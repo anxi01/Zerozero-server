@@ -1,5 +1,9 @@
-package com.zerozero.domain;
+package com.zerozero.user.entity;
 
+import com.zerozero.common.entity.BaseEntity;
+import com.zerozero.chatmessage.entity.ChatMessage;
+import com.zerozero.chatroom.entity.ChatRoom;
+import com.zerozero.store.entity.Store;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -1,6 +1,6 @@
 package com.zerozero.config;
 
-import com.zerozero.repository.UserRepository;
+import com.zerozero.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

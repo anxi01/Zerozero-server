@@ -1,5 +1,8 @@
-package com.zerozero.domain;
+package com.zerozero.chatmessage.entity;
 
+import com.zerozero.chatroom.entity.ChatRoom;
+import com.zerozero.common.entity.BaseEntity;
+import com.zerozero.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

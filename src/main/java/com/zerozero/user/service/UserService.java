@@ -1,7 +1,7 @@
-package com.zerozero.service;
+package com.zerozero.user.service;
 
-import com.zerozero.domain.User;
-import com.zerozero.response.UserInfoResponse;
+import com.zerozero.user.entity.User;
+import com.zerozero.user.dto.response.UserInfoResponse;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,6 +1,6 @@
-package com.zerozero.response;
+package com.zerozero.user.dto.response;
 
-import com.zerozero.domain.Store;
+import com.zerozero.store.entity.Store;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;

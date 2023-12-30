@@ -1,9 +1,9 @@
 package com.zerozero.auth;
 
 import com.zerozero.config.JwtService;
-import com.zerozero.domain.Role;
-import com.zerozero.domain.User;
-import com.zerozero.repository.UserRepository;
+import com.zerozero.user.entity.Role;
+import com.zerozero.user.entity.User;
+import com.zerozero.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

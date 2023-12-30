@@ -1,7 +1,7 @@
-package com.zerozero.controller;
+package com.zerozero.user.controller;
 
-import com.zerozero.response.UserInfoResponse;
-import com.zerozero.service.UserService;
+import com.zerozero.user.dto.response.UserInfoResponse;
+import com.zerozero.user.service.UserService;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

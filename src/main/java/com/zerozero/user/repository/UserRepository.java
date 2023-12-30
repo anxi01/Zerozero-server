@@ -1,6 +1,6 @@
-package com.zerozero.repository;
+package com.zerozero.user.repository;
 
-import com.zerozero.domain.User;
+import com.zerozero.user.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
