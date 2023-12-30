@@ -1,5 +1,6 @@
 package com.zerozero.auth;
 
+import com.zerozero.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,26 +19,26 @@ public class AuthenticationController {
 
   /* 회원가입 */
   @PostMapping("/register")
-  public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
-    return ResponseEntity.ok(service.register(request));
+  public ApiResponse<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+    return ApiResponse.ok(service.register(request));
   }
 
   /* 로그인 */
   @PostMapping("/authenticate")
-  public ResponseEntity<AuthenticationResponse> authenticate(
+  public ApiResponse<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request) {
-    return ResponseEntity.ok(service.authenticate(request));
+    return ApiResponse.ok(service.authenticate(request));
   }
 
   /* 이메일 중복 체크 */
   @GetMapping("/check-email/{email}")
-  public ResponseEntity<String> checkEmail(@PathVariable String email) {
-    return ResponseEntity.ok(service.checkEmail(email));
+  public ApiResponse<String> checkEmail(@PathVariable String email) {
+    return ApiResponse.ok(service.checkEmail(email));
   }
 
   /* 닉네임 중복 체크 */
   @GetMapping("/check-nickname/{nickname}")
-  public ResponseEntity<String> checkNickname(@PathVariable String nickname) {
-    return ResponseEntity.ok(service.checkNickname(nickname));
+  public ApiResponse<String> checkNickname(@PathVariable String nickname) {
+    return ApiResponse.ok(service.checkNickname(nickname));
   }
 }

@@ -1,10 +1,10 @@
 package com.zerozero.user.controller;
 
+import com.zerozero.common.response.ApiResponse;
 import com.zerozero.user.dto.response.UserInfoResponse;
 import com.zerozero.user.service.UserService;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +17,8 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/my-page")
-  public ResponseEntity<UserInfoResponse> getMyInfo(Principal connectedUser) {
-    return ResponseEntity.ok(userService.getUserInfo(connectedUser));
+  public ApiResponse<UserInfoResponse> getMyInfo(Principal connectedUser) {
+    return ApiResponse.ok(userService.getUserInfo(connectedUser));
   }
 
 }
