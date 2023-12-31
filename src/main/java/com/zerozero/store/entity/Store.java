@@ -1,7 +1,6 @@
 package com.zerozero.store.entity;
 
 import com.zerozero.common.entity.BaseEntity;
-import com.zerozero.naver.dto.SearchLocalResponse;
 import com.zerozero.naver.dto.SearchLocalResponse.SearchLocalItem;
 import com.zerozero.user.entity.User;
 import jakarta.persistence.Entity;

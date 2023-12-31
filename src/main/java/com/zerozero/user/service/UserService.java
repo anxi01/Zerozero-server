@@ -1,11 +1,9 @@
 package com.zerozero.user.service;
 
 import com.zerozero.store.dto.response.StoreInfoResponse;
-import com.zerozero.store.entity.Store;
 import com.zerozero.store.repository.StoreRepository;
 import com.zerozero.user.dto.response.UserInfoResponse;
 import com.zerozero.user.entity.User;
-import java.awt.Stroke;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
