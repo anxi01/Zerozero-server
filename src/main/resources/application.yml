@@ -12,3 +12,11 @@ spring:
         format_sql: true
 jwt:
   secretKey: ${secretKey}
+
+naver:
+  url:
+    search:
+      local: https://openapi.naver.com/v1/search/local.json
+  client:
+    id: ${X-Naver-Client-Id}
+    secret: ${X-Naver-Client-Secret}
