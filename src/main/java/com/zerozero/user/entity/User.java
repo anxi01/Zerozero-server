@@ -1,5 +1,6 @@
 package com.zerozero.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zerozero.chatmessage.entity.ChatMessage;
 import com.zerozero.chatroom.entity.ChatRoom;
 import com.zerozero.common.entity.BaseEntity;
@@ -55,6 +56,7 @@ public class User extends BaseEntity implements UserDetails {
 
   @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_id")
+  @JsonIgnore
   private List<Store> stores = new ArrayList<>();
 
   @ManyToOne
