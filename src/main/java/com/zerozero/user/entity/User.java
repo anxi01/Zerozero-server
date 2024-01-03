@@ -1,8 +1,7 @@
 package com.zerozero.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.zerozero.chatmessage.entity.ChatMessage;
-import com.zerozero.chatroom.entity.ChatRoom;
+import com.zerozero.chat.entity.ChatMessage;
+import com.zerozero.chat.entity.ChatRoom;
 import com.zerozero.common.entity.BaseEntity;
 import com.zerozero.store.entity.Store;
 import jakarta.persistence.Entity;
@@ -56,11 +55,18 @@ public class User extends BaseEntity implements UserDetails {
 
   @OneToMany(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_id")
-  @JsonIgnore
   private List<Store> stores = new ArrayList<>();
 
   @ManyToOne
   private ChatRoom chatRoom;
+
+  public void enterChatRoom(ChatRoom chatRoom) {
+    this.chatRoom = chatRoom;
+  }
+
+  public void exitChatRoom() {
+    this.chatRoom = null;
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
