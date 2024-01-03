@@ -7,6 +7,7 @@ import com.zerozero.chat.repository.ChatRoomRepository;
 import com.zerozero.user.entity.User;
 import com.zerozero.user.repository.UserRepository;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -42,5 +43,10 @@ public class ChatRoomService {
   public ChatRoomResponse createChatRoom(ChatRoomRequest requestDto) {
     ChatRoom chatRoom = chatRoomRepository.save(requestDto.toEntity());
     return new ChatRoomResponse(chatRoom);
+  }
+
+  public List<ChatRoomResponse> getAllChatRoom() {
+    return chatRoomRepository.findAllByOrderByNameAsc().stream()
+        .map(ChatRoomResponse::new).toList();
   }
 }

@@ -38,6 +38,12 @@ public class ChatController {
     return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.createChatRoom(request));
   }
 
+  /* 채팅방 전체 조회 */
+  @GetMapping("/list")
+  public ResponseEntity<List<ChatRoomResponse>> getAllChatRoom() {
+    return ResponseEntity.ok(chatRoomService.getAllChatRoom());
+  }
+
   @MessageMapping("/send-message")
   @SendTo("/topic/chat")
   public void sendMessage(ChatMessageRequest request) {
