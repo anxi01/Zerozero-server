@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>WebSocket Chat</title>
+  <!-- SockJS 및 Stomp.js 라이브러리 로드 -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div id="chat-messages"></div>
+<input id="userId-input" type="text" placeholder="UserID"/>
+<input id="roomId-input" type="text" placeholder="RoomID"/>
+<input id="message-input" type="text" placeholder="Type a message..."/>
+<button onclick="sendMessage()">Send</button>
+<script th:inline="javascript">
+  var socket = new SockJS('/ws-chat'); // WebSocket 연결
+  var stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function (frame) {
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/topic/chat', function (response) {
+      showMessage(JSON.parse(response.body)); // 받은 메시지를 표시
+    });
+  });
+
+  function sendMessage() {
+    var message = document.getElementById('message-input').value;
+    var userId = document.getElementById('userId-input').value; // 사용자 ID 입력
+    var roomId = document.getElementById('roomId-input').value; // 채팅방 ID 입력
+    stompClient.send("/app/send-message", {}, JSON.stringify({
+      userId: userId,
+      roomId: roomId, // 변수명을 roomId로 수정
+      message: message
+    })); // 메시지 전송
+  }
+
+  function showMessage(message) {
+    var chatMessages = document.getElementById('chat-messages');
+    var p = document.createElement('p');
+    p.appendChild(document.createTextNode(message));
+    chatMessages.appendChild(p);
+  }
+</script>
+</body>
+</html>
