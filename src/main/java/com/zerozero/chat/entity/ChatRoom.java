@@ -1,6 +1,6 @@
-package com.zerozero.chatroom.entity;
+package com.zerozero.chat.entity;
 
-import com.zerozero.chatmessage.entity.ChatMessage;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zerozero.common.entity.BaseEntity;
 import com.zerozero.user.entity.User;
 import jakarta.persistence.Entity;
@@ -11,11 +11,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class ChatRoom extends BaseEntity {
 
@@ -27,9 +30,16 @@ public class ChatRoom extends BaseEntity {
 
   @OneToMany
   @JoinColumn(name = "chat_room_id")
+  @JsonIgnore
   private List<User> users = new ArrayList<>();
 
   @OneToMany
   @JoinColumn(name = "chat_room_id")
+  @JsonIgnore
   private List<ChatMessage> chatMessages = new ArrayList<>();
+
+  @Builder
+  public ChatRoom(String roomName) {
+    this.name = roomName;
+  }
 }
