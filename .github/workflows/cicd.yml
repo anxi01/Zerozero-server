@@ -14,7 +14,7 @@ env:
   BUCKET_NAME: zerozero-cicd-bucket
   CODE_DEPLOY_APP_NAME: zerozero-CD
   DEPLOYMENT_GROUP_NAME: zerozero-CD-group
-  RESOURCE_PATH: ./Zerozero-server/src/main/resources/application-dev.yaml
+  RESOURCE_PATH: ./src/main/resources/application-dev.yaml
 
 jobs:
   deploy:
