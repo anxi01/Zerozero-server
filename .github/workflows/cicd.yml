@@ -14,7 +14,7 @@ env:
   BUCKET_NAME: zerozero-cicd-bucket
   CODE_DEPLOY_APP_NAME: zerozero-CD
   DEPLOYMENT_GROUP_NAME: zerozero-CD-group
-  JASYPT_SECRETE_KEY: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+  RESOURCE_PATH: ./Zerozero-server/src/main/resources/application-dev.yaml
 
 jobs:
   deploy:
@@ -28,6 +28,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Set yaml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          jasypt.encryptor.password: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
