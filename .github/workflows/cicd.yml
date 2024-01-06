@@ -14,7 +14,7 @@ env:
   BUCKET_NAME: zerozero-cicd-bucket
   CODE_DEPLOY_APP_NAME: zerozero-CD
   DEPLOYMENT_GROUP_NAME: zerozero-CD-group
-  JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+  JASYPT_SECRETE_KEY: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
 
 jobs:
   deploy:
