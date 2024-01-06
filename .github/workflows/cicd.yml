@@ -14,7 +14,7 @@ env:
   BUCKET_NAME: zerozero-cicd-bucket
   CODE_DEPLOY_APP_NAME: zerozero-CD
   DEPLOYMENT_GROUP_NAME: zerozero-CD-group
-  JASYPT_ENCRYPTOR_PASSWORD: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+  RESOURCE_PATH: ./src/main/resources/application-dev.yaml
 
 jobs:
   deploy:
@@ -28,6 +28,19 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Set yaml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          jasypt.encryptor.password: ${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
+          jwt.secretKey: ${{ secrets.JWT_SECRET}}
+          spring.datasource.url: ${{ secrets.URL }}
+          spring.datasource.username: ${{ secrets.USER_NAME }}
+          spring.datasource.password: ${{ secrets.PASSWORD }}
+          naver.client.id: ${{ secrets.NAVER_CLIENT_ID}}
+          naver.client.secret: ${{ secrets.NAVER_CLIENT_SECRET }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew

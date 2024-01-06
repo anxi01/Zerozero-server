@@ -14,6 +14,10 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+jasypt:
+  encryptor:
+    password: ${JASYPT_SECRETE_KEY}
+
 jwt:
   secretKey: ENC(bUGcue0lkiShbjCUGQWvlDs/bBNBWX/dT9LM5CuHg6iyfgiEhgyeT9ZQFEt8vgbpHI7+waQ4GdnkSTqZApygZrfxVvRj1tpTjp5Tqk4sRgvcSXg0SvEChLWPAzxzqylUrkf0pwG4JBdamojvNzENjHijYmXOai3tU4p4Nava3YDecMQOus41f7VRWOFHRBi6HsUvkUg2BqJzovPbLc8dwU5fo0L1mvR+al6IeO4+Xow=)
 
