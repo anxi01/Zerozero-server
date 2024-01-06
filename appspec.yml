@@ -4,12 +4,17 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/Zerozero-server
+    overwrite: yes
+
 permissions:
-  - object: /home/ubuntu/Zerozero-server/
+  - object: /
     owner: ubuntu
     group: ubuntu
+
 hooks:
   AfterInstall:
-    - location: scripts/deploy.sh
+    - location: scripts/stop.sh
       timeout: 60
-      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 60
