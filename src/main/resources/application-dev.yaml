@@ -4,9 +4,9 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${URL}
-    username: ${Name}
-    password: ${Password}
+    url: ENC(CfQzJEeNbGbU4xY+7tg8p5BPLSdeqCKURrjNKmSR8ePywty2XUaqjvN7bbcgARxa8VO0ndJ7j7jMacoWsBWHq3HaG+214xMNwCTwFHipR4Ct1VaC14zhpaFUyiO5kj+fYchGuuhDQoE=)
+    username: ENC(H/LUe4yjEZBVeMMUMKLqBg==)
+    password: ENC(GyU0n92ylyBEHLaznLNwHQs1xaWvpZ8H)
   jpa:
     hibernate:
       ddl-auto: create
@@ -19,15 +19,12 @@ jasypt:
     password: ${JASYPT_SECRETE_KEY}
 
 jwt:
-  secretKey: ${secretKey}
-#  secretKey: ENC(bUGcue0lkiShbjCUGQWvlDs/bBNBWX/dT9LM5CuHg6iyfgiEhgyeT9ZQFEt8vgbpHI7+waQ4GdnkSTqZApygZrfxVvRj1tpTjp5Tqk4sRgvcSXg0SvEChLWPAzxzqylUrkf0pwG4JBdamojvNzENjHijYmXOai3tU4p4Nava3YDecMQOus41f7VRWOFHRBi6HsUvkUg2BqJzovPbLc8dwU5fo0L1mvR+al6IeO4+Xow=)
+  secretKey: ENC(bUGcue0lkiShbjCUGQWvlDs/bBNBWX/dT9LM5CuHg6iyfgiEhgyeT9ZQFEt8vgbpHI7+waQ4GdnkSTqZApygZrfxVvRj1tpTjp5Tqk4sRgvcSXg0SvEChLWPAzxzqylUrkf0pwG4JBdamojvNzENjHijYmXOai3tU4p4Nava3YDecMQOus41f7VRWOFHRBi6HsUvkUg2BqJzovPbLc8dwU5fo0L1mvR+al6IeO4+Xow=)
 
 naver:
   url:
     search:
       local: https://openapi.naver.com/v1/search/local.json
   client:
-#    id: ENC(+360t44DgPZsqSUxThTfvgjE34sgxwfuKlSkCKVjq10=)
-    id: ${X-Naver-Client-Id}
-#    secret: ENC(Ed98V/o2RX3XhBYyxPMkvyt9jzj2O/xR)
-    secret: ${X-Naver-Client-Secret}
+    id: ENC(+360t44DgPZsqSUxThTfvgjE34sgxwfuKlSkCKVjq10=)
+    secret: ENC(Ed98V/o2RX3XhBYyxPMkvyt9jzj2O/xR)
