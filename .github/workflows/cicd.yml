@@ -34,7 +34,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -Pjasypt.encryptor.password=$JASYPT_ENCRYPTOR_PASSWORD
 
       - name: Make Zip File
         run: zip -qq -r ./$GITHUB_SHA.zip .
