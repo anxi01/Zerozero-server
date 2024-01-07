@@ -1,9 +1,11 @@
 package com.zerozero.domain.user.api;
 
 import com.zerozero.domain.user.application.UserService;
+import com.zerozero.domain.user.dto.UserStoreRankDTO;
 import com.zerozero.domain.user.dto.response.UserInfoResponse;
 import com.zerozero.global.common.dto.response.ApiResponse;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,4 +23,8 @@ public class UserController {
     return ApiResponse.ok(userService.getUserInfo(connectedUser));
   }
 
+  @GetMapping("/rank")
+  public ApiResponse<List<UserStoreRankDTO>> getTop10Users() {
+    return ApiResponse.ok(userService.getTop10UsersByStoreCount());
+  }
 }
