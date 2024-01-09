@@ -5,6 +5,8 @@ import com.zerozero.global.auth.dto.request.AuthenticationRequest;
 import com.zerozero.global.auth.dto.request.RegisterRequest;
 import com.zerozero.global.auth.dto.response.AuthenticationResponse;
 import com.zerozero.global.common.dto.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "인증/인가 controller", description = "회원 가입, 로그인 관련 API입니다.")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -20,26 +23,26 @@ public class AuthenticationController {
 
   private final AuthenticationService service;
 
-  /* 회원가입 */
+  @Operation(summary = "회원가입")
   @PostMapping("/register")
   public ApiResponse<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
     return ApiResponse.ok(service.register(request));
   }
 
-  /* 로그인 */
+  @Operation(summary = "로그인", description = "로그인한 사용자의 토큰을 이용하여 API를 사용할 수 있습니다.")
   @PostMapping("/authenticate")
   public ApiResponse<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request) {
     return ApiResponse.ok(service.authenticate(request));
   }
 
-  /* 이메일 중복 체크 */
+  @Operation(summary = "이메일 중복체크")
   @GetMapping("/check-email/{email}")
   public ApiResponse<String> checkEmail(@PathVariable String email) {
     return ApiResponse.ok(service.checkEmail(email));
   }
 
-  /* 닉네임 중복 체크 */
+  @Operation(summary = "닉네임 중복체크")
   @GetMapping("/check-nickname/{nickname}")
   public ApiResponse<String> checkNickname(@PathVariable String nickname) {
     return ApiResponse.ok(service.checkNickname(nickname));
