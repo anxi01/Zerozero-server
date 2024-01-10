@@ -41,6 +41,8 @@ jobs:
           spring.datasource.password: ${{ secrets.PASSWORD }}
           naver.client.id: ${{ secrets.NAVER_CLIENT_ID}}
           naver.client.secret: ${{ secrets.NAVER_CLIENT_SECRET }}
+          cloud.aws.credentials.accessKey: ${{ secrets.IAM_ACCESS_KEY }}
+          cloud.aws.credentials.secretKey: ${{ secrets.IAM_SECRET_KEY }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
