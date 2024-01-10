@@ -1,13 +1,16 @@
 package com.zerozero.domain.store.domain;
 
 import com.zerozero.domain.naver.dto.response.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.domain.store.dto.request.RegisterStoreRequest;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.global.common.domain.BaseEntity;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,12 +39,15 @@ public class Store extends BaseEntity {
 
   private int mapy;
 
-  private boolean selling;
+  private boolean selling = false;
 
   @ManyToOne
   private User user;
 
-  public static Store of(User user, SearchLocalItem item, boolean isSelling) {
+  @ElementCollection
+  private List<String> imageUrl;
+
+  public static Store of(User user, SearchLocalItem item, RegisterStoreRequest request) {
     return Store.builder()
         .name(item.getTitle())
         .category(item.getCategory())
@@ -49,8 +55,9 @@ public class Store extends BaseEntity {
         .roadAddress(item.getRoadAddress())
         .mapx(item.getMapx())
         .mapy(item.getMapy())
-        .selling(isSelling)
+        .selling(true)
         .user(user)
+        .imageUrl(request.getImages())
         .build();
   }
 }
