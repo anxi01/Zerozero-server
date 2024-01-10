@@ -52,7 +52,7 @@ public class StoreService {
 
     var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
-    Store store = Store.of(user, storeItem, request.isSelling());
+    Store store = Store.of(user, storeItem, request);
     storeRepository.save(store);
 
     return StoreInfoResponse.from(store);
