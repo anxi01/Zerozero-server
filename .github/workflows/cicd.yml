@@ -58,6 +58,6 @@ jobs:
           script: |
             sudo docker pull ${{secrets.DOCKER_USERNAME}}/zerozero:latest
             sudo docker stop $(docker ps -a -q)
-            sudo docker run -d --log-driver=syslog -p 8080:8080 -e JAVA_OPTS=-Djasypt.encryptor.password=${{secrets.JASYPT_ENCRYPTOR_PASSWORD}} ${{secrets.DOCKER_USERNAME}}/zerozero:latest
             sudo docker rm $(docker ps --filter 'status=exited' -a -q)
+            sudo docker run -d --log-driver=syslog -p 8080:8080 -e JAVA_OPTS=-Djasypt.encryptor.password=${{secrets.JASYPT_ENCRYPTOR_PASSWORD}} ${{secrets.DOCKER_USERNAME}}/zerozero:latest
             sudo docker image prune -a -f
