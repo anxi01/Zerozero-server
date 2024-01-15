@@ -52,7 +52,8 @@ public class AuthenticationService {
 
   public String checkEmail(String email) {
     if (userRepository.existsByEmail(email)) {
-      throw new IllegalArgumentException("이메일이 중복됩니다.");
+//      throw new IllegalArgumentException("이메일이 중복됩니다.");
+      return "이미 존재하는 이메일입니다.";
     } else {
       return "사용 가능한 이메일입니다.";
     }
@@ -60,7 +61,8 @@ public class AuthenticationService {
 
   public String checkNickname(String nickname) {
     if (userRepository.existsByNickname(nickname)) {
-      throw new IllegalArgumentException("닉네임이 중복됩니다.");
+//      throw new IllegalArgumentException("닉네임이 중복됩니다.");
+      return "이미 존재하는 닉네임입니다.";
     } else {
       return "사용 가능한 닉네임입니다.";
     }
