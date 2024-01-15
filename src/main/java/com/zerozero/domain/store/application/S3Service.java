@@ -1,4 +1,4 @@
-package com.zerozero.global.s3.application;
+package com.zerozero.domain.store.application;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -25,24 +25,30 @@ public class S3Service {
 
   private final AmazonS3 amazonS3;
 
-  public List<String> uploadImage(List<MultipartFile> multipartFiles) {
-    List<String> fileUrls = new ArrayList<>();
+  public List<String> uploadImages(List<MultipartFile> multipartFiles) {
+    List<String> imageUrls = new ArrayList<>();
 
     multipartFiles.forEach(file -> {
           String fileName = createFileName(file.getOriginalFilename());
-          ObjectMetadata objectMetadata = new ObjectMetadata();
-          objectMetadata.setContentLength(file.getSize());
-          objectMetadata.setContentType(file.getContentType());
+          String fileExtension = getFileExtension(fileName);
 
-          try (InputStream inputStream = file.getInputStream()) {
-            amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
-          } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-          }
-      fileUrls.add(getUrl(bucket, fileName));
+      if (isValidImageFileExtension(fileExtension)) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setContentType(file.getContentType());
+
+        try (InputStream inputStream = file.getInputStream()) {
+          amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+              .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (IOException e) {
+          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+        }
+        imageUrls.add(getUrl(bucket, fileName));
+      } else {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원되지 않는 이미지 형식입니다.");
+      }
     });
-    return fileUrls;
+    return imageUrls;
   }
 
   private String createFileName(String fileName){
@@ -59,5 +65,10 @@ public class S3Service {
 
   private String getUrl(String bucket, String fileName) {
     return amazonS3.getUrl(bucket, fileName).toString();
+  }
+
+  private boolean isValidImageFileExtension(String fileExtension) {
+    return fileExtension.equalsIgnoreCase(".png") || fileExtension.equalsIgnoreCase(".jpeg")
+        || fileExtension.equalsIgnoreCase(".jpg");
   }
 }
