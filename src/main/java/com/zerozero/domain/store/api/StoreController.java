@@ -8,14 +8,16 @@ import com.zerozero.global.common.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Store Controller", description = "판매점 관련 API입니다.")
 @RestController
@@ -31,12 +33,13 @@ public class StoreController {
     return ApiResponse.ok(storeService.search(query));
   }
 
-  @Operation(summary = "판매점 등록", description = "사용자가 검색한 판매점 리스트를 통해 제로음료수 판매점을 등록합니다.")
+  @Operation(summary = "판매점 등록", description = "사용자가 검색한 판매점 리스트를 통해 제로음료수 판매점을 등록합니다. 사진을 등록할 수 있습니다.")
   @PostMapping
   public ApiResponse<StoreInfoResponse> addStore(Principal connectedUser,
       @RequestParam String query,
-      @RequestBody RegisterStoreRequest request) {
-    return ApiResponse.ok(storeService.add(connectedUser, query, request));
+      @RequestPart RegisterStoreRequest request,
+      @RequestPart List<MultipartFile> images) {
+    return ApiResponse.ok(storeService.add(connectedUser, query, request, images));
   }
 
   @Operation(summary = "판매점 조회", description = "각각의 판매점 정보를 조회합니다.")

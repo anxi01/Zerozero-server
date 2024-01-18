@@ -1,7 +1,6 @@
 package com.zerozero.domain.store.domain;
 
 import com.zerozero.domain.naver.dto.response.SearchLocalResponse.SearchLocalItem;
-import com.zerozero.domain.store.dto.request.RegisterStoreRequest;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.global.common.domain.BaseEntity;
 import jakarta.persistence.ElementCollection;
@@ -47,7 +46,7 @@ public class Store extends BaseEntity {
   @ElementCollection
   private List<String> imageUrl;
 
-  public static Store of(User user, SearchLocalItem item, RegisterStoreRequest request) {
+  public static Store of(User user, SearchLocalItem item, List<String> uploadImages) {
     return Store.builder()
         .name(item.getTitle())
         .category(item.getCategory())
@@ -57,7 +56,7 @@ public class Store extends BaseEntity {
         .mapy(item.getMapy())
         .selling(true)
         .user(user)
-        .imageUrl(request.getImages())
+        .imageUrl(uploadImages)
         .build();
   }
 }

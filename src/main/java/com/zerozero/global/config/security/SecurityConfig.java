@@ -30,7 +30,7 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-            .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+            .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "http://localhost:3000/**").permitAll()
             .anyRequest().authenticated())
         .sessionManagement((sessionManagement) ->
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -43,10 +43,10 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("*"));
+    config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
     config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    config.setAllowedHeaders(Arrays.asList("*"));
     config.setAllowCredentials(true);
-    config.setAllowedHeaders(List.of("*"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);

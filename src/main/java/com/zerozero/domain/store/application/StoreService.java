@@ -9,9 +9,11 @@ import com.zerozero.domain.store.dto.response.StoreListResponse;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class StoreService {
 
   private final NaverClient naverClient;
   private final StoreRepository storeRepository;
+  private final S3Service s3Service;
 
   public StoreListResponse search(String query) {
 
@@ -38,23 +41,24 @@ public class StoreService {
     }
   }
 
-  public StoreInfoResponse add(Principal connectedUser, String query, RegisterStoreRequest request) {
+  public StoreInfoResponse add(Principal connectedUser, String query, RegisterStoreRequest request,
+      List<MultipartFile> images) {
 
     var storeList = search(query);
     var storeItem = storeList.getItems().stream()
         .filter(s ->
             s.getTitle().equals(request.getTitle()) &&
-            s.getMapx() == request.getMapx() &&
-            s.getMapy() == request.getMapy()
+                s.getMapx() == request.getMapx() &&
+                s.getMapy() == request.getMapy()
         )
         .findFirst()
         .orElseThrow(IllegalArgumentException::new);
 
     var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    List<String> uploadImages = s3Service.uploadImages(images);
+    Store store = Store.of(user, storeItem, uploadImages);
 
-    Store store = Store.of(user, storeItem, request);
     storeRepository.save(store);
-
     return StoreInfoResponse.from(store);
   }
 
