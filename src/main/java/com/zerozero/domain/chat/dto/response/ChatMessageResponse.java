@@ -8,14 +8,14 @@ import lombok.Getter;
 public class ChatMessageResponse {
 
   private Long id;
-  private String userName;
+  private String username;
   private String message;
   private String createdAt;
   private String updatedAt;
 
   public ChatMessageResponse(ChatMessage chatMessage) {
     this.id = chatMessage.getId();
-    this.userName = chatMessage.getUser().getNickname();
+    this.username = chatMessage.getUser().getNickname();
     this.message = chatMessage.getMessage();
     this.createdAt = chatMessage.getCreatedAt()
         .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
