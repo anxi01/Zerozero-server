@@ -12,7 +12,6 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,9 +36,4 @@ public class ChatRoom extends BaseEntity {
   @JoinColumn(name = "chat_room_id")
   @JsonIgnore
   private List<ChatMessage> chatMessages = new ArrayList<>();
-
-  @Builder
-  public ChatRoom(String roomName) {
-    this.name = roomName;
-  }
 }
