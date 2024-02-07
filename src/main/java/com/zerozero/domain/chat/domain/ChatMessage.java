@@ -8,12 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 public class ChatMessage extends BaseEntity {
 
@@ -30,11 +33,4 @@ public class ChatMessage extends BaseEntity {
   @ManyToOne
   @JsonIgnore
   private ChatRoom chatRoom;
-
-  @Builder
-  public ChatMessage(String message, User user, ChatRoom chatRoom) {
-    this.message = message;
-    this.user = user;
-    this.chatRoom = chatRoom;
-  }
 }
