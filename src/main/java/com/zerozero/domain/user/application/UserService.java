@@ -1,11 +1,13 @@
 package com.zerozero.domain.user.application;
 
+import com.zerozero.domain.store.application.S3Service;
 import com.zerozero.domain.store.dto.response.StoreInfoResponse;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.domain.user.dto.UserStoreRankDTO;
 import com.zerozero.domain.user.dto.response.UserInfoResponse;
 import com.zerozero.domain.user.repository.UserRepository;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final StoreRepository storeRepository;
+  private final S3Service s3Service;
 
   public UserInfoResponse getUserInfo(Principal connectedUser) {
 
@@ -49,5 +53,16 @@ public class UserService {
       top10RankInfos.add(new UserStoreRankDTO(user.getNickname(), (Long) allRankInfos.get(i)[1]));
     }
     return top10RankInfos;
+  }
+
+  public void uploadProfileImage(Principal connectedUser, MultipartFile profileImage)
+      throws IOException {
+
+    User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+    String imageUrl = s3Service.uploadImage(profileImage);
+
+    user.uploadProfileImage(imageUrl);
+    userRepository.save(user);
   }
 }
