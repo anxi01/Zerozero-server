@@ -25,6 +25,24 @@ public class S3Service {
 
   private final AmazonS3 amazonS3;
 
+  public String uploadImage(MultipartFile multipartFile) throws IOException {
+    String fileName = createFileName(multipartFile.getOriginalFilename());
+
+    String fileExtension = getFileExtension(fileName);
+
+    if (isValidImageFileExtension(fileExtension)) {
+
+      ObjectMetadata objectMetadata = new ObjectMetadata();
+      objectMetadata.setContentLength(multipartFile.getSize());
+      objectMetadata.setContentType(multipartFile.getContentType());
+
+      amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), objectMetadata);
+      return getUrl(bucket, fileName);
+    } else {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원되지 않는 이미지 형식입니다.");
+    }
+  }
+
   public List<String> uploadImages(List<MultipartFile> multipartFiles) {
     List<String> imageUrls = new ArrayList<>();
 

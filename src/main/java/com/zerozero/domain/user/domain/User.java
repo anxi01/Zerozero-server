@@ -46,6 +46,8 @@ public class User extends BaseEntity implements UserDetails {
 
   private String password;
 
+  private String profileImage;
+
   @Enumerated(EnumType.STRING)
   private Role role;
 
@@ -59,6 +61,10 @@ public class User extends BaseEntity implements UserDetails {
 
   @ManyToOne
   private ChatRoom chatRoom;
+
+  public void uploadProfileImage(String imageUrl) {
+    this.profileImage = imageUrl;
+  }
 
   public void enterChatRoom(ChatRoom chatRoom) {
     this.chatRoom = chatRoom;

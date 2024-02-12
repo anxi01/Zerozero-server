@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-  List<Store> findStoresByUser(User user);
+  Long countStoresByUser(User user);
 
   @Query("SELECT s.user.id, COUNT(s) as storeCount FROM Store s GROUP BY s.user.id ORDER BY storeCount DESC")
   List<Object[]> countStoresByUserId();
