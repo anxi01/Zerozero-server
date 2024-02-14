@@ -4,12 +4,12 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(CfQzJEeNbGbU4xY+7tg8p5BPLSdeqCKURrjNKmSR8ePywty2XUaqjvN7bbcgARxa8VO0ndJ7j7jMacoWsBWHq3HaG+214xMNwCTwFHipR4Ct1VaC14zhpaFUyiO5kj+fYchGuuhDQoE=)
-    username: ENC(H/LUe4yjEZBVeMMUMKLqBg==)
-    password: ENC(GyU0n92ylyBEHLaznLNwHQs1xaWvpZ8H)
+    url: ENC(vFKt3bUbkwBRwX6JB/mt68kZ9vybavoACZd6L2+aPchLywg9g+8zvWbASCrsFJ8t/A44qXXIsXuz1lMgF8TLHS1SZAKCkXbxQLL1oENS0cLMclctjTy47qDY8WUeRINx)
+    username: ENC(4HB0kiECCrTDYoLAu+ZFWg==)
+    password: ENC(SS+vlSCU22M19cs6pYMT9gSglt+jBJzr)
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         show_sql: true
