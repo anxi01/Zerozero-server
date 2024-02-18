@@ -1,5 +1,6 @@
 package com.zerozero.global.config.security;
 
+import com.zerozero.global.filter.ExceptionHandleFilter;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,13 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-            .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "http://localhost:3000/**").permitAll()
+            .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
             .anyRequest().authenticated())
         .sessionManagement((sessionManagement) ->
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider)
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new ExceptionHandleFilter(), JwtAuthenticationFilter.class);
 
     return http.build();
   }

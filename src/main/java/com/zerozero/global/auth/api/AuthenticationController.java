@@ -39,12 +39,14 @@ public class AuthenticationController {
   @Operation(summary = "이메일 중복체크")
   @GetMapping("/check-email/{email}")
   public ApiResponse<String> checkEmail(@PathVariable String email) {
-    return ApiResponse.ok(service.checkEmail(email));
+    service.checkEmail(email);
+    return ApiResponse.ok();
   }
 
   @Operation(summary = "닉네임 중복체크")
   @GetMapping("/check-nickname/{nickname}")
   public ApiResponse<String> checkNickname(@PathVariable String nickname) {
-    return ApiResponse.ok(service.checkNickname(nickname));
+    service.checkNickname(nickname);
+    return ApiResponse.ok();
   }
 }

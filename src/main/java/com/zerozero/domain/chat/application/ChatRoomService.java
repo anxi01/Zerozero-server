@@ -3,9 +3,11 @@ package com.zerozero.domain.chat.application;
 import com.zerozero.domain.chat.domain.ChatRoom;
 import com.zerozero.domain.chat.dto.request.ChatRoomRequest;
 import com.zerozero.domain.chat.dto.response.ChatRoomResponse;
+import com.zerozero.domain.chat.exception.ChatRoomNotFoundException;
 import com.zerozero.domain.chat.repository.ChatRoomRepository;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.domain.user.repository.UserRepository;
+import com.zerozero.global.auth.exception.UserNotFoundException;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,8 @@ public class ChatRoomService {
 
   @Transactional
   public void enterChatRoom(Long roomId, Long userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-    ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+    User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(ChatRoomNotFoundException::new);
 
     user.enterChatRoom(chatRoom);
   }

@@ -6,8 +6,10 @@ import com.zerozero.domain.store.domain.Store;
 import com.zerozero.domain.store.dto.request.RegisterStoreRequest;
 import com.zerozero.domain.store.dto.response.StoreInfoResponse;
 import com.zerozero.domain.store.dto.response.StoreListResponse;
+import com.zerozero.domain.store.exception.StoreNotFoundException;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
+import com.zerozero.global.s3.application.S3Service;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,7 @@ public class StoreService {
           .items(searchLocalResponse.getItems())
           .build();
     } else {
-      throw new IllegalArgumentException("해당 음식점이 존재하지 않습니다.");
+      throw new StoreNotFoundException();
     }
   }
 
@@ -52,7 +54,7 @@ public class StoreService {
                 s.getMapy() == request.getMapy()
         )
         .findFirst()
-        .orElseThrow(IllegalArgumentException::new);
+        .orElseThrow(StoreNotFoundException::new);
 
     var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     List<String> uploadImages = s3Service.uploadImages(images);
@@ -63,9 +65,7 @@ public class StoreService {
   }
 
   public StoreInfoResponse getStoreInfo(Long storeId) {
-    Store store = storeRepository.findById(storeId)
-        .orElseThrow(() -> new IllegalArgumentException("판매점이 존재하지 않습니다."));
-
+    Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
     return StoreInfoResponse.from(store);
   }
 }

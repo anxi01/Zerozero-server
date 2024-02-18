@@ -1,6 +1,7 @@
 package com.zerozero.global.config.security;
 
 import com.zerozero.domain.user.repository.UserRepository;
+import com.zerozero.global.auth.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,7 @@ public class ApplicationConfig {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> userRepository.findByEmail(username)
-        .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 사용자입니다."));
+    return username -> userRepository.findByEmail(username).orElseThrow(UserNotFoundException::new);
   }
 
   @Bean
