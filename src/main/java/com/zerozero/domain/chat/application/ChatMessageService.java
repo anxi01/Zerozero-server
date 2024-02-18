@@ -3,10 +3,12 @@ package com.zerozero.domain.chat.application;
 import com.zerozero.domain.chat.domain.ChatMessage;
 import com.zerozero.domain.chat.domain.ChatRoom;
 import com.zerozero.domain.chat.dto.response.ChatMessageResponse;
+import com.zerozero.domain.chat.exception.ChatRoomNotFoundException;
 import com.zerozero.domain.chat.repository.ChatMessageRepository;
 import com.zerozero.domain.chat.repository.ChatRoomRepository;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.domain.user.repository.UserRepository;
+import com.zerozero.global.auth.exception.UserNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,9 @@ public class ChatMessageService {
   private final UserRepository userRepository;
 
   public void saveMessage(Long chatRoomId, String message, Long userId) {
-    ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-        () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + chatRoomId));
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+    ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(ChatRoomNotFoundException::new);
+    User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
     ChatMessage chatMessage = ChatMessage.builder()
         .chatRoom(chatRoom)
         .message(message)
