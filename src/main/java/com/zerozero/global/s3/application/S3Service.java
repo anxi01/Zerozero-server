@@ -1,4 +1,4 @@
-package com.zerozero.domain.store.application;
+package com.zerozero.global.s3.application;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
