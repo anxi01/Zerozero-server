@@ -1,6 +1,6 @@
 package com.zerozero.domain.user.application;
 
-import com.zerozero.domain.store.application.S3Service;
+import com.zerozero.global.s3.application.S3Service;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.domain.user.dto.response.UserInfoResponse;
