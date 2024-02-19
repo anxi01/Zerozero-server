@@ -33,7 +33,6 @@ public class UserController {
   @PostMapping("/upload-profile")
   public ApiResponse<String> uploadProfileImage(Principal connectedUser, @RequestPart MultipartFile profileImage)
       throws IOException {
-    userService.uploadProfileImage(connectedUser, profileImage);
-    return ApiResponse.ok();
+    return ApiResponse.ok(userService.uploadProfileImage(connectedUser, profileImage));
   }
 }

@@ -41,7 +41,7 @@ public class UserService {
         .build();
   }
 
-  public void uploadProfileImage(Principal connectedUser, MultipartFile profileImage)
+  public String uploadProfileImage(Principal connectedUser, MultipartFile profileImage)
       throws IOException {
 
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -50,6 +50,8 @@ public class UserService {
 
     user.uploadProfileImage(imageUrl);
     userRepository.save(user);
+
+    return user.getProfileImage();
   }
 
   private long calculateUserRank(List<Object[]> allRankInfos, Long userId) {
