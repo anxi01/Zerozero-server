@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,12 +35,11 @@ public class StoreController {
   }
 
   @Operation(summary = "판매점 등록", description = "사용자가 검색한 판매점 리스트를 통해 제로음료수 판매점을 등록합니다. 사진을 등록할 수 있습니다.")
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ApiResponse<StoreInfoResponse> addStore(Principal connectedUser,
-      @RequestParam String query,
       @RequestPart RegisterStoreRequest request,
       @RequestPart List<MultipartFile> images) {
-    return ApiResponse.ok(storeService.add(connectedUser, query, request, images));
+    return ApiResponse.ok(storeService.add(connectedUser, request, images));
   }
 
   @Operation(summary = "판매점 조회", description = "각각의 판매점 정보를 조회합니다.")
