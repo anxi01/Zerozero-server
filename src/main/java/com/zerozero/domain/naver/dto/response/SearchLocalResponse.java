@@ -29,9 +29,14 @@ public class SearchLocalResponse {
     private String roadAddress;
     private int mapx;
     private int mapy;
+    private boolean selling;
 
     public String getTitle() {
       return deleteHtmlTags(this.title);
+    }
+
+    public void setSellingTrue() {
+      this.selling = true;
     }
   }
 

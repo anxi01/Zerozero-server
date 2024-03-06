@@ -2,6 +2,7 @@ package com.zerozero.domain.store.application;
 
 import com.zerozero.domain.naver.NaverClient;
 import com.zerozero.domain.naver.dto.request.SearchLocalRequest;
+import com.zerozero.domain.naver.dto.response.SearchLocalResponse.SearchLocalItem;
 import com.zerozero.domain.store.domain.Store;
 import com.zerozero.domain.store.dto.request.RegisterStoreRequest;
 import com.zerozero.domain.store.dto.response.StoreInfoResponse;
@@ -11,6 +12,7 @@ import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.global.s3.application.S3Service;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,20 +35,32 @@ public class StoreService {
 
     var searchLocalResponse = naverClient.localSearch(searchLocalRequest);
 
-    /* 식당 존재 확인 */
+    /* 가게 존재 확인 */
     if (searchLocalResponse.getTotal() > 0) {
+      List<SearchLocalItem> storeInfos = new ArrayList<>();
+
+      for (SearchLocalItem item : searchLocalResponse.getItems()) {
+        boolean isSelling = storeRepository.existsByNameAndMapxAndMapyAndSellingIsTrue(
+            item.getTitle(), item.getMapx(), item.getMapy());
+
+        if (isSelling) {
+          item.setSellingTrue();
+        }
+
+        storeInfos.add(item);
+      }
+
       return StoreListResponse.builder()
-          .items(searchLocalResponse.getItems())
+          .items(storeInfos)
           .build();
-    } else {
-      throw new StoreNotFoundException();
     }
+    throw new StoreNotFoundException();
   }
 
-  public StoreInfoResponse add(Principal connectedUser, String query, RegisterStoreRequest request,
+  public StoreInfoResponse add(Principal connectedUser, RegisterStoreRequest request,
       List<MultipartFile> images) {
 
-    var storeList = search(query);
+    var storeList = search(request.getTitle());
     var storeItem = storeList.getItems().stream()
         .filter(s ->
             s.getTitle().equals(request.getTitle()) &&

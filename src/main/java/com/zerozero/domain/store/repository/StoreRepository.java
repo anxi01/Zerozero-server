@@ -12,4 +12,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
   @Query("SELECT s.user.id, COUNT(s) as storeCount FROM Store s GROUP BY s.user.id ORDER BY storeCount DESC")
   List<Object[]> countStoresByUserId();
+
+  Boolean existsByNameAndMapxAndMapyAndSellingIsTrue(String name, int mapx, int mapy);
 }
