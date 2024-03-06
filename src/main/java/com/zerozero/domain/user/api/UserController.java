@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class UserController {
   }
 
   @Operation(summary = "프로필 사진 업로드", description = "프로필 사진을 업로드합니다.")
-  @PostMapping("/upload-profile")
+  @PostMapping(value = "/upload-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ApiResponse<String> uploadProfileImage(Principal connectedUser, @RequestPart MultipartFile profileImage)
       throws IOException {
     return ApiResponse.ok(userService.uploadProfileImage(connectedUser, profileImage));
