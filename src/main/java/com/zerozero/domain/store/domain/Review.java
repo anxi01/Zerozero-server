@@ -2,6 +2,7 @@ package com.zerozero.domain.store.domain;
 
 import com.zerozero.domain.store.dto.request.ReviewRequest;
 import com.zerozero.domain.user.domain.User;
+import com.zerozero.global.common.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Review {
+public class Review extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
