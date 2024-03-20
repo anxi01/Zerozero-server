@@ -2,8 +2,9 @@ package com.zerozero.domain.store.api;
 
 import com.zerozero.domain.store.application.StoreService;
 import com.zerozero.domain.store.dto.request.RegisterStoreRequest;
-import com.zerozero.domain.store.dto.response.StoreInfoResponse;
 import com.zerozero.domain.store.dto.response.StoreListResponse;
+import com.zerozero.domain.store.dto.response.StoreReviewResponse;
+import com.zerozero.domain.store.dto.response.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.global.common.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,9 +43,10 @@ public class StoreController {
     return ApiResponse.ok(storeService.add(connectedUser, request, images));
   }
 
-  @Operation(summary = "판매점 조회", description = "각각의 판매점 정보를 조회합니다.")
+  @Operation(summary = "판매점과 리뷰 조회", description = "판매점과 작성된 리뷰들을 조회합니다.")
   @GetMapping("/{storeId}")
-  public ApiResponse<StoreInfoResponse> getStoreInfo(@PathVariable Long storeId) {
-    return ApiResponse.ok(storeService.getStoreInfo(storeId));
+  public ApiResponse<StoreReviewResponse> getStoreInfo(@PathVariable Long storeId,
+      @RequestParam(defaultValue = "LATEST") String sort) {
+    return ApiResponse.ok(storeService.getStoreInfo(storeId, sort));
   }
 }

@@ -1,7 +1,5 @@
 package com.zerozero.domain.user.domain;
 
-import com.zerozero.domain.chat.domain.ChatMessage;
-import com.zerozero.domain.chat.domain.ChatRoom;
 import com.zerozero.domain.store.domain.Store;
 import com.zerozero.global.common.domain.BaseEntity;
 import jakarta.persistence.Entity;
@@ -12,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -51,27 +48,11 @@ public class User extends BaseEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @OneToMany
-  @JoinColumn(name = "user_id")
-  private List<ChatMessage> chatMessages = new ArrayList<>();
-
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_id")
+  @OneToMany(mappedBy = "user")
   private List<Store> stores = new ArrayList<>();
-
-  @ManyToOne
-  private ChatRoom chatRoom;
 
   public void uploadProfileImage(String imageUrl) {
     this.profileImage = imageUrl;
-  }
-
-  public void enterChatRoom(ChatRoom chatRoom) {
-    this.chatRoom = chatRoom;
-  }
-
-  public void exitChatRoom() {
-    this.chatRoom = null;
   }
 
   @Override
