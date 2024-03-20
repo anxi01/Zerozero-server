@@ -3,6 +3,8 @@ package com.zerozero.domain.store.application;
 import com.zerozero.domain.store.domain.Review;
 import com.zerozero.domain.store.domain.Store;
 import com.zerozero.domain.store.dto.request.ReviewRequest;
+import com.zerozero.domain.store.exception.AccessDeniedException;
+import com.zerozero.domain.store.exception.ReviewNotFoundException;
 import com.zerozero.domain.store.exception.StoreNotFoundException;
 import com.zerozero.domain.store.repository.ReviewRepository;
 import com.zerozero.domain.store.repository.StoreRepository;
@@ -30,4 +32,16 @@ public class ReviewService {
   }
 
 
+  public void editReview(Principal connectedUser, Long reviewId, ReviewRequest request) {
+
+    User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+
+    if (user.getId() == review.getUser().getId()) {
+      review.editReview(request);
+      reviewRepository.save(review);
+    } else {
+      throw new AccessDeniedException();
+    }
+  }
 }
