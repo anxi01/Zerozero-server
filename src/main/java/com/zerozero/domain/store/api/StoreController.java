@@ -43,7 +43,7 @@ public class StoreController {
     return ApiResponse.ok(storeService.add(connectedUser, request, images));
   }
 
-  @Operation(summary = "판매점 조회", description = "각각의 판매점 정보를 조회합니다.")
+  @Operation(summary = "판매점과 리뷰 조회", description = "판매점과 작성된 리뷰들을 조회합니다.")
   @GetMapping("/{storeId}")
   public ApiResponse<StoreReviewResponse> getStoreInfo(@PathVariable Long storeId,
       @RequestParam(defaultValue = "LATEST") String sort) {
