@@ -48,8 +48,7 @@ public class User extends BaseEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "user_id")
+  @OneToMany(mappedBy = "user")
   private List<Store> stores = new ArrayList<>();
 
   public void uploadProfileImage(String imageUrl) {
