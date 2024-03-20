@@ -5,6 +5,7 @@ import com.zerozero.domain.store.dto.request.ReviewRequest;
 import com.zerozero.global.common.dto.response.ApiResponse;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,14 @@ public class ReviewController {
       @RequestBody ReviewRequest request) {
 
     reviewService.uploadReview(connectedUser, storeId, request);
+    return ApiResponse.ok();
+  }
+
+  @PatchMapping("/edit/{reviewId}")
+  private ApiResponse<String> editReview(Principal connectedUser, @PathVariable Long reviewId,
+      @RequestBody ReviewRequest request) {
+
+    reviewService.editReview(connectedUser, reviewId, request);
     return ApiResponse.ok();
   }
 }
