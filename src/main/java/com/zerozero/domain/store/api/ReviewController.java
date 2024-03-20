@@ -5,6 +5,7 @@ import com.zerozero.domain.store.dto.request.ReviewRequest;
 import com.zerozero.global.common.dto.response.ApiResponse;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,13 @@ public class ReviewController {
       @RequestBody ReviewRequest request) {
 
     reviewService.editReview(connectedUser, reviewId, request);
+    return ApiResponse.ok();
+  }
+
+  @DeleteMapping("/{reviewId}")
+  private ApiResponse<String> deleteReview(Principal connectedUser, @PathVariable Long reviewId) {
+
+    reviewService.deleteReview(connectedUser, reviewId);
     return ApiResponse.ok();
   }
 }

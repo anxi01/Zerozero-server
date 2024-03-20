@@ -37,11 +37,27 @@ public class ReviewService {
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
 
-    if (user.getId() == review.getUser().getId()) {
+    if (isUserAuthorized(user, review)) {
       review.editReview(request);
       reviewRepository.save(review);
     } else {
       throw new AccessDeniedException();
     }
+  }
+
+  public void deleteReview(Principal connectedUser, Long reviewId) {
+
+    User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+
+    if (isUserAuthorized(user, review)) {
+      reviewRepository.delete(review);
+    } else {
+      throw new AccessDeniedException();
+    }
+  }
+
+  private boolean isUserAuthorized(User user, Review review) {
+    return user.getId().equals(review.getUser().getId());
   }
 }
