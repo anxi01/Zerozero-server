@@ -49,4 +49,9 @@ public class Review {
         .user(user)
         .build();
   }
+
+  public void editReview(ReviewRequest request) {
+    this.rating = request.getRating();
+    this.content = request.getContent();
+  }
 }
