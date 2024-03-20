@@ -3,16 +3,20 @@ package com.zerozero.domain.store.application;
 import com.zerozero.domain.naver.NaverClient;
 import com.zerozero.domain.naver.dto.request.SearchLocalRequest;
 import com.zerozero.domain.naver.dto.response.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.domain.store.domain.Review;
 import com.zerozero.domain.store.domain.Store;
 import com.zerozero.domain.store.dto.request.RegisterStoreRequest;
-import com.zerozero.domain.store.dto.response.StoreInfoResponse;
 import com.zerozero.domain.store.dto.response.StoreListResponse;
+import com.zerozero.domain.store.dto.response.StoreReviewResponse;
+import com.zerozero.domain.store.dto.response.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.domain.store.exception.StoreNotFoundException;
+import com.zerozero.domain.store.repository.ReviewRepository;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.global.s3.application.S3Service;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,9 +27,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class StoreService {
 
+  private final static String SORT_BY_RECENT = "LATEST";
+  private final static String SORT_BY_RATING_HIGHEST = "HIGH_RATING";
+  private final static String SORT_BY_RATING_LOWEST = "LOW_RATING";
+
   private final NaverClient naverClient;
   private final StoreRepository storeRepository;
   private final S3Service s3Service;
+  private final ReviewRepository reviewRepository;
 
   public StoreListResponse search(String query) {
 
@@ -78,8 +87,22 @@ public class StoreService {
     return StoreInfoResponse.from(store);
   }
 
-  public StoreInfoResponse getStoreInfo(Long storeId) {
+  public StoreReviewResponse getStoreInfo(Long storeId, String sortBy) {
     Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
-    return StoreInfoResponse.from(store);
+
+    List<Review> reviews = reviewRepository.findAllByStore(store);
+    sortReviews(reviews, sortBy);
+
+    return StoreReviewResponse.of(store, reviews);
+  }
+
+  private void sortReviews(List<Review> reviews, String sortBy) {
+    if (sortBy.equalsIgnoreCase(SORT_BY_RECENT)) {
+      reviews.sort(Comparator.comparing(Review::getCreatedAt).reversed());
+    } else if (sortBy.equalsIgnoreCase(SORT_BY_RATING_HIGHEST)) {
+      reviews.sort(Comparator.comparing(Review::getRating).reversed());
+    } else if (sortBy.equalsIgnoreCase(SORT_BY_RATING_LOWEST)) {
+      reviews.sort(Comparator.comparing(Review::getRating));
+    }
   }
 }
