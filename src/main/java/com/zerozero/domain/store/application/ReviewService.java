@@ -4,6 +4,7 @@ import com.zerozero.domain.store.domain.Review;
 import com.zerozero.domain.store.domain.Store;
 import com.zerozero.domain.store.dto.request.ReviewRequest;
 import com.zerozero.domain.store.exception.AccessDeniedException;
+import com.zerozero.domain.store.exception.AlreadyReviewedException;
 import com.zerozero.domain.store.exception.ReviewNotFoundException;
 import com.zerozero.domain.store.exception.StoreNotFoundException;
 import com.zerozero.domain.store.repository.ReviewRepository;
@@ -26,11 +27,13 @@ public class ReviewService {
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
 
-    Review review = Review.of(request, user, store);
+    if (hasUserAlreadyReviewed(user, store)) {
+      throw new AlreadyReviewedException();
+    }
 
+    Review review = Review.of(request, user, store);
     reviewRepository.save(review);
   }
-
 
   public void editReview(Principal connectedUser, Long reviewId, ReviewRequest request) {
 
@@ -55,6 +58,10 @@ public class ReviewService {
     } else {
       throw new AccessDeniedException();
     }
+  }
+
+  private boolean hasUserAlreadyReviewed(User user, Store store) {
+    return reviewRepository.existsByUserAndStore(user, store);
   }
 
   private boolean isUserAuthorized(User user, Review review) {
