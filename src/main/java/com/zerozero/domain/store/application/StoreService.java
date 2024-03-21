@@ -10,6 +10,7 @@ import com.zerozero.domain.store.dto.response.StoreListResponse;
 import com.zerozero.domain.store.dto.response.StoreReviewResponse;
 import com.zerozero.domain.store.dto.response.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.domain.store.exception.StoreNotFoundException;
+import com.zerozero.domain.store.repository.ReviewLikeRepository;
 import com.zerozero.domain.store.repository.ReviewRepository;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
@@ -28,11 +29,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class StoreService {
 
   private final static String SORT_BY_RECENT = "LATEST";
+  private final static String SORT_BY_LIKE_DESC = "LIKE_DESC";
 
   private final NaverClient naverClient;
   private final StoreRepository storeRepository;
   private final S3Service s3Service;
   private final ReviewRepository reviewRepository;
+  private final ReviewLikeRepository reviewLikeRepository;
 
   public StoreListResponse search(String query) {
 
@@ -91,12 +94,20 @@ public class StoreService {
     List<Review> reviews = reviewRepository.findAllByStore(store);
     sortReviews(reviews, sortBy);
 
-    return StoreReviewResponse.of(store, reviews);
+    List<Integer> likeCounts = new ArrayList<>();
+    for (Review review : reviews) {
+      int likeCount = reviewLikeRepository.countByReview(review);
+      likeCounts.add(likeCount);
+    }
+
+    return StoreReviewResponse.of(store, reviews, likeCounts);
   }
 
   private void sortReviews(List<Review> reviews, String sortBy) {
     if (sortBy.equalsIgnoreCase(SORT_BY_RECENT)) {
       reviews.sort(Comparator.comparing(Review::getCreatedAt).reversed());
+    } else if (sortBy.equalsIgnoreCase(SORT_BY_LIKE_DESC)) {
+      reviews.sort(Comparator.comparing(review -> -reviewLikeRepository.countByReview(review)));
     }
   }
 }
