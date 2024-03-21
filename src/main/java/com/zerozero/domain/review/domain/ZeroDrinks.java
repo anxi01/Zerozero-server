@@ -1,4 +1,4 @@
-package com.zerozero.domain.store.domain;
+package com.zerozero.domain.review.domain;
 
 public enum ZeroDrinks {
   COCA_COLA_ZERO,

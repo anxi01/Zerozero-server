@@ -1,4 +1,4 @@
-package com.zerozero.domain.store.domain;
+package com.zerozero.domain.review.domain;
 
 import com.zerozero.domain.user.domain.User;
 import jakarta.persistence.Entity;

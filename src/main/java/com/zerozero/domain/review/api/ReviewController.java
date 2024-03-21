@@ -1,7 +1,7 @@
-package com.zerozero.domain.store.api;
+package com.zerozero.domain.review.api;
 
-import com.zerozero.domain.store.application.ReviewService;
-import com.zerozero.domain.store.dto.request.ReviewRequest;
+import com.zerozero.domain.review.application.ReviewService;
+import com.zerozero.domain.review.dto.request.ReviewRequest;
 import com.zerozero.global.common.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

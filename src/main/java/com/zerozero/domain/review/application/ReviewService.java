@@ -1,15 +1,15 @@
-package com.zerozero.domain.store.application;
+package com.zerozero.domain.review.application;
 
-import com.zerozero.domain.store.domain.Review;
-import com.zerozero.domain.store.domain.ReviewLike;
+import com.zerozero.domain.review.domain.Review;
+import com.zerozero.domain.review.domain.ReviewLike;
 import com.zerozero.domain.store.domain.Store;
-import com.zerozero.domain.store.dto.request.ReviewRequest;
+import com.zerozero.domain.review.dto.request.ReviewRequest;
 import com.zerozero.domain.store.exception.AccessDeniedException;
-import com.zerozero.domain.store.exception.AlreadyReviewedException;
-import com.zerozero.domain.store.exception.ReviewNotFoundException;
+import com.zerozero.domain.review.exception.AlreadyReviewedException;
+import com.zerozero.domain.review.exception.ReviewNotFoundException;
 import com.zerozero.domain.store.exception.StoreNotFoundException;
-import com.zerozero.domain.store.repository.ReviewLikeRepository;
-import com.zerozero.domain.store.repository.ReviewRepository;
+import com.zerozero.domain.review.repository.ReviewLikeRepository;
+import com.zerozero.domain.review.repository.ReviewRepository;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
 import java.security.Principal;

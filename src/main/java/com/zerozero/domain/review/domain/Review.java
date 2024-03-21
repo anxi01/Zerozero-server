@@ -1,6 +1,7 @@
-package com.zerozero.domain.store.domain;
+package com.zerozero.domain.review.domain;
 
-import com.zerozero.domain.store.dto.request.ReviewRequest;
+import com.zerozero.domain.store.domain.Store;
+import com.zerozero.domain.review.dto.request.ReviewRequest;
 import com.zerozero.domain.user.domain.User;
 import com.zerozero.global.common.domain.BaseEntity;
 import jakarta.persistence.CollectionTable;

@@ -1,6 +1,6 @@
-package com.zerozero.domain.store.dto.request;
+package com.zerozero.domain.review.dto.request;
 
-import com.zerozero.domain.store.domain.ZeroDrinks;
+import com.zerozero.domain.review.domain.ZeroDrinks;
 import java.util.List;
 import lombok.Getter;
 

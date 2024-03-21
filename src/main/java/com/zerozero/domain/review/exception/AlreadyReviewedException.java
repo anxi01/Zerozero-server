@@ -1,4 +1,4 @@
-package com.zerozero.domain.store.exception;
+package com.zerozero.domain.review.exception;
 
 import com.zerozero.global.error.ErrorCode;
 import com.zerozero.global.error.exception.ServiceException;
