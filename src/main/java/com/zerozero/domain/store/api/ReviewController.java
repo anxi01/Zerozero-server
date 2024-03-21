@@ -48,4 +48,12 @@ public class ReviewController {
     reviewService.deleteReview(connectedUser, reviewId);
     return ApiResponse.ok();
   }
+
+  @Operation(summary = "리뷰 좋아요", description = "사용자가 리뷰에 좋아요를 등록, 해제할 수 있습니다.")
+  @PatchMapping("/likes/{reviewId}")
+  private ApiResponse<String> likeReview(Principal connectedUser, @PathVariable Long reviewId) {
+
+    reviewService.likeReview(connectedUser, reviewId);
+    return ApiResponse.ok();
+  }
 }

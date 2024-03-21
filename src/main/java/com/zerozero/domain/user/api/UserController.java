@@ -1,5 +1,6 @@
 package com.zerozero.domain.user.api;
 
+import com.zerozero.domain.store.dto.response.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.domain.user.application.UserService;
 import com.zerozero.domain.user.dto.response.UserInfoResponse;
 import com.zerozero.global.common.dto.response.ApiResponse;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +34,15 @@ public class UserController {
 
   @Operation(summary = "프로필 사진 업로드", description = "프로필 사진을 업로드합니다.")
   @PostMapping(value = "/upload-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ApiResponse<String> uploadProfileImage(Principal connectedUser, @RequestPart MultipartFile profileImage)
+  public ApiResponse<String> uploadProfileImage(Principal connectedUser,
+      @RequestPart MultipartFile profileImage)
       throws IOException {
     return ApiResponse.ok(userService.uploadProfileImage(connectedUser, profileImage));
+  }
+
+  @Operation(summary = "등록한 판매점 리스트 조회", description = "자신이 등록한 판매점의 리스트를 조회합니다.")
+  @GetMapping("/storeList")
+  public ApiResponse<List<StoreInfoResponse>> getMyStores(Principal connectedUser) {
+    return ApiResponse.ok(userService.getMyStores(connectedUser));
   }
 }
