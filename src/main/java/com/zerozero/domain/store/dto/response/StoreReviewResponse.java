@@ -2,8 +2,10 @@ package com.zerozero.domain.store.dto.response;
 
 import com.zerozero.domain.store.domain.Review;
 import com.zerozero.domain.store.domain.Store;
+import com.zerozero.domain.store.domain.ZeroDrinks;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +20,12 @@ public class StoreReviewResponse {
   private StoreInfoResponse storeInfo;
   private List<ReviewResponse> reviews;
 
-  public static StoreReviewResponse of(Store store, List<Review> reviews) {
+  public static StoreReviewResponse of(Store store, List<Review> reviews, List<Integer> likeCounts) {
     return StoreReviewResponse.builder()
         .storeInfo(StoreInfoResponse.from(store))
-        .reviews(reviews.stream().map(ReviewResponse::from).toList())
-        .build();
+        .reviews(IntStream.range(0, reviews.size())
+            .mapToObj(i -> ReviewResponse.of(reviews.get(i), likeCounts.get(i)))
+            .toList()).build();
   }
 
   @Builder
@@ -69,16 +72,20 @@ public class StoreReviewResponse {
     private Long reviewId;
     private Long userId;
     private String nickname;
+    private List<ZeroDrinks> zeroDrinks;
     private String content;
+    private int likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static ReviewResponse from(Review review) {
+    public static ReviewResponse of(Review review, int likeCount) {
       return ReviewResponse.builder()
           .reviewId(review.getId())
           .userId(review.getUser().getId())
           .nickname(review.getUser().getNickname())
+          .zeroDrinks(review.getZeroDrinks())
           .content(review.getContent())
+          .likeCount(likeCount)
           .createdAt(review.getCreatedAt())
           .updatedAt(review.getUpdatedAt())
           .build();
