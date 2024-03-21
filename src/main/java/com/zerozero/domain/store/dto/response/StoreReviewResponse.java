@@ -33,22 +33,16 @@ public class StoreReviewResponse {
   public static class StoreInfoResponse {
 
     private Long storeId;
-
     private String name;
-
     private String category;
-
     private String address;
-
     private String roadAddress;
-
     private int mapx;
-
     private int mapy;
-
     private boolean selling;
-
     private List<String> images;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static StoreInfoResponse from(Store store) {
       return StoreInfoResponse.builder()
@@ -61,6 +55,8 @@ public class StoreReviewResponse {
           .mapy(store.getMapy())
           .selling(store.isSelling())
           .images(store.getImageUrl())
+          .createdAt(store.getCreatedAt())
+          .updatedAt(store.getUpdatedAt())
           .build();
     }
   }
