@@ -18,11 +18,14 @@ import lombok.NoArgsConstructor;
 public class StoreReviewResponse {
 
   private StoreInfoResponse storeInfo;
+  private List<ZeroDrinks> top3ZeroDrinks;
   private List<ReviewResponse> reviews;
 
-  public static StoreReviewResponse of(Store store, List<Review> reviews, List<Integer> likeCounts) {
+  public static StoreReviewResponse of(Store store, List<Review> reviews, List<Integer> likeCounts,
+      List<ZeroDrinks> top3ZeroDrinks) {
     return StoreReviewResponse.builder()
         .storeInfo(StoreInfoResponse.from(store))
+        .top3ZeroDrinks(top3ZeroDrinks)
         .reviews(IntStream.range(0, reviews.size())
             .mapToObj(i -> ReviewResponse.of(reviews.get(i), likeCounts.get(i)))
             .toList()).build();
