@@ -69,7 +69,6 @@ public class StoreReviewResponse {
     private Long reviewId;
     private Long userId;
     private String nickname;
-    private Integer rating;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -79,7 +78,6 @@ public class StoreReviewResponse {
           .reviewId(review.getId())
           .userId(review.getUser().getId())
           .nickname(review.getUser().getNickname())
-          .rating(review.getRating())
           .content(review.getContent())
           .createdAt(review.getCreatedAt())
           .updatedAt(review.getUpdatedAt())

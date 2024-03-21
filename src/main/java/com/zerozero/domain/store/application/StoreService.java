@@ -28,8 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class StoreService {
 
   private final static String SORT_BY_RECENT = "LATEST";
-  private final static String SORT_BY_RATING_HIGHEST = "HIGH_RATING";
-  private final static String SORT_BY_RATING_LOWEST = "LOW_RATING";
 
   private final NaverClient naverClient;
   private final StoreRepository storeRepository;
@@ -99,10 +97,6 @@ public class StoreService {
   private void sortReviews(List<Review> reviews, String sortBy) {
     if (sortBy.equalsIgnoreCase(SORT_BY_RECENT)) {
       reviews.sort(Comparator.comparing(Review::getCreatedAt).reversed());
-    } else if (sortBy.equalsIgnoreCase(SORT_BY_RATING_HIGHEST)) {
-      reviews.sort(Comparator.comparing(Review::getRating).reversed());
-    } else if (sortBy.equalsIgnoreCase(SORT_BY_RATING_LOWEST)) {
-      reviews.sort(Comparator.comparing(Review::getRating));
     }
   }
 }
