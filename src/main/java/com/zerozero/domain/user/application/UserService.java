@@ -1,5 +1,7 @@
 package com.zerozero.domain.user.application;
 
+import com.zerozero.domain.store.domain.Store;
+import com.zerozero.domain.store.dto.response.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.global.s3.application.S3Service;
 import com.zerozero.domain.store.repository.StoreRepository;
 import com.zerozero.domain.user.domain.User;
@@ -64,5 +66,14 @@ public class UserService {
       }
     }
     return -1;
+  }
+
+  public List<StoreInfoResponse> getMyStores(Principal connectedUser) {
+
+    User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+    List<Store> stores = storeRepository.findAllByUser(user);
+
+    return stores.stream().map(StoreInfoResponse::from).toList();
   }
 }
