@@ -16,4 +16,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
   Boolean existsByNameAndMapxAndMapyAndSellingIsTrue(String name, int mapx, int mapy);
 
   List<Store> findAllByUser(User user);
+
+  Store findByNameAndMapxAndMapyAndSellingIsTrue(String title, int mapx, int mapy);
 }
