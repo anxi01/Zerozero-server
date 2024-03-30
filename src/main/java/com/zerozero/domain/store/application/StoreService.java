@@ -60,6 +60,11 @@ public class StoreService {
 
         if (isSelling) {
           item.setSellingTrue();
+
+          Store store = storeRepository.findByNameAndMapxAndMapyAndSellingIsTrue(
+              item.getTitle(), item.getMapx(), item.getMapy());
+
+          item.setStoreId(store.getId());
         }
 
         storeInfos.add(item);

@@ -30,6 +30,7 @@ public class SearchLocalResponse {
     private int mapx;
     private int mapy;
     private boolean selling;
+    private long storeId;
 
     public String getTitle() {
       return deleteHtmlTags(this.title);
