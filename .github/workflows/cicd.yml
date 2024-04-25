@@ -3,6 +3,8 @@ name: Zerozero Server CICD
 on:
   push:
     branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
 jobs:
   deploy:
@@ -51,19 +53,6 @@ jobs:
           username: ubuntu
           key: ${{secrets.PEM_KEY}}
           script: |
-            sudo docker pull ${{secrets.DOCKER_USERNAME}}/zerozero:latest
-
-            EXISTING_CONTAINER_ID=$(sudo docker ps -q -f "publish=8080" -f "status=running")
-            if [ ! -z "$EXISTING_CONTAINER_ID" ]; then
-              sudo docker stop $EXISTING_CONTAINER_ID
-              sudo docker rm $EXISTING_CONTAINER_ID
-            fi
-  
-            EXISTING_CONTAINER_ID=$(sudo docker ps -q -f "publish=8080" -f "status=exited")
-            if [ ! -z "$EXISTING_CONTAINER_ID" ]; then
-              sudo docker rm $EXISTING_CONTAINER_ID
-            fi
-
-            sudo docker rm $(sudo docker ps --filter 'status=exited' -a -q)
-            sudo docker run -d --log-driver=syslog -p 8080:8080 -e JAVA_OPTS=-Djasypt.encryptor.password=${{secrets.JASYPT_ENCRYPTOR_PASSWORD}} ${{secrets.DOCKER_USERNAME}}/zerozero:latest
-            sudo docker image prune -a -f
+            chmod 777 ./deploy.sh
+            ./deploy.sh
+            docker image prune -f
