@@ -53,6 +53,6 @@ jobs:
           username: ubuntu
           key: ${{secrets.PEM_KEY}}
           script: |
-            chmod 777 /home/ubuntu/docker/deploy.sh
-            ./deploy.sh
+            sudo chmod 777 /home/ubuntu/docker/deploy.sh
+            /home/ubuntu/docker/deploy.sh
             docker image prune -f
