@@ -1,11 +1,11 @@
 package com.zerozero.store.presentation;
 
-import com.zerozero.store.application.StoreService;
+import com.zerozero.core.presentation.ApiResponse;
 import com.zerozero.store.RegisterStoreRequest;
 import com.zerozero.store.StoreListResponse;
 import com.zerozero.store.StoreReviewResponse;
 import com.zerozero.store.StoreReviewResponse.StoreInfoResponse;
-import com.zerozero.core.presentation.ApiResponse;
+import com.zerozero.store.application.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;

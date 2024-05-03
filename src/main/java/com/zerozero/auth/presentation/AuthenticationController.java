@@ -1,9 +1,10 @@
 package com.zerozero.auth.presentation;
 
-import com.zerozero.auth.application.AuthenticationService;
 import com.zerozero.auth.AuthenticationRequest;
-import com.zerozero.auth.RegisterRequest;
 import com.zerozero.auth.AuthenticationResponse;
+import com.zerozero.auth.RegisterRequest;
+import com.zerozero.auth.TokenRequest;
+import com.zerozero.auth.application.AuthenticationService;
 import com.zerozero.core.presentation.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,5 +49,11 @@ public class AuthenticationController {
   public ApiResponse<String> checkNickname(@PathVariable String nickname) {
     service.checkNickname(nickname);
     return ApiResponse.ok();
+  }
+
+  @Operation(summary = "리프레시 토큰", description = "액세스 토큰 만료시, 리프레시 토큰을 이용해 액세스 토큰을 재발급합니다.")
+  @PostMapping("/refresh-token")
+  public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody TokenRequest request) {
+    return ApiResponse.ok(service.refreshToken(request.getRefreshToken()));
   }
 }
