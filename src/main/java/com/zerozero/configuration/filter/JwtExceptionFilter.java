@@ -1,12 +1,16 @@
 package com.zerozero.configuration.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zerozero.core.exception.error.ErrorCode;
+import com.zerozero.core.presentation.ErrorResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.http.HttpStatus;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtExceptionFilter extends OncePerRequestFilter {
@@ -18,13 +22,18 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
-      sendErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
+      sendErrorResponse(response, ErrorCode.EXPIRED_JWT_EXCEPTION);
     }
   }
 
-  private void sendErrorResponse(HttpStatus status, HttpServletResponse response, Exception e) throws IOException {
-    response.setStatus(status.value());
+  private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+    response.setStatus(errorCode.getHttpStatus());
+    response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");
-    response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+    ObjectMapper objectMapper = new ObjectMapper();
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
+    Map<String, ErrorResponse> result = new HashMap<>();
+    result.put("result", errorResponse);
+    response.getWriter().write(objectMapper.writeValueAsString(result));
   }
 }

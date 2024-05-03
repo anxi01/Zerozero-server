@@ -1,7 +1,7 @@
 package com.zerozero.configuration.security;
 
-import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.auth.UserNotFoundException;
+import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

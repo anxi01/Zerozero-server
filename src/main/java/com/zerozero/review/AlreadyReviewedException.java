@@ -1,7 +1,7 @@
 package com.zerozero.review;
 
-import com.zerozero.core.exception.error.ErrorCode;
 import com.zerozero.core.exception.ServiceException;
+import com.zerozero.core.exception.error.ErrorCode;
 
 public class AlreadyReviewedException extends ServiceException {
 

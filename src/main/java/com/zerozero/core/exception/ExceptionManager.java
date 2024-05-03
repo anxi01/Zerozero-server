@@ -10,7 +10,7 @@ public class ExceptionManager {
 
   @ExceptionHandler(ServiceException.class)
   public ApiResponse<?> handleException(ServiceException e) {
-    ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode());
+    ErrorResponse errorResponse = ErrorResponse.from(e.getErrorCode());
     return ApiResponse.fail(errorResponse, errorResponse.getCode());
   }
 }

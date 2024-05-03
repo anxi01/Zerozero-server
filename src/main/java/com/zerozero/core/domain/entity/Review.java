@@ -1,8 +1,8 @@
 package com.zerozero.core.domain.entity;
 
-import com.zerozero.review.ZeroDrinks;
-import com.zerozero.review.ReviewRequest;
 import com.zerozero.core.domain.shared.BaseEntity;
+import com.zerozero.review.ReviewRequest;
+import com.zerozero.review.ZeroDrinks;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;

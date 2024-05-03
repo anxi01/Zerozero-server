@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(vFKt3bUbkwBRwX6JB/mt68kZ9vybavoACZd6L2+aPchLywg9g+8zvWbASCrsFJ8t/A44qXXIsXuz1lMgF8TLHS1SZAKCkXbxQLL1oENS0cLMclctjTy47qDY8WUeRINx)
-    username: ENC(4HB0kiECCrTDYoLAu+ZFWg==)
-    password: ENC(SS+vlSCU22M19cs6pYMT9gSglt+jBJzr)
+    url: ENC(ZZCaM677BSas7HxoxUYIchTSuFIBKixZ2YALoTSt+i/ztGfzdXj3q+5JtldPEBHVcs9rrwP36+tVDa/CsbewVgzrWwEyMS4WkY20fVVGZ5BlU+fnFzKCb63AF+d+WgHJ)
+    username: ENC(hIB+Lwmf5YEV6Fxhyf83uEKJCwmtwCto)
+    password: ENC(mAQQhW6j4EsXca6HtrbdHBsqo+vKqmp5)
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,6 +19,9 @@ spring:
 
 jwt:
   secretKey: ENC(bUGcue0lkiShbjCUGQWvlDs/bBNBWX/dT9LM5CuHg6iyfgiEhgyeT9ZQFEt8vgbpHI7+waQ4GdnkSTqZApygZrfxVvRj1tpTjp5Tqk4sRgvcSXg0SvEChLWPAzxzqylUrkf0pwG4JBdamojvNzENjHijYmXOai3tU4p4Nava3YDecMQOus41f7VRWOFHRBi6HsUvkUg2BqJzovPbLc8dwU5fo0L1mvR+al6IeO4+Xow=)
+  expiration: ENC(7B771kWc05bAbt2cQseiBK6cS1mkCho+)
+  refresh-token:
+    expiration: ENC(TtV+7SDsBOEGp+rbVRoymg6Lx2FYds0B)
 
 naver:
   url:
@@ -31,10 +34,10 @@ naver:
 cloud:
   aws:
     credentials:
-      accessKey: ENC(uUN+tzVSwP0qiEunRG5TFIv/wcm2EG312EmrcIj5rmc=)
-      secretKey: ENC(uPaC8CgR7qRn6K4GH9OpFISRgJaFa85u8b46yUXwPEVFMhBSEb7DUu7azEnZdnM54i9m/aE/raQ=)
+      accessKey: ENC(YJpgvvWZd5X5K88wZxtcVZZ4OXnps5CvOJj8WjwNFRI=)
+      secretKey: ENC(kpo+UFixZRrofHRCa+Ec//dWT6A8ZaaFYQ/bbJJ9GrquNpmOsOaZporG1wAzK1T6RPZPwldrcgI=)
     s3:
-      bucket: zerozero-cicd-bucket/images
+      bucket: zerozero-upload/images
     region:
       static: ap-northeast-2
     stack:

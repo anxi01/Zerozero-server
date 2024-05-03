@@ -1,9 +1,9 @@
 package com.zerozero.configuration.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zerozero.core.exception.ServiceException;
 import com.zerozero.core.exception.error.ErrorCode;
 import com.zerozero.core.presentation.ErrorResponse;
-import com.zerozero.core.exception.ServiceException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ public class ExceptionHandleFilter extends OncePerRequestFilter {
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");
     ObjectMapper objectMapper = new ObjectMapper();
-    ErrorResponse errorResponse = ErrorResponse.of(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
     Map<String, ErrorResponse> result = new HashMap<>();
     result.put("result", errorResponse);
     response.getWriter().write(objectMapper.writeValueAsString(result));

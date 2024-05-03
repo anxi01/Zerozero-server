@@ -1,7 +1,7 @@
 package com.zerozero.core.domain.entity;
 
-import com.zerozero.external.naver.SearchLocalResponse.SearchLocalItem;
 import com.zerozero.core.domain.shared.BaseEntity;
+import com.zerozero.external.naver.SearchLocalResponse.SearchLocalItem;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
