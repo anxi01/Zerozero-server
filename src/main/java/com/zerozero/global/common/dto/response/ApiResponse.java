@@ -1,6 +1,7 @@
 package com.zerozero.global.common.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.zerozero.global.error.ErrorResponse;
 import java.util.StringJoiner;
 import java.util.function.Supplier;
 
@@ -68,6 +69,10 @@ public class ApiResponse<T> {
 
   public static <T> ApiResponse<T> fail(int code, String message, T result) {
     return new ApiResponse<>(false, String.valueOf(code), message, () -> result);
+  }
+
+  public static <T> ApiResponse<T> fail(ErrorResponse errorResponse, T result) {
+    return new ApiResponse<>(false, String.valueOf(errorResponse.getHttpStatus()), errorResponse.getMessage(), () -> result);
   }
 
 }
