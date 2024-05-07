@@ -1,6 +1,7 @@
 package com.zerozero.global.config.security;
 
 import com.zerozero.global.filter.ExceptionHandleFilter;
+import com.zerozero.global.filter.JwtExceptionFilter;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class SecurityConfig {
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(new ExceptionHandleFilter(), JwtAuthenticationFilter.class);
+        .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
     return http.build();
   }
