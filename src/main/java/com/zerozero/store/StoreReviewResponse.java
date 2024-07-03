@@ -2,9 +2,13 @@ package com.zerozero.store;
 
 import com.zerozero.core.domain.entity.Review;
 import com.zerozero.core.domain.entity.Store;
-import com.zerozero.review.ZeroDrinks;
+import com.zerozero.core.domain.vo.Image;
+import com.zerozero.core.domain.vo.ZeroDrink;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,11 +22,11 @@ import lombok.NoArgsConstructor;
 public class StoreReviewResponse {
 
   private StoreInfoResponse storeInfo;
-  private List<ZeroDrinks> top3ZeroDrinks;
+  private List<ZeroDrink> top3ZeroDrinks;
   private List<ReviewResponse> reviews;
 
   public static StoreReviewResponse of(Store store, List<Review> reviews, List<Integer> likeCounts,
-      List<ZeroDrinks> top3ZeroDrinks) {
+      List<ZeroDrink> top3ZeroDrinks) {
     return StoreReviewResponse.builder()
         .storeInfo(StoreInfoResponse.from(store))
         .top3ZeroDrinks(top3ZeroDrinks)
@@ -35,7 +39,7 @@ public class StoreReviewResponse {
   @Getter
   public static class StoreInfoResponse {
 
-    private Long storeId;
+    private UUID storeId;
     private String name;
     private String category;
     private String address;
@@ -43,7 +47,7 @@ public class StoreReviewResponse {
     private int mapx;
     private int mapy;
     private boolean selling;
-    private List<String> images;
+    private List<Image> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -56,8 +60,8 @@ public class StoreReviewResponse {
           .roadAddress(store.getRoadAddress())
           .mapx(store.getMapx())
           .mapy(store.getMapy())
-          .selling(store.isSelling())
-          .images(store.getImageUrl())
+          .selling(store.getStatus())
+          .images(Arrays.stream(store.getImages()).collect(Collectors.toList()))
           .createdAt(store.getCreatedAt())
           .updatedAt(store.getUpdatedAt())
           .build();
@@ -68,10 +72,10 @@ public class StoreReviewResponse {
   @Builder
   public static class ReviewResponse {
 
-    private Long reviewId;
-    private Long userId;
+    private UUID reviewId;
+    private UUID userId;
     private String nickname;
-    private List<ZeroDrinks> zeroDrinks;
+    private List<ZeroDrink> zeroDrinks;
     private String content;
     private int likeCount;
     private LocalDateTime createdAt;
@@ -80,9 +84,9 @@ public class StoreReviewResponse {
     public static ReviewResponse of(Review review, int likeCount) {
       return ReviewResponse.builder()
           .reviewId(review.getId())
-          .userId(review.getUser().getId())
+          .userId(review.getUserId())
           .nickname(review.getUser().getNickname())
-          .zeroDrinks(review.getZeroDrinks())
+          .zeroDrinks(Arrays.stream(review.getZeroDrinks()).collect(Collectors.toList()))
           .content(review.getContent())
           .likeCount(likeCount)
           .createdAt(review.getCreatedAt())

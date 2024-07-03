@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +46,7 @@ public class StoreController {
 
   @Operation(summary = "판매점과 리뷰 조회", description = "판매점과 작성된 리뷰들을 조회합니다.")
   @GetMapping("/{storeId}")
-  public ApiResponse<StoreReviewResponse> getStoreInfo(@PathVariable Long storeId,
+  public ApiResponse<StoreReviewResponse> getStoreInfo(@PathVariable UUID storeId,
       @RequestParam(defaultValue = "LATEST") String sort) {
     return ApiResponse.ok(storeService.getStoreInfo(storeId, sort));
   }

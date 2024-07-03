@@ -1,6 +1,7 @@
 package com.zerozero.external.naver;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class SearchLocalResponse {
     private int mapx;
     private int mapy;
     private boolean selling;
-    private long storeId;
+    private UUID storeId;
 
     public String getTitle() {
       return deleteHtmlTags(this.title);

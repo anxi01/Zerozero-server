@@ -4,12 +4,14 @@ import com.zerozero.core.domain.entity.Store;
 import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.StoreJPARepository;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
+import com.zerozero.core.domain.vo.Image;
 import com.zerozero.core.util.AWSS3Service;
 import com.zerozero.store.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.user.UserInfoResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,24 +45,24 @@ public class UserService {
         .build();
   }
 
-  public String uploadProfileImage(Principal connectedUser, MultipartFile profileImage)
+  public Image uploadProfileImage(Principal connectedUser, MultipartFile profileImage)
       throws IOException {
 
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
     String imageUrl = AWSS3Service.uploadImage(profileImage);
 
-    user.uploadProfileImage(imageUrl);
+    user.uploadProfileImage(Image.convertUrlToImage(imageUrl));
     userJPARepository.save(user);
 
     return user.getProfileImage();
   }
 
-  private long calculateUserRank(List<Object[]> allRankInfos, Long userId) {
+  private long calculateUserRank(List<Object[]> allRankInfos, UUID userId) {
 
     for (int i = 0; i < allRankInfos.size(); i++) {
       Object[] rankInfo = allRankInfos.get(i);
-      Long currentUserId = (Long) rankInfo[0];
+      UUID currentUserId = (UUID) rankInfo[0];
       if (userId.equals(currentUserId)) {
         return i + 1;
       }

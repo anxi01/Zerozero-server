@@ -1,5 +1,6 @@
 package com.zerozero.user.presentation;
 
+import com.zerozero.core.domain.vo.Image;
 import com.zerozero.core.presentation.ApiResponse;
 import com.zerozero.store.StoreReviewResponse.StoreInfoResponse;
 import com.zerozero.user.UserInfoResponse;
@@ -34,7 +35,7 @@ public class UserController {
 
   @Operation(summary = "프로필 사진 업로드", description = "프로필 사진을 업로드합니다.")
   @PostMapping(value = "/upload-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ApiResponse<String> uploadProfileImage(Principal connectedUser,
+  public ApiResponse<Image> uploadProfileImage(Principal connectedUser,
       @RequestPart MultipartFile profileImage)
       throws IOException {
     return ApiResponse.ok(userService.uploadProfileImage(connectedUser, profileImage));

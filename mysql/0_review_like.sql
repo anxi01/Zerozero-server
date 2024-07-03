@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS review_like
 (
-    id            BINARY(16)                NOT NULL            COMMENT 'ID',
+    id            INT AUTO_INCREMENT        NOT NULL            COMMENT 'ID',
     review_id     BINARY(16)                NULL                COMMENT '리뷰 ID',
     user_id       BINARY(16)                NULL                COMMENT '사용자 ID',
     created_at    DATETIME                  NULL                COMMENT '생성일시',
