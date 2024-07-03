@@ -3,10 +3,11 @@ package com.zerozero.core.domain.infra.repository;
 import com.zerozero.core.domain.entity.Store;
 import com.zerozero.core.domain.entity.User;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface StoreJPARepository extends JpaRepository<Store, Long> {
+public interface StoreJPARepository extends JpaRepository<Store, UUID> {
 
   Long countStoresByUser(User user);
 

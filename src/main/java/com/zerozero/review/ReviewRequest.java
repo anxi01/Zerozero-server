@@ -1,11 +1,11 @@
 package com.zerozero.review;
 
-import java.util.List;
+import com.zerozero.core.domain.vo.ZeroDrink;
 import lombok.Getter;
 
 @Getter
 public class ReviewRequest {
 
-  private List<ZeroDrinks> zeroDrinks;
+  private ZeroDrink[] zeroDrinks;
   private String content;
 }

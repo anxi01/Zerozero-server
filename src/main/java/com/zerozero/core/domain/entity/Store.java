@@ -1,31 +1,27 @@
 package com.zerozero.core.domain.entity;
 
 import com.zerozero.core.domain.shared.BaseEntity;
+import com.zerozero.core.domain.vo.Image;
 import com.zerozero.external.naver.SearchLocalResponse.SearchLocalItem;
-import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.util.List;
+import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
+@Setter
+@SuperBuilder
 public class Store extends BaseEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
   private String name;
 
@@ -35,18 +31,17 @@ public class Store extends BaseEntity {
 
   private String roadAddress;
 
-  private int mapx;
+  private Integer mapx;
 
-  private int mapy;
+  private Integer mapy;
 
-  private boolean selling = false;
+  @Builder.Default
+  private Boolean status = false;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+  @Column(columnDefinition = "JSON")
+  private Image[] images;
 
-  @ElementCollection
-  private List<String> imageUrl;
+  private UUID userId;
 
   public static Store of(User user, SearchLocalItem item, List<String> uploadImages) {
     return Store.builder()
@@ -56,9 +51,7 @@ public class Store extends BaseEntity {
         .roadAddress(item.getRoadAddress())
         .mapx(item.getMapx())
         .mapy(item.getMapy())
-        .selling(true)
-        .user(user)
-        .imageUrl(uploadImages)
+        .status(true)
         .build();
   }
 }

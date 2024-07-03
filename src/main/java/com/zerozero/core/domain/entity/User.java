@@ -1,56 +1,44 @@
 package com.zerozero.core.domain.entity;
 
 import com.zerozero.core.domain.shared.BaseEntity;
+import com.zerozero.core.domain.vo.Image;
 import com.zerozero.user.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
-@Table(name = "users")
+@Setter
+@SuperBuilder
 public class User extends BaseEntity implements UserDetails {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
   private String nickname;
 
-  @Email
   private String email;
 
   private String password;
 
-  private String profileImage;
+  private Image profileImage;
 
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @OneToMany(mappedBy = "user")
-  private List<Store> stores = new ArrayList<>();
-
-  public void uploadProfileImage(String imageUrl) {
-    this.profileImage = imageUrl;
+  public void uploadProfileImage(Image image) {
+    this.profileImage = image;
   }
 
   @Override

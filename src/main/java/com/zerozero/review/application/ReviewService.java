@@ -14,6 +14,7 @@ import com.zerozero.store.AccessDeniedException;
 import com.zerozero.store.StoreNotFoundException;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class ReviewService {
   private final StoreJPARepository storeJPARepository;
   private final ReviewLikeJPARepository reviewLikeJPARepository;
 
-  public void uploadReview(Principal connectedUser, Long storeId, ReviewRequest request) {
+  public void uploadReview(Principal connectedUser, UUID storeId, ReviewRequest request) {
 
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     Store store = storeJPARepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
@@ -39,7 +40,7 @@ public class ReviewService {
     reviewJPARepository.save(review);
   }
 
-  public void editReview(Principal connectedUser, Long reviewId, ReviewRequest request) {
+  public void editReview(Principal connectedUser, UUID reviewId, ReviewRequest request) {
 
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     Review review = reviewJPARepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
@@ -52,7 +53,7 @@ public class ReviewService {
     }
   }
 
-  public void deleteReview(Principal connectedUser, Long reviewId) {
+  public void deleteReview(Principal connectedUser, UUID reviewId) {
 
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     Review review = reviewJPARepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
@@ -64,7 +65,7 @@ public class ReviewService {
     }
   }
 
-  public void likeReview(Principal connectedUser, Long reviewId) {
+  public void likeReview(Principal connectedUser, UUID reviewId) {
 
     User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     Review review = reviewJPARepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);

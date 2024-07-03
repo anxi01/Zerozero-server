@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS refresh_token
 (
-    id                  BINARY(16)                NOT NULL            COMMENT 'ID',
+    id                  INT AUTO_INCREMENT        NOT NULL            COMMENT 'ID',
     refresh_token       VARCHAR(255)              NOT NULL            COMMENT '리프레시 토큰',
     user_id             BINARY(16)                NULL                COMMENT '사용자 ID',
     created_at          DATETIME                  NULL                COMMENT '생성일시',

@@ -6,11 +6,11 @@ import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.ReviewJPARepository;
 import com.zerozero.core.domain.infra.repository.ReviewLikeJPARepository;
 import com.zerozero.core.domain.infra.repository.StoreJPARepository;
+import com.zerozero.core.domain.vo.ZeroDrink;
 import com.zerozero.core.util.AWSS3Service;
 import com.zerozero.external.naver.NaverClient;
 import com.zerozero.external.naver.SearchLocalRequest;
 import com.zerozero.external.naver.SearchLocalResponse.SearchLocalItem;
-import com.zerozero.review.ZeroDrinks;
 import com.zerozero.store.RegisterStoreRequest;
 import com.zerozero.store.StoreListResponse;
 import com.zerozero.store.StoreNotFoundException;
@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +99,7 @@ public class StoreService {
     return StoreInfoResponse.from(store);
   }
 
-  public StoreReviewResponse getStoreInfo(Long storeId, String sortBy) {
+  public StoreReviewResponse getStoreInfo(UUID storeId, String sortBy) {
     Store store = storeJPARepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
 
     List<Review> reviews = reviewJPARepository.findAllByStore(store);
@@ -106,7 +107,7 @@ public class StoreService {
 
     List<Integer> likeCounts = getLikeCounts(reviews);
 
-    List<ZeroDrinks> top3ZeroDrinks = getTop3ZeroDrinks(reviews);
+    List<ZeroDrink> top3ZeroDrinks = getTop3ZeroDrinks(reviews);
 
     return StoreReviewResponse.of(store, reviews, likeCounts, top3ZeroDrinks);
   }
@@ -128,32 +129,32 @@ public class StoreService {
     return likeCounts;
   }
 
-  private List<ZeroDrinks> getTop3ZeroDrinks(List<Review> reviews) {
+  private List<ZeroDrink> getTop3ZeroDrinks(List<Review> reviews) {
     // 모든 리뷰의 zeroDrinks를 하나의 리스트로 모음
-    List<ZeroDrinks> allZeroDrinks = reviews.stream()
+    List<ZeroDrink> allZeroDrinks = reviews.stream()
         .flatMap(review -> review.getZeroDrinks().stream())
         .toList();
 
     // zeroDrinks 출현 빈도를 계산
-    Map<ZeroDrinks, Long> zeroDrinksFrequency = allZeroDrinks.stream()
+    Map<ZeroDrink, Long> zeroDrinksFrequency = allZeroDrinks.stream()
         .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
     // 출현 빈도를 기준으로 내림차순으로 정렬
-    List<Map.Entry<ZeroDrinks, Long>> sortedZeroDrinksFrequency = zeroDrinksFrequency.entrySet().stream()
+    List<Map.Entry<ZeroDrink, Long>> sortedZeroDrinksFrequency = zeroDrinksFrequency.entrySet().stream()
         .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
         .toList();
 
     // 정렬된 결과를 순위로 변환하여 저장
-    Map<ZeroDrinks, Integer> zeroDrinksRanking = new LinkedHashMap<>();
+    Map<ZeroDrink, Integer> zeroDrinksRanking = new LinkedHashMap<>();
     int rank = 1;
-    for (Map.Entry<ZeroDrinks, Long> entry : sortedZeroDrinksFrequency) {
+    for (Map.Entry<ZeroDrink, Long> entry : sortedZeroDrinksFrequency) {
       zeroDrinksRanking.put(entry.getKey(), rank++);
     }
 
     // 순위를 List<ZeroDrinks>로 변환하여 저장
-    List<ZeroDrinks> top3ZeroDrinks = new ArrayList<>();
+    List<ZeroDrink> top3ZeroDrinks = new ArrayList<>();
     for (int i = 1; i <= 3; i++) {
-      for (Map.Entry<ZeroDrinks, Integer> entry : zeroDrinksRanking.entrySet()) {
+      for (Map.Entry<ZeroDrink, Integer> entry : zeroDrinksRanking.entrySet()) {
         if (entry.getValue() == i) {
           top3ZeroDrinks.add(entry.getKey());
         }
