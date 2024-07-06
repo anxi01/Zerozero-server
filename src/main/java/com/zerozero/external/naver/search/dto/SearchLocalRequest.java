@@ -1,4 +1,4 @@
-package com.zerozero.external.naver;
+package com.zerozero.external.naver.search.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import org.springframework.util.MultiValueMap;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchLocalRequest {
+public class SearchNaverLocalRequest {
 
   private String query = "";
 

@@ -1,4 +1,4 @@
-package com.zerozero.external.naver;
+package com.zerozero.external.naver.search.dto;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchLocalResponse {
+public class SearchNaverLocalResponse {
 
   private int total;
   private int start;
