@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
-public class ServiceException extends RuntimeException {
+public class ServiceException extends RunTimeCode {
   private final ErrorCode errorCode;
 }
