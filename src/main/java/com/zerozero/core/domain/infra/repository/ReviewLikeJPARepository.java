@@ -1,14 +1,12 @@
 package com.zerozero.core.domain.infra.repository;
 
-import com.zerozero.core.domain.entity.Review;
 import com.zerozero.core.domain.entity.ReviewLike;
-import com.zerozero.core.domain.entity.User;
-import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewLikeJPARepository extends JpaRepository<ReviewLike, Long> {
 
-  Optional<ReviewLike> findByUserAndReview(User user, Review review);
+  ReviewLike findByReviewIdAndUserId(UUID reviewId, UUID userId);
 
-  int countByReview(Review review);
+  Integer countByReviewId(UUID reviewId);
 }

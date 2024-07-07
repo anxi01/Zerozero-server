@@ -2,7 +2,6 @@ package com.zerozero.core.domain.entity;
 
 import com.zerozero.core.domain.shared.BaseEntity;
 import com.zerozero.core.domain.vo.Image;
-import com.zerozero.user.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,6 +38,11 @@ public class User extends BaseEntity implements UserDetails {
 
   public void uploadProfileImage(Image image) {
     this.profileImage = image;
+  }
+
+  public enum Role {
+    USER,
+    ADMIN
   }
 
   @Override
