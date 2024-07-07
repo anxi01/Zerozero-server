@@ -2,7 +2,7 @@ package com.zerozero.core.domain.entity;
 
 import com.zerozero.core.domain.shared.BaseEntity;
 import com.zerozero.core.domain.vo.Image;
-import com.zerozero.external.naver.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.external.naver.search.dto.SearchLocalResponse.SearchLocalItem;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.util.List;
@@ -43,7 +43,7 @@ public class Store extends BaseEntity {
 
   private UUID userId;
 
-  public static Store of(User user, SearchLocalItem item, List<String> uploadImages) {
+  public static Store of(UUID userId, SearchLocalItem item, List<String> uploadImages) {
     return Store.builder()
         .name(item.getTitle())
         .category(item.getCategory())
@@ -52,6 +52,8 @@ public class Store extends BaseEntity {
         .mapx(item.getMapx())
         .mapy(item.getMapy())
         .status(true)
+        .images(uploadImages.stream().map(Image::convertUrlToImage).toArray(Image[]::new))
+        .userId(userId)
         .build();
   }
 }

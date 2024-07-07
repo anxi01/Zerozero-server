@@ -1,10 +1,7 @@
 package com.zerozero.core.domain.entity;
 
-import com.zerozero.core.domain.shared.BaseEntity;
+import com.zerozero.core.domain.shared.BaseAutoIncrementEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,20 +16,11 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class RefreshToken extends BaseEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class RefreshToken extends BaseAutoIncrementEntity {
 
   private String refreshToken;
 
   private UUID userId;
-
-  public RefreshToken(String refreshToken, User user) {
-    this.refreshToken = refreshToken;
-    this.userId = user.getId();
-  }
 
   public RefreshToken update(String refreshToken) {
     this.refreshToken = refreshToken;
