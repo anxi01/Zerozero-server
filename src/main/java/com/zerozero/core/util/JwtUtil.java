@@ -1,6 +1,7 @@
 package com.zerozero.core.util;
 
-import com.zerozero.auth.TokenDto;
+import com.zerozero.core.domain.vo.AccessToken;
+import com.zerozero.core.domain.vo.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JwtService {
+public class JwtUtil {
 
   @Value("${jwt.secretKey}")
   private String secretKey;
@@ -38,31 +39,32 @@ public class JwtService {
     return claimsResolver.apply(claims);
   }
 
-  public TokenDto generateToken(UserDetails userDetails) {
-    String accessToken = generateAccessToken(new HashMap<>(), userDetails);
-    String refreshToken = generateRefreshToken(new HashMap<>(), userDetails);
-
-    return new TokenDto(accessToken, refreshToken);
-  }
-
-  public String generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-    return Jwts.builder()
+  public AccessToken generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    if (extraClaims == null) {
+      extraClaims = new HashMap<>();
+    }
+    String accessToken = Jwts.builder()
         .setClaims(extraClaims)
         .setSubject(userDetails.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
         .compact();
+    return AccessToken.of(accessToken);
   }
 
-  public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-    return Jwts.builder()
+  public RefreshToken generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    if (extraClaims == null) {
+      extraClaims = new HashMap<>();
+    }
+    String refreshToken = Jwts.builder()
         .setClaims(extraClaims)
         .setSubject(userDetails.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
         .compact();
+    return RefreshToken.of(refreshToken);
   }
 
   public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -70,7 +72,7 @@ public class JwtService {
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
   }
 
-  private boolean isTokenExpired(String token) {
+  public boolean isTokenExpired(String token) {
     return extractExpiration(token).before(new Date());
   }
 
