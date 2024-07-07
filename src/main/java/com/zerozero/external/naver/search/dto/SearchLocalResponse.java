@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchNaverLocalResponse {
+public class SearchLocalResponse {
 
   private int total;
   private int start;
@@ -30,15 +30,11 @@ public class SearchNaverLocalResponse {
     private String roadAddress;
     private int mapx;
     private int mapy;
-    private boolean selling;
+    private boolean status;
     private UUID storeId;
 
     public String getTitle() {
       return deleteHtmlTags(this.title);
-    }
-
-    public void setSellingTrue() {
-      this.selling = true;
     }
   }
 

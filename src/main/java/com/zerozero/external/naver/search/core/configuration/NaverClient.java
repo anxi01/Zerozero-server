@@ -1,7 +1,7 @@
-package com.zerozero.external.naver.core.configuration;
+package com.zerozero.external.naver.search.core.configuration;
 
-import com.zerozero.external.naver.SearchLocalRequest;
-import com.zerozero.external.naver.SearchLocalResponse;
+import com.zerozero.external.naver.search.dto.SearchLocalRequest;
+import com.zerozero.external.naver.search.dto.SearchLocalResponse;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
