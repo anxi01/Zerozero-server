@@ -9,7 +9,7 @@ import org.springframework.util.MultiValueMap;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchNaverLocalRequest {
+public class SearchLocalRequest {
 
   private String query = "";
 
