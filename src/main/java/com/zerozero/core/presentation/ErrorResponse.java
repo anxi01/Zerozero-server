@@ -1,21 +1,33 @@
 package com.zerozero.core.presentation;
 
-import com.zerozero.core.exception.error.ErrorCode;
+import com.zerozero.core.exception.DomainException;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class ErrorResponse {
-  private final int httpStatus;
-  private final String message;
-  private final String code;
 
-  public ErrorResponse(ErrorCode errorCode) {
-    this.httpStatus = errorCode.getHttpStatus();
-    this.message = errorCode.getMessage();
-    this.code = errorCode.getCode();
+  private int statusCode;
+
+  private boolean success;
+
+  private String message;
+
+  private String code;
+
+  @Builder(builderClassName = "CreateErrorCode", builderMethodName = "createErrorCode")
+  public ErrorResponse(int statusCode, Exception exception) {
+    this.statusCode = statusCode;
+    this.success = false;
+    this.message = exception.getMessage();
+    this.code = exception.getClass().getSimpleName();
   }
 
-  public static ErrorResponse from(ErrorCode errorCode) {
-    return new ErrorResponse(errorCode);
+  @Builder(builderClassName = "CreateDomainErrorCode", builderMethodName = "createDomainErrorCode")
+  public ErrorResponse(int statusCode, DomainException exception) {
+    this.statusCode = statusCode;
+    this.success = false;
+    this.message = exception.getMessage();
+    this.code = exception.getCode();
   }
 }
