@@ -1,6 +1,6 @@
 package com.zerozero.configuration.filter;
 
-import com.zerozero.core.util.JwtService;
+import com.zerozero.core.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private final JwtService jwtService;
+  private final JwtUtil jwtUtil;
   private final UserDetailsService userDetailsService;
 
   @Override
@@ -41,13 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     jwt = authHeader.substring(7);
-    userEmail = jwtService.extractUsername(jwt);
+    userEmail = jwtUtil.extractUsername(jwt);
 
     /* user가 처음 로그인할 때 */
     if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-      if (jwtService.isTokenValid(jwt, userDetails)) {
+      if (jwtUtil.isTokenValid(jwt, userDetails)) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
             userDetails, null, userDetails.getAuthorities()
         );

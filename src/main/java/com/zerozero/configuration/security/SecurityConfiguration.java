@@ -1,7 +1,6 @@
 package com.zerozero.configuration.security;
 
 import com.zerozero.configuration.filter.JwtAuthenticationFilter;
-import com.zerozero.configuration.filter.JwtExceptionFilter;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,13 +30,12 @@ public class SecurityConfiguration {
         .csrf(AbstractHttpConfigurer::disable)
         .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-            .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-            .anyRequest().authenticated())
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .anyRequest().permitAll())
         .sessionManagement((sessionManagement) ->
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider)
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

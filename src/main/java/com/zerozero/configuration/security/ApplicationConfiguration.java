@@ -1,6 +1,5 @@
 package com.zerozero.configuration.security;
 
-import com.zerozero.auth.UserNotFoundException;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +20,7 @@ public class ApplicationConfiguration {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> userJPARepository.findByEmail(username).orElseThrow(UserNotFoundException::new);
+    return userJPARepository::findByEmail;
   }
 
   @Bean
