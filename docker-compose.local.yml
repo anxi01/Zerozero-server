@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    container_name: zerozero_mysql_db
+    image: mysql:8.0.23
+    platform: linux/amd64
+    ports:
+      - '3306:3306'
+    restart: always
+    volumes:
+      - ./docker/mysql/db:/var/lib/mysql
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Asia/Seoul
+
+  mongo:
+    container_name: zerozero_mongo_db
+    image: mongo
+    ports:
+      - '27017:27017'
+    restart: always
+    volumes:
+      - data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
