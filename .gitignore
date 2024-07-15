@@ -8,6 +8,7 @@ build/
 data
 docker
 /src/main/resources/application-local.yaml
+region.geojson
 
 ### STS ###
 .apt_generated
