@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Store", description = "핀메잠")
+@Tag(name = "Store", description = "판매점")
 public class ReadStoreInfoController {
 
   private final ReadStoreInfoUseCase readStoreInfoUseCase;

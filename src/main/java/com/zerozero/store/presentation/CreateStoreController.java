@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Store", description = "핀매점")
+@Tag(name = "Store", description = "판매점")
 public class CreateStoreController {
 
   private final CreateStoreUseCase createStoreUseCase;
