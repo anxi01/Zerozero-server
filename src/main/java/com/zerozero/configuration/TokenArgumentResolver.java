@@ -3,9 +3,10 @@ package com.zerozero.configuration;
 import com.zerozero.core.domain.shared.Token;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
+import com.zerozero.core.exception.error.AuthenticationErrorCode;
+import com.zerozero.core.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
-import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -26,18 +27,24 @@ public class TokenArgumentResolver implements HandlerMethodArgumentResolver {
 
     HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
     String authorizationHeader = request.getHeader("Authorization");
+    if (authorizationHeader == null) {
+      throw AuthenticationErrorCode.NOT_EXIST_HEADER.toException();
+    }
     String token = null;
     try {
       token = authorizationHeader.split("Bearer")[1].replace(" ", "");
     } catch (Exception e) {
-      throw new AuthorizationServiceException(e.getMessage());
+      throw AuthenticationErrorCode.NOT_EXIST_TOKEN.toException();
+    }
+    if (!JwtUtil.isJWT(token)) {
+      throw AuthenticationErrorCode.NOT_MATCH_TOKEN_FORMAT.toException();
     }
     if (parameter.getParameterType().equals(AccessToken.class)) {
       return AccessToken.of(token);
     } else if (parameter.getParameterType().equals(RefreshToken.class)) {
       return RefreshToken.of(token);
     } else {
-      throw new AuthorizationServiceException("Unsupported token type");
+      throw AuthenticationErrorCode.NOT_DEFINE_TOKEN.toException();
     }
   }
 }

@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,7 +74,20 @@ public class JwtUtil {
   }
 
   public boolean isTokenExpired(String token) {
-    return extractExpiration(token).before(new Date());
+    try {
+      return extractExpiration(token).before(new Date());
+    } catch (Exception e) {
+      return true;
+    }
+  }
+
+  public static boolean isJWT(String token) {
+    final String JWT_REGEX = "^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$";
+    final Pattern JWT_PATTERN = Pattern.compile(JWT_REGEX);
+    if (token == null) {
+      return false;
+    }
+    return JWT_PATTERN.matcher(token).matches();
   }
 
   private Date extractExpiration(String token) {
