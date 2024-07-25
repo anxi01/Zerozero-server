@@ -1,8 +1,10 @@
 package com.zerozero.auth.presentation;
 
 import com.zerozero.auth.application.LoginUserUseCase;
+import com.zerozero.auth.application.LoginUserUseCase.LoginUserErrorCode;
 import com.zerozero.auth.application.LoginUserUseCase.LoginUserResponse.Tokens;
 import com.zerozero.auth.presentation.LoginUserController.LoginUserResponse.Token;
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
@@ -41,6 +43,7 @@ public class LoginUserController {
       description = "사용자가 이메일과 비밀번호를 입력하여 로그인합니다.",
       operationId = "/login"
   )
+  @ApiErrorCode({GlobalErrorCode.class, LoginUserErrorCode.class})
   @PostMapping("/login")
   public ResponseEntity<LoginUserResponse> loginUser(@Valid @RequestBody LoginUserRequest loginUserRequest) {
     LoginUserUseCase.LoginUserResponse loginUserResponse = loginUserUseCase.execute(

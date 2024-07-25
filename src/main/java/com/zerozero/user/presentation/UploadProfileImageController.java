@@ -1,9 +1,11 @@
 package com.zerozero.user.presentation;
 
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.UploadProfileImageUseCase;
+import com.zerozero.user.application.UploadProfileImageUseCase.UploadProfileImageErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,6 +37,7 @@ public class UploadProfileImageController {
       description = "사용자가 이미지 파일을 통해 프로필 사진을 등록합니다.",
       operationId = "/user/image"
   )
+  @ApiErrorCode({GlobalErrorCode.class, UploadProfileImageErrorCode.class})
   @PostMapping(value = "/user/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UploadProfileImageResponse> uploadProfileImage(
       @RequestPart @Parameter(description = "이미지 원본 파일") MultipartFile imageFile,

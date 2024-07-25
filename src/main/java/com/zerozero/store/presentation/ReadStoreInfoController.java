@@ -1,5 +1,6 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.Review.Filter;
@@ -13,6 +14,7 @@ import com.zerozero.review.application.ReadStoreReviewUseCase;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewRequest;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewResponse;
 import com.zerozero.store.application.ReadStoreInfoUseCase;
+import com.zerozero.store.application.ReadStoreInfoUseCase.ReadStoreInfoErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,6 +51,7 @@ public class ReadStoreInfoController {
       description = "판매점 ID를 통해 판매점과 리뷰를 조회합니다.",
       operationId = "/store"
   )
+  @ApiErrorCode({GlobalErrorCode.class, ReadStoreInfoErrorCode.class})
   @GetMapping("/store")
   public ResponseEntity<ReadStoreInfoResponse> readStoreInfo(@ParameterObject ReadStoreInfoRequest request,
       @Parameter(hidden = true) AccessToken accessToken) {

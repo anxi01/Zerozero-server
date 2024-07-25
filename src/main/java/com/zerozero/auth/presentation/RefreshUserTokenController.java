@@ -1,8 +1,10 @@
 package com.zerozero.auth.presentation;
 
 import com.zerozero.auth.application.RefreshUserTokenUseCase;
+import com.zerozero.auth.application.RefreshUserTokenUseCase.RefreshUserTokenErrorCode;
 import com.zerozero.auth.application.RefreshUserTokenUseCase.RefreshUserTokenResponse.Tokens;
 import com.zerozero.auth.presentation.RefreshUserTokenController.RefreshUserTokenResponse.Token;
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
@@ -36,6 +38,7 @@ public class RefreshUserTokenController {
       description = "사용자의 리프레시 토큰을 통해 토큰을 재발급합니다.",
       operationId = "/refresh/token"
   )
+  @ApiErrorCode({GlobalErrorCode.class, RefreshUserTokenErrorCode.class})
   @PostMapping("/refresh/token")
   public ResponseEntity<RefreshUserTokenResponse> refreshUserToken(@Parameter(hidden = true) RefreshToken refreshToken) {
     RefreshUserTokenUseCase.RefreshUserTokenResponse refreshUserTokenResponse = refreshUserTokenUseCase.execute(

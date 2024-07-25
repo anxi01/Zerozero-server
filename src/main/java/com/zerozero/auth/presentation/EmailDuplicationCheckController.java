@@ -1,7 +1,9 @@
 package com.zerozero.auth.presentation;
 
 import com.zerozero.auth.application.EmailDuplicationCheckUseCase;
+import com.zerozero.auth.application.EmailDuplicationCheckUseCase.EmailDuplicationCheckErrorCode;
 import com.zerozero.auth.application.EmailDuplicationCheckUseCase.EmailDuplicationCheckRequest;
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +35,7 @@ public class EmailDuplicationCheckController {
       description = "사용자 이메일이 중복인지 검증합니다.",
       operationId = "/email/duplicate-check"
   )
+  @ApiErrorCode({GlobalErrorCode.class, EmailDuplicationCheckErrorCode.class})
   @GetMapping("/email/duplicate-check")
   public ResponseEntity<EmailDuplicationCheckResponse> emailDuplicationCheck(
       @Schema(description = "이메일", example = "zerozero@drink.com") @Valid @Email String email) {

@@ -1,10 +1,12 @@
 package com.zerozero.user.presentation;
 
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.ReadUserStoresUseCase;
+import com.zerozero.user.application.ReadUserStoresUseCase.ReadUserStoresErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,6 +37,7 @@ public class ReadUserStoresController {
       description = "사용자가 등록한 판매점 목록을 조회합니다.",
       operationId = "/user/stores"
   )
+  @ApiErrorCode({GlobalErrorCode.class, ReadUserStoresErrorCode.class})
   @GetMapping("/user/stores")
   public ResponseEntity<ReadUserStoresResponse> readUserStores(@Parameter(hidden = true) AccessToken accessToken) {
     ReadUserStoresUseCase.ReadUserStoresResponse readUserStoresResponse = readUserStoresUseCase.execute(
