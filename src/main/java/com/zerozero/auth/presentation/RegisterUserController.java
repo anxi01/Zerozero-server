@@ -1,6 +1,8 @@
 package com.zerozero.auth.presentation;
 
 import com.zerozero.auth.application.RegisterUserUseCase;
+import com.zerozero.auth.application.RegisterUserUseCase.RegisterUserErrorCode;
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -37,6 +39,7 @@ public class RegisterUserController {
       description = "사용자의 개인 정보를 통해 회원을 가입합니다.",
       operationId = "/register"
   )
+  @ApiErrorCode({GlobalErrorCode.class, RegisterUserErrorCode.class})
   @PostMapping("/register")
   public ResponseEntity<RegisterUserResponse> registerUser(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
     RegisterUserUseCase.RegisterUserResponse registerUserResponse = registerUserUseCase.execute(

@@ -1,11 +1,13 @@
 package com.zerozero.review.presentation;
 
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.ZeroDrink;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.review.application.CreateStoreReviewUseCase;
+import com.zerozero.review.application.CreateStoreReviewUseCase.CreateStoreReviewErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,6 +41,7 @@ public class CreateStoreReviewController {
       description = "판매점에 대한 리뷰를 등록합니다.",
       operationId = "/review"
   )
+  @ApiErrorCode({GlobalErrorCode.class, CreateStoreReviewErrorCode.class})
   @PostMapping("/review")
   public ResponseEntity<CreateStoreReviewResponse> createStoreReview(@RequestParam @Schema(description = "판매점 ID") UUID storeId,
       @RequestBody CreateStoreReviewRequest request,

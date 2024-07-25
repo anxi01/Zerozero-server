@@ -1,11 +1,13 @@
 package com.zerozero.store.presentation;
 
+import  com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.store.application.SearchStoreUseCase;
+import com.zerozero.store.application.SearchStoreUseCase.SearchStoreErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,6 +40,7 @@ public class SearchStoreController {
       description = "등록할 판매점을 쿼리를 통해 검색합니다.",
       operationId = "/store/search"
   )
+  @ApiErrorCode({GlobalErrorCode.class, SearchStoreErrorCode.class})
   @GetMapping("/store/search")
   public ResponseEntity<SearchStoreResponse> searchStore(@ParameterObject SearchStoreRequest request,
       @Parameter(hidden = true) AccessToken accessToken) {

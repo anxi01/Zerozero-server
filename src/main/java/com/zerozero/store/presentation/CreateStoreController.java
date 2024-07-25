@@ -1,10 +1,12 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.store.application.CreateStoreUseCase;
+import com.zerozero.store.application.CreateStoreUseCase.CreateStoreErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,6 +44,7 @@ public class CreateStoreController {
       description = "사용자가 검색한 판매점 ID를 통해 제로음료 판매점을 등록합니다.",
       operationId = "/store"
   )
+  @ApiErrorCode({GlobalErrorCode.class, CreateStoreErrorCode.class})
   @PostMapping(value = "/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<CreateStoreResponse> createStore(@Valid @ParameterObject CreateStoreRequest request,
       @RequestPart @Parameter(description = "이미지 원본 파일") List<MultipartFile> imageFiles,

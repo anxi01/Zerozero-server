@@ -1,10 +1,12 @@
 package com.zerozero.user.presentation;
 
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.record.UserProfile;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.ReadUserInfoUseCase;
+import com.zerozero.user.application.ReadUserInfoUseCase.ReadUserInfoErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -34,6 +36,7 @@ public class ReadUserInfoController {
       description = "사용자의 마이페이지를 토큰을 통해 조회합니다.",
       operationId = "/user/mypage"
   )
+  @ApiErrorCode({GlobalErrorCode.class, ReadUserInfoErrorCode.class})
   @GetMapping("/user/mypage")
   public ResponseEntity<ReadUserInfoResponse> readUserInfo(@Parameter(hidden = true) AccessToken accessToken) {
     ReadUserInfoUseCase.ReadUserInfoResponse readUserInfoResponse = readUserInfoUseCase.execute(
