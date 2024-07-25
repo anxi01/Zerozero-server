@@ -39,7 +39,7 @@ public class SearchStoreController {
       operationId = "/store/search"
   )
   @GetMapping("/store/search")
-  public ResponseEntity<SearchStoreResponse> SearchStore(@ParameterObject SearchStoreRequest request,
+  public ResponseEntity<SearchStoreResponse> searchStore(@ParameterObject SearchStoreRequest request,
       @Parameter(hidden = true) AccessToken accessToken) {
     SearchStoreUseCase.SearchStoreResponse searchStoreResponse = searchStoreUseCase.execute(
         SearchStoreUseCase.SearchStoreRequest.builder()

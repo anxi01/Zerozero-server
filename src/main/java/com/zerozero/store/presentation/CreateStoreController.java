@@ -43,7 +43,7 @@ public class CreateStoreController {
       operationId = "/store"
   )
   @PostMapping(value = "/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<CreateStoreResponse> CreateStore(@Valid @ParameterObject CreateStoreRequest request,
+  public ResponseEntity<CreateStoreResponse> createStore(@Valid @ParameterObject CreateStoreRequest request,
       @RequestPart @Parameter(description = "이미지 원본 파일") List<MultipartFile> imageFiles,
       @Parameter(hidden = true) AccessToken accessToken) {
     CreateStoreUseCase.CreateStoreResponse createStoreResponse = createStoreUseCase.execute(
