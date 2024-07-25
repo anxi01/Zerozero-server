@@ -32,11 +32,6 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
-
-    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
-
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
@@ -57,5 +52,4 @@ jar {
 
 tasks.named('test') {
     useJUnitPlatform()
-    systemProperty "jasypt.encryptor.password", project.getProperties().get("jasypt.encryptor.password")
 }
