@@ -29,6 +29,10 @@ naver:
     id: ENC(+360t44DgPZsqSUxThTfvgjE34sgxwfuKlSkCKVjq10=)
     secret: ENC(Ed98V/o2RX3XhBYyxPMkvyt9jzj2O/xR)
 
+kakao:
+  restApiKey: ENC(uyN1NUoVEVS8SB0PGCUSU3oSW6oTn3TZCewIDULwi9e2UMAAqnVOZbrO2a7XWb1R)
+  keywordUrl: https://dapi.kakao.com/v2/local/search/keyword.json
+
 cloud:
   aws:
     credentials:
