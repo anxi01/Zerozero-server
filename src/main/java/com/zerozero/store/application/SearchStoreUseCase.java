@@ -11,12 +11,13 @@ import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.util.JwtUtil;
-import com.zerozero.external.naver.search.application.SearchNaverLocalUseCase;
-import com.zerozero.external.naver.search.application.SearchNaverLocalUseCase.SearchNaverLocalRequest;
-import com.zerozero.external.naver.search.dto.SearchLocalResponse;
-import com.zerozero.external.naver.search.dto.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase;
+import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase.RequestKakaoKeywordSearchRequest;
+import com.zerozero.external.kakao.search.dto.KeywordSearchResponse;
+import com.zerozero.external.kakao.search.dto.KeywordSearchResponse.Document;
 import com.zerozero.store.application.SearchStoreUseCase.SearchStoreRequest;
 import com.zerozero.store.application.SearchStoreUseCase.SearchStoreResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -41,7 +42,7 @@ public class SearchStoreUseCase implements BaseUseCase<SearchStoreRequest, Searc
 
   private final JwtUtil jwtUtil;
 
-  private final SearchNaverLocalUseCase searchNaverLocalUseCase;
+  private final RequestKakaoKeywordSearchUseCase requestKakaoKeywordSearchUseCase;
 
   private final UserJPARepository userJPARepository;
 
@@ -71,23 +72,25 @@ public class SearchStoreUseCase implements BaseUseCase<SearchStoreRequest, Searc
           .errorCode(SearchStoreErrorCode.NOT_EXIST_USER)
           .build();
     }
-    SearchLocalResponse searchLocalResponse = searchNaverLocalUseCase.execute(
-        SearchNaverLocalRequest.builder().query(request.getQuery()).build()).getResponse();
-    if (searchLocalResponse == null || searchLocalResponse.getTotal() == 0) {
+    KeywordSearchResponse keywordSearchResponse = requestKakaoKeywordSearchUseCase.execute(
+            RequestKakaoKeywordSearchRequest.builder()
+                .query(request.getQuery())
+                .build())
+        .getKeywordSearchResponse();
+    if (keywordSearchResponse == null || keywordSearchResponse.getMeta().getTotalCount() == 0) {
       log.error("[SearchStoreUseCase] Search response is null");
       return SearchStoreResponse.builder()
           .success(false)
           .errorCode(SearchStoreErrorCode.NOT_EXIST_SEARCH_RESPONSE)
           .build();
     }
-    List<SearchLocalItem> searchLocalItems = searchLocalResponse.getItems();
-    List<SearchLocalItem> filteredItems = searchLocalItems.stream().peek(item -> {
-      boolean isSelling = storeJPARepository.existsByNameAndMapxAndMapyAndStatusIsTrue(
-          item.getTitle(), item.getMapx(), item.getMapy());
+    List<Document> filteredItems = Arrays.stream(keywordSearchResponse.getDocuments()).peek(item -> {
+      boolean isSelling = storeJPARepository.existsByNameAndLongitudeAndLatitudeAndStatusIsTrue(
+          item.getPlaceName(), item.getX(), item.getY());
       if (isSelling) {
         item.setStatus(true);
-        Store store = storeJPARepository.findByNameAndMapxAndMapyAndStatusIsTrue(item.getTitle(),
-            item.getMapx(), item.getMapy());
+        Store store = storeJPARepository.findByNameAndLongitudeAndLatitudeAndStatusIsTrue(item.getPlaceName(),
+            item.getX(), item.getY());
         item.setStoreId(store.getId());
       }
     }).collect(Collectors.toList());

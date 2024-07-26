@@ -1,6 +1,7 @@
 package com.zerozero.external.kakao.search.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -75,5 +76,9 @@ public class KeywordSearchResponse {
     private String placeUrl;
 
     private String distance;
+
+    private boolean status;
+
+    private UUID storeId;
   }
 }
