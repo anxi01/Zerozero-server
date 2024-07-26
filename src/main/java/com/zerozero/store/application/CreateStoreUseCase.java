@@ -12,13 +12,14 @@ import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.util.AWSS3Service;
 import com.zerozero.core.util.JwtUtil;
-import com.zerozero.external.naver.search.application.SearchNaverLocalUseCase;
-import com.zerozero.external.naver.search.application.SearchNaverLocalUseCase.SearchNaverLocalRequest;
-import com.zerozero.external.naver.search.dto.SearchLocalResponse;
-import com.zerozero.external.naver.search.dto.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase;
+import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase.RequestKakaoKeywordSearchRequest;
+import com.zerozero.external.kakao.search.dto.KeywordSearchResponse;
+import com.zerozero.external.kakao.search.dto.KeywordSearchResponse.Document;
 import com.zerozero.store.application.CreateStoreUseCase.CreateStoreRequest;
 import com.zerozero.store.application.CreateStoreUseCase.CreateStoreResponse;
 import io.jsonwebtoken.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,7 +46,7 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
 
   private final AWSS3Service awss3Service;
 
-  private final SearchNaverLocalUseCase searchNaverLocalUseCase;
+  private final RequestKakaoKeywordSearchUseCase requestKakaoKeywordSearchUseCase;
 
   private final UserJPARepository userJPARepository;
 
@@ -77,20 +78,22 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
           .errorCode(CreateStoreErrorCode.NOT_EXIST_USER)
           .build();
     }
-    SearchLocalResponse searchLocalResponse = searchNaverLocalUseCase.execute(
-        SearchNaverLocalRequest.builder().query(request.getTitle()).build()).getResponse();
-    if (searchLocalResponse == null || searchLocalResponse.getTotal() == 0) {
+    KeywordSearchResponse keywordSearchResponse = requestKakaoKeywordSearchUseCase.execute(
+            RequestKakaoKeywordSearchRequest.builder()
+                .query(request.getPlaceName())
+                .build())
+        .getKeywordSearchResponse();
+    if (keywordSearchResponse == null || keywordSearchResponse.getMeta().getTotalCount() == 0) {
       log.error("[CreateStoreUseCase] Search response is null");
       return CreateStoreResponse.builder()
           .success(false)
           .errorCode(CreateStoreErrorCode.NOT_EXIST_SEARCH_RESPONSE)
           .build();
     }
-    SearchLocalItem matchedStore = searchLocalResponse.getItems().stream().filter(
-            item -> item.getTitle().equals(request.getTitle()) && item.getMapx() == request.getMapx()
-                && item.getMapy() == request.getMapy())
-        .findFirst()
-        .orElse(null);
+    Document matchedStore = Arrays.stream(keywordSearchResponse.getDocuments()).filter(
+        document -> document != null && request.getPlaceName().equals(document.getPlaceName())
+            && request.getLongitude().equals(document.getX()) && request.getLatitude()
+            .equals(document.getY())).findFirst().orElse(null);
     if (matchedStore == null) {
       log.error("[CreateStoreUseCase] Store not found");
       return CreateStoreResponse.builder()
@@ -162,11 +165,11 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
   @AllArgsConstructor(access = AccessLevel.PROTECTED)
   public static class CreateStoreRequest implements BaseRequest {
 
-    private String title;
+    private String placeName;
 
-    private int mapx;
+    private String longitude;
 
-    private int mapy;
+    private String latitude;
 
     private List<MultipartFile> imageFiles;
 
@@ -174,7 +177,9 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
 
     @Override
     public boolean isValid() {
-      return title != null && mapx != 0 && mapy != 0 && imageFiles != null && !imageFiles.isEmpty() && accessToken != null;
+      return placeName != null && longitude != null && !longitude.isEmpty() && latitude != null
+          && !latitude.isEmpty() && imageFiles != null && !imageFiles.isEmpty()
+          && accessToken != null;
     }
   }
 
