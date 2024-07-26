@@ -2,7 +2,7 @@ package com.zerozero.core.domain.entity;
 
 import com.zerozero.core.domain.shared.BaseEntity;
 import com.zerozero.core.domain.vo.Image;
-import com.zerozero.external.naver.search.dto.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.external.kakao.search.dto.KeywordSearchResponse.Document;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import java.util.List;
@@ -23,17 +23,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Store extends BaseEntity {
 
+  private String kakaoId;
+
   private String name;
 
   private String category;
+
+  private String phone;
 
   private String address;
 
   private String roadAddress;
 
-  private Integer mapx;
+  private String longitude;
 
-  private Integer mapy;
+  private String latitude;
 
   @Builder.Default
   private Boolean status = false;
@@ -41,18 +45,23 @@ public class Store extends BaseEntity {
   @Column(columnDefinition = "JSON")
   private Image[] images;
 
+  private String placeUrl;
+
   private UUID userId;
 
-  public static Store of(UUID userId, SearchLocalItem item, List<String> uploadImages) {
+  public static Store of(UUID userId, Document store, List<String> uploadImages) {
     return Store.builder()
-        .name(item.getTitle())
-        .category(item.getCategory())
-        .address(item.getAddress())
-        .roadAddress(item.getRoadAddress())
-        .mapx(item.getMapx())
-        .mapy(item.getMapy())
+        .kakaoId(store.getId())
+        .name(store.getPlaceName())
+        .category(store.getCategoryName())
+        .phone(store.getPhone())
+        .address(store.getAddressName())
+        .roadAddress(store.getRoadAddressName())
+        .longitude(store.getX())
+        .latitude(store.getY())
         .status(true)
         .images(uploadImages.stream().map(Image::convertUrlToImage).toArray(Image[]::new))
+        .placeUrl(store.getPlaceUrl())
         .userId(userId)
         .build();
   }
