@@ -13,9 +13,9 @@ public interface StoreJPARepository extends JpaRepository<Store, UUID> {
   @Query("SELECT u.id, COUNT(s) as storeCount FROM User u JOIN Store s ON u.id = s.userId GROUP BY u.id ORDER BY storeCount DESC")
   List<Object[]> findUserIdWithStoreCountOrderByStoreCountDesc();
 
-  Boolean existsByNameAndMapxAndMapyAndStatusIsTrue(String name, int mapx, int mapy);
+  Boolean existsByNameAndLongitudeAndLatitudeAndStatusIsTrue(String name, String longitude, String latitude);
 
-  Store findByNameAndMapxAndMapyAndStatusIsTrue(String title, int mapx, int mapy);
+  Store findByNameAndLongitudeAndLatitudeAndStatusIsTrue(String name, String longitude, String latitude);
 
   List<Store> findAllByUserId(UUID userId);
 }

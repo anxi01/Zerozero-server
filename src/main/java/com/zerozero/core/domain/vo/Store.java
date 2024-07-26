@@ -1,7 +1,7 @@
 package com.zerozero.core.domain.vo;
 
 import com.zerozero.core.domain.shared.ValueObject;
-import com.zerozero.external.naver.search.dto.SearchLocalResponse.SearchLocalItem;
+import com.zerozero.external.kakao.search.dto.KeywordSearchResponse.Document;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,11 +31,17 @@ public class Store extends ValueObject implements Serializable {
   @Schema(description = "판매점 ID", example = "8e3006f4-3a16-11ef-9454-0242ac120002")
   private UUID id;
 
+  @Schema(description = "카카오 ID", example = "25770215")
+  private String kakaoId;
+
   @Schema(description = "판매점 이름", example = "제로 피자")
   private String name;
 
-  @Schema(description = "판매 종류", example = "양식>피자")
+  @Schema(description = "판매 종류", example = "음식점 > 한식 > 육류,고기")
   private String category;
+
+  @Schema(description = "전화번호", example = "02-525-6692")
+  private String phone;
 
   @Schema(description = "판매점 주소", example = "서울특별시 서초구 서초동")
   private String address;
@@ -43,11 +49,11 @@ public class Store extends ValueObject implements Serializable {
   @Schema(description = "판매점 도로명 주소", example = "서울특별시 서초구 서초대로50길 82 정원빌딩")
   private String roadAddress;
 
-  @Schema(description = "판매점 x좌표", example = "1270136455")
-  private Integer mapx;
+  @Schema(description = "판매점 x좌표(경도)", example = "127.01275515884753")
+  private String longitude;
 
-  @Schema(description = "판매점 y좌표", example = "374895501")
-  private Integer mapy;
+  @Schema(description = "판매점 y좌표(위도)", example = "37.49206032952165")
+  private String latitude;
 
   @Schema(description = "제로음료 판매 여부", example = "true")
   private Boolean status;
@@ -55,37 +61,46 @@ public class Store extends ValueObject implements Serializable {
   @Schema(description = "제로음료 등록 이미지 목록")
   private Image[] images;
 
+  @Schema(description = "판매점 상세페이지 URL", example = "http://place.map.kakao.com/25770215")
+  private String placeUrl;
+
   public static Store of(com.zerozero.core.domain.entity.Store store) {
     if (store == null) {
       return null;
     }
     return Store.builder()
         .id(store.getId())
+        .kakaoId(store.getKakaoId())
         .name(store.getName())
         .category(store.getCategory())
+        .phone(store.getPhone())
         .address(store.getAddress())
         .roadAddress(store.getRoadAddress())
-        .mapx(store.getMapx())
-        .mapy(store.getMapy())
+        .longitude(store.getLongitude())
+        .latitude(store.getLatitude())
         .status(store.getStatus())
         .images(store.getImages())
+        .placeUrl(store.getPlaceUrl())
         .build();
   }
 
-  public static Store of(SearchLocalItem item) {
+  public static Store of(Document item) {
     if (item == null) {
       return null;
     }
     return Store.builder()
         .id(item.getStoreId())
-        .name(item.getTitle())
-        .category(item.getCategory())
-        .address(item.getAddress())
-        .roadAddress(item.getRoadAddress())
-        .mapx(item.getMapx())
-        .mapy(item.getMapy())
+        .kakaoId(item.getId())
+        .name(item.getPlaceName())
+        .category(item.getCategoryName())
+        .phone(item.getPhone())
+        .address(item.getAddressName())
+        .roadAddress(item.getRoadAddressName())
+        .longitude(item.getX())
+        .latitude(item.getY())
         .status(item.isStatus())
         .images(null)
+        .placeUrl(item.getPlaceUrl())
         .build();
   }
 }

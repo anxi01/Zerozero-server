@@ -25,3 +25,28 @@ CREATE TABLE IF NOT EXISTS store
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT '판매점';
+
+ALTER TABLE store
+    ADD kakao_id VARCHAR(255) NOT NULL COMMENT '카카오 장소 ID' AFTER id;
+
+ALTER TABLE store
+    ADD phone VARCHAR(255) NULL COMMENT '전화번호' AFTER category;
+
+ALTER TABLE store
+    RENAME COLUMN mapx TO longitude;
+
+ALTER TABLE store
+    MODIFY longitude VARCHAR(255);
+
+ALTER TABLE store
+    RENAME COLUMN mapy TO latitude;
+
+ALTER TABLE store
+    MODIFY latitude VARCHAR(255);
+
+ALTER TABLE store
+    DROP INDEX store_index_mapx,
+    DROP INDEX store_index_mapy;
+
+ALTER TABLE store
+    ADD place_url VARCHAR(255) NULL COMMENT '장소 상세페이지 URL' AFTER images;
