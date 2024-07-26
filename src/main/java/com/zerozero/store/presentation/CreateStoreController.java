@@ -51,9 +51,9 @@ public class CreateStoreController {
       @Parameter(hidden = true) AccessToken accessToken) {
     CreateStoreUseCase.CreateStoreResponse createStoreResponse = createStoreUseCase.execute(
         CreateStoreUseCase.CreateStoreRequest.builder()
-            .title(request.getTitle())
-            .mapx(request.getMapx())
-            .mapy(request.getMapy())
+            .placeName(request.getPlaceName())
+            .longitude(request.getLongitude())
+            .latitude(request.getLatitude())
             .imageFiles(imageFiles)
             .accessToken(accessToken)
             .build());
@@ -89,14 +89,14 @@ public class CreateStoreController {
 
     @NotNull(message = "판매점 이름은 필수 값입니다.")
     @Schema(description = "판매점 이름", example = "꿉당")
-    private String title;
+    private String placeName;
 
-    @NotNull(message = "판매점 x좌표는 필수 값입니다.")
-    @Schema(description = "판매점 x좌표", example = "1270299418")
-    private int mapx;
+    @NotNull(message = "판매점 x좌표(경도)는 필수 값입니다.")
+    @Schema(description = "판매점 x좌표(경도)", example = "127.01275515884753")
+    private String longitude;
 
-    @NotNull(message = "판매점 y좌표는 필수 값입니다.")
-    @Schema(description = "판매점 y좌표", example = "374971650")
-    private int mapy;
+    @NotNull(message = "판매점 y좌표(위도)는 필수 값입니다.")
+    @Schema(description = "판매점 y좌표(위도)", example = "37.49206032952165")
+    private String latitude;
   }
 }
