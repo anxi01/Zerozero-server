@@ -1,10 +1,13 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.property.CreateStoreQueueProperty;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
+import com.zerozero.queue.store.CreateStoreMessageProducer;
+import com.zerozero.queue.store.CreateStoreMessageProducer.CreateStoreMessageProducerRequest;
 import com.zerozero.store.application.CreateStoreUseCase;
 import com.zerozero.store.application.CreateStoreUseCase.CreateStoreErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +42,8 @@ public class CreateStoreController {
 
   private final CreateStoreUseCase createStoreUseCase;
 
+  private final CreateStoreQueueProperty createStoreQueueProperty;
+
   @Operation(
       summary = "판매점 등록 API",
       description = "사용자가 검색한 판매점 ID를 통해 제로음료 판매점을 등록합니다.",
@@ -66,6 +71,13 @@ public class CreateStoreController {
             throw GlobalErrorCode.INTERNAL_ERROR.toException();
           });
     }
+
+    CreateStoreMessageProducer createStoreMessageProducer = new CreateStoreMessageProducer(createStoreQueueProperty,
+        CreateStoreMessageProducerRequest.builder()
+            .storeId(createStoreResponse.getStoreId())
+            .build());
+    createStoreMessageProducer.publishMessage();
+
     return ResponseEntity.ok(CreateStoreResponse.builder().build());
   }
 
