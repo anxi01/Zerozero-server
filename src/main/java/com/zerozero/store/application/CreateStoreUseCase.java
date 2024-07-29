@@ -21,6 +21,7 @@ import com.zerozero.store.application.CreateStoreUseCase.CreateStoreResponse;
 import io.jsonwebtoken.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -125,7 +126,7 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
           .build();
     }
     storeJPARepository.save(store);
-    return CreateStoreResponse.builder().build();
+    return CreateStoreResponse.builder().storeId(store.getId()).build();
   }
 
   @Getter
@@ -155,6 +156,8 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
   @SuperBuilder
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class CreateStoreResponse extends BaseResponse<CreateStoreErrorCode> {
+
+    private UUID storeId;
   }
 
   @ToString
