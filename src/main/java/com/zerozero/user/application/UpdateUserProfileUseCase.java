@@ -11,8 +11,8 @@ import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.util.AWSS3Service;
 import com.zerozero.core.util.JwtUtil;
-import com.zerozero.user.application.UploadProfileImageUseCase.UploadProfileImageRequest;
-import com.zerozero.user.application.UploadProfileImageUseCase.UploadProfileImageResponse;
+import com.zerozero.user.application.UpdateUserProfileUseCase.UpdateUserProfileRequest;
+import com.zerozero.user.application.UpdateUserProfileUseCase.UpdateUserProfileResponse;
 import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UploadProfileImageUseCase implements BaseUseCase<UploadProfileImageRequest, UploadProfileImageResponse> {
+public class UpdateUserProfileUseCase implements BaseUseCase<UpdateUserProfileRequest, UpdateUserProfileResponse> {
 
   private final JwtUtil jwtUtil;
 
@@ -42,46 +42,54 @@ public class UploadProfileImageUseCase implements BaseUseCase<UploadProfileImage
   private final UserJPARepository userJPARepository;
 
   @Override
-  public UploadProfileImageResponse execute(UploadProfileImageRequest request) {
+  public UpdateUserProfileResponse execute(UpdateUserProfileRequest request) {
     if (request == null || !request.isValid()) {
-      log.error("[UploadProfileImageUseCase] Invalid request");
-      return UploadProfileImageResponse.builder().success(false)
-          .errorCode(UploadProfileImageErrorCode.NOT_EXIST_REQUEST_CONDITION)
+      log.error("[UpdateUserProfileUseCase] Invalid request");
+      return UpdateUserProfileResponse.builder().success(false)
+          .errorCode(UpdateUserProfileErrorCode.NOT_EXIST_REQUEST_CONDITION)
           .build();
     }
     AccessToken accessToken = request.getAccessToken();
     if (jwtUtil.isTokenExpired(accessToken.getToken())) {
-      log.error("[UploadProfileImageUseCase] Expired access token");
-      return UploadProfileImageResponse.builder().success(false)
-          .errorCode(UploadProfileImageErrorCode.EXPIRED_TOKEN).build();
+      log.error("[UpdateUserProfileUseCase] Expired access token");
+      return UpdateUserProfileResponse.builder().success(false)
+          .errorCode(UpdateUserProfileErrorCode.EXPIRED_TOKEN).build();
     }
     String userEmail = jwtUtil.extractUsername(accessToken.getToken());
     User user = userJPARepository.findByEmail(userEmail);
     if (user == null) {
-      log.error("[UploadProfileImageUseCase] not found user with email {}", userEmail);
-      return UploadProfileImageResponse.builder().success(false)
-          .errorCode(UploadProfileImageErrorCode.NOT_EXIST_USER).build();
+      log.error("[UpdateUserProfileUseCase] not found user with email {}", userEmail);
+      return UpdateUserProfileResponse.builder().success(false)
+          .errorCode(UpdateUserProfileErrorCode.NOT_EXIST_USER).build();
     }
-    String imageUrl;
-    try {
-      imageUrl = awss3Service.uploadImage(request.getImageFile());
-      if (imageUrl == null || imageUrl.isEmpty()) {
-        log.error("[UploadProfileImageUseCase] imageUrl is null");
-        return UploadProfileImageResponse.builder().success(false)
-            .errorCode(UploadProfileImageErrorCode.FAILED_IMAGE_CONVERT).build();
+    MultipartFile imageFile = request.getImageFile();
+    if (imageFile == null) {
+      user.uploadProfileImage(null);
+    } else {
+      String imageUrl;
+      try {
+        imageUrl = awss3Service.uploadImage(imageFile);
+        if (imageUrl == null || imageUrl.isEmpty()) {
+          log.error("[UpdateUserProfileUseCase] imageUrl is null");
+          return UpdateUserProfileResponse.builder().success(false)
+              .errorCode(UpdateUserProfileErrorCode.FAILED_IMAGE_CONVERT).build();
+        }
+      } catch (IOException e) {
+        log.error("[UpdateUserProfileUseCase] image upload error", e);
+        return UpdateUserProfileResponse.builder().success(false)
+            .errorCode(UpdateUserProfileErrorCode.FAILED_IMAGE_CONVERT).build();
       }
-    } catch (IOException e) {
-      log.error("[UploadProfileImageUseCase] image upload error", e);
-      return UploadProfileImageResponse.builder().success(false)
-          .errorCode(UploadProfileImageErrorCode.FAILED_IMAGE_CONVERT).build();
+      user.uploadProfileImage(Image.convertUrlToImage(imageUrl));
     }
-    user.uploadProfileImage(Image.convertUrlToImage(imageUrl));
-    return UploadProfileImageResponse.builder().build();
+    if (!request.getNickname().equals(user.getNickname())) {
+      user.updateNickname(request.getNickname());
+    }
+    return UpdateUserProfileResponse.builder().build();
   }
 
   @Getter
   @RequiredArgsConstructor
-  public enum UploadProfileImageErrorCode implements BaseErrorCode<DomainException> {
+  public enum UpdateUserProfileErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "요청 조건이 올바르지 않습니다."),
     EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
@@ -102,7 +110,7 @@ public class UploadProfileImageUseCase implements BaseUseCase<UploadProfileImage
   @Setter
   @SuperBuilder
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  public static class UploadProfileImageResponse extends BaseResponse<UploadProfileImageErrorCode> {
+  public static class UpdateUserProfileResponse extends BaseResponse<UpdateUserProfileErrorCode> {
   }
 
   @ToString
@@ -111,7 +119,9 @@ public class UploadProfileImageUseCase implements BaseUseCase<UploadProfileImage
   @Builder
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @AllArgsConstructor(access = AccessLevel.PROTECTED)
-  public static class UploadProfileImageRequest implements BaseRequest {
+  public static class UpdateUserProfileRequest implements BaseRequest {
+
+    private String nickname;
 
     private MultipartFile imageFile;
 
@@ -119,7 +129,7 @@ public class UploadProfileImageUseCase implements BaseUseCase<UploadProfileImage
 
     @Override
     public boolean isValid() {
-      return imageFile != null && accessToken != null;
+      return nickname != null && accessToken != null;
     }
   }
 
