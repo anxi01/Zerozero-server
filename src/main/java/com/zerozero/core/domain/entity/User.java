@@ -36,6 +36,13 @@ public class User extends BaseEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Role role;
 
+  public void updateNickname(String nickname) {
+    if (nickname == null) {
+      return;
+    }
+    this.nickname = nickname;
+  }
+
   public void uploadProfileImage(Image image) {
     this.profileImage = image;
   }
