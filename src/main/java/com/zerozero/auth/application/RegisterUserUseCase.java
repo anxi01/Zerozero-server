@@ -47,11 +47,6 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
       return RegisterUserResponse.builder().success(false)
           .errorCode(RegisterUserErrorCode.ALREADY_EXIST_EMAIL).build();
     }
-    if (isDuplicateNickname(request.getNickname())) {
-      log.error("[RegisterUserUseCase] Nickname already exists");
-      return RegisterUserResponse.builder().success(false)
-          .errorCode(RegisterUserErrorCode.ALREADY_EXIST_NICKNAME).build();
-    }
     User user = User.builder()
         .nickname(request.getNickname())
         .email(request.getEmail())
@@ -66,17 +61,12 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
     return userJPARepository.existsByEmail(email);
   }
 
-  private boolean isDuplicateNickname(String nickname) {
-    return userJPARepository.existsByNickname(nickname);
-  }
-
   @Getter
   @RequiredArgsConstructor
   public enum RegisterUserErrorCode implements BaseErrorCode<DomainException> {
 
     NOT_EXIST_REGISTER_CONDITION(HttpStatus.BAD_REQUEST, "회원가입 조건이 올바르지 않습니다."),
-    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
-    ALREADY_EXIST_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다.");
+    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
 
     private final HttpStatus httpStatus;
 
