@@ -57,8 +57,10 @@ public class RefreshUserTokenController {
     return ResponseEntity.ok(RefreshUserTokenResponse.builder()
         .token(new Token(
             Optional.ofNullable(refreshUserTokenResponse.getTokens()).map(Tokens::getAccessToken)
+                .map(AccessToken::getToken)
                 .orElse(null),
             Optional.ofNullable(refreshUserTokenResponse.getTokens()).map(Tokens::getRefreshToken)
+                .map(RefreshToken::getToken)
                 .orElse(null)))
         .build());
   }
@@ -75,7 +77,7 @@ public class RefreshUserTokenController {
     @Schema(description = "액세스 토큰과 리프레시 토큰")
     private Token token;
 
-    record Token(AccessToken accessToken, RefreshToken refreshToken) {
+    record Token(String accessToken, String refreshToken) {
     }
   }
 }
