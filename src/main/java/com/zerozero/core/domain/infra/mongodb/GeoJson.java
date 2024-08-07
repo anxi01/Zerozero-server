@@ -1,4 +1,4 @@
-package com.zerozero.core.domain.infra.mongodb.region;
+package com.zerozero.core.domain.infra.mongodb;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
