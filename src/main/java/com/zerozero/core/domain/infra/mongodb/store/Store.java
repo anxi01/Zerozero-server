@@ -1,5 +1,6 @@
 package com.zerozero.core.domain.infra.mongodb.store;
 
+import com.zerozero.core.domain.infra.mongodb.GeoJsonConverter;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @ToString
@@ -15,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collation = "store")
+@Document(collection = "store")
 public class Store {
 
   private UUID storeId;
@@ -36,6 +38,8 @@ public class Store {
 
   private String latitude;
 
+  private GeoJsonPoint location;
+
   private String placeUrl;
 
   private UUID userId;
@@ -54,6 +58,7 @@ public class Store {
         .roadAddress(store.getRoadAddress())
         .longitude(store.getLongitude())
         .latitude(store.getLatitude())
+        .location(GeoJsonConverter.of(store.getLongitude(), store.getLatitude()))
         .placeUrl(store.getPlaceUrl())
         .userId(store.getUserId())
         .build();

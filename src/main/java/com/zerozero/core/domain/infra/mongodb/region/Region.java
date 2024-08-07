@@ -1,6 +1,7 @@
 package com.zerozero.core.domain.infra.mongodb.region;
 
 
+import com.zerozero.core.domain.infra.mongodb.GeoJson;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
