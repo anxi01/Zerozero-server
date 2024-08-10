@@ -133,7 +133,7 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
   @RequiredArgsConstructor
   public enum CreateStoreErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "등록 요청 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
     NOT_EXIST_SEARCH_RESPONSE(HttpStatus.BAD_REQUEST, "검색 응답이 존재하지 않습니다."),
     NOT_EXIST_STORE(HttpStatus.BAD_REQUEST, "등록된 판매점이 존재하지 않습니다."),

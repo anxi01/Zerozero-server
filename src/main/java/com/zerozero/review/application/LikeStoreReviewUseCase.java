@@ -91,7 +91,7 @@ public class LikeStoreReviewUseCase implements BaseUseCase<LikeStoreReviewReques
   @RequiredArgsConstructor
   public enum LikeStoreReviewErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REVIEW_LIKE_CONDITION(HttpStatus.BAD_REQUEST, "리뷰 좋아요 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
     NOT_EXIST_DELETABLE_REVIEW(HttpStatus.BAD_REQUEST, "삭제 가능한 리뷰가 존재하지 않습니다.");
 

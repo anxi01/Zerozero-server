@@ -79,7 +79,7 @@ public class ReadNearbyStoresUseCase implements BaseUseCase<ReadNearbyStoresRequ
   @RequiredArgsConstructor
   public enum ReadNearbyStoresErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "검색 요청 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다.");
 
     private final HttpStatus httpStatus;
