@@ -91,7 +91,7 @@ public class UpdateStoreReviewUseCase implements BaseUseCase<UpdateStoreReviewRe
   @RequiredArgsConstructor
   public enum UpdateStoreReviewErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REVIEW_CONDITION(HttpStatus.BAD_REQUEST, "리뷰 요청 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
     NOT_EXIST_REVIEW(HttpStatus.BAD_REQUEST, "리뷰가 존재하지 않습니다."),
     USER_VALIDATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "리뷰를 작성한 사용자가 아닙니다.");

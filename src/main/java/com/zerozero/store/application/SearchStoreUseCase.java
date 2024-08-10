@@ -103,7 +103,7 @@ public class SearchStoreUseCase implements BaseUseCase<SearchStoreRequest, Searc
   @RequiredArgsConstructor
   public enum SearchStoreErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_SEARCH_CONDITION(HttpStatus.BAD_REQUEST, "검색 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
     NOT_EXIST_SEARCH_RESPONSE(HttpStatus.BAD_REQUEST, "검색 응답이 존재하지 않습니다.");
 
