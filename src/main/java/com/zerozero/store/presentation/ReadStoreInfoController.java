@@ -72,6 +72,7 @@ public class ReadStoreInfoController {
     ReadStoreReviewResponse readStoreReviewResponse = readStoreReviewUseCase.execute(ReadStoreReviewRequest.builder()
         .storeId(request.getStoreId())
         .filter(request.getFilter())
+        .accessToken(accessToken)
         .build());
     if (readStoreReviewResponse == null || !readStoreReviewResponse.isSuccess()) {
       Optional.ofNullable(readStoreReviewResponse)
