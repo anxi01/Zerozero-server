@@ -8,9 +8,11 @@ import com.zerozero.core.domain.entity.Review.Filter;
 import com.zerozero.core.domain.infra.repository.ReviewJPARepository;
 import com.zerozero.core.domain.infra.repository.ReviewLikeJPARepository;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
+import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.User;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
+import com.zerozero.core.util.JwtUtil;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewRequest;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewResponse;
 import java.util.Arrays;
@@ -43,12 +45,23 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
 
   private final UserJPARepository userJPARepository;
 
+  private final JwtUtil jwtUtil;
+
   @Override
   public ReadStoreReviewResponse execute(ReadStoreReviewRequest request) {
     if (request == null || !request.isValid()) {
+      log.error("[ReadStoreReviewUseCase] Invalid request");
       return ReadStoreReviewResponse.builder()
           .success(false)
           .errorCode(ReadStoreReviewErrorCode.NOT_EXIST_REQUEST_CONDITION)
+          .build();
+    }
+    AccessToken accessToken = request.getAccessToken();
+    if (jwtUtil.isTokenExpired(accessToken.getToken())) {
+      log.error("[ReadStoreReviewUseCase] Expired access token");
+      return ReadStoreReviewResponse.builder()
+          .success(false)
+          .errorCode(ReadStoreReviewErrorCode.EXPIRED_TOKEN)
           .build();
     }
     List<Review> reviews = reviewJPARepository.findAllByStoreIdAndDeleted(request.getStoreId(), false);
@@ -74,7 +87,8 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
   @Getter
   @RequiredArgsConstructor
   public enum ReadStoreReviewErrorCode implements BaseErrorCode<DomainException> {
-    NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "요청 조건이 올바르지 않습니다.");
+    NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "요청 조건이 올바르지 않습니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
 
     private final HttpStatus httpStatus;
 
@@ -122,9 +136,11 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
 
     private Filter filter;
 
+    private AccessToken accessToken;
+
     @Override
     public boolean isValid() {
-      return storeId != null;
+      return storeId != null && accessToken != null;
     }
   }
 
