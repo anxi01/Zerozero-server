@@ -1,10 +1,10 @@
 package com.zerozero.store.presentation;
 
-import  com.zerozero.configuration.swagger.ApiErrorCode;
+import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.record.StoreWithoutImages;
 import com.zerozero.core.domain.vo.AccessToken;
-import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.store.application.SearchStoreUseCase;
 import com.zerozero.store.application.SearchStoreUseCase.SearchStoreErrorCode;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +59,11 @@ public class SearchStoreController {
             throw GlobalErrorCode.INTERNAL_ERROR.toException();
           });
     }
-    return ResponseEntity.ok(SearchStoreResponse.builder().stores(searchStoreResponse.getStores()).build());
+    return ResponseEntity.ok(SearchStoreResponse.builder()
+        .stores(searchStoreResponse.getStores().stream()
+            .map(StoreWithoutImages::of)
+            .collect(Collectors.toList()))
+        .build());
   }
 
   @ToString
@@ -71,7 +76,7 @@ public class SearchStoreController {
   public static class SearchStoreResponse extends BaseResponse<GlobalErrorCode> {
 
     @Schema(description = "판매점 목록")
-    private List<Store> stores;
+    private List<StoreWithoutImages> stores;
   }
 
   @ToString
