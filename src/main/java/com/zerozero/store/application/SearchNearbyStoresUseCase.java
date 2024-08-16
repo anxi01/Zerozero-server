@@ -95,10 +95,11 @@ public class SearchNearbyStoresUseCase implements BaseUseCase<SearchNearbyStores
       boolean isSelling = storeJPARepository.existsByNameAndLongitudeAndLatitudeAndStatusIsTrue(
           item.getPlaceName(), item.getX(), item.getY());
       if (isSelling) {
-        item.setStatus(true);
         Store store = storeJPARepository.findByNameAndLongitudeAndLatitudeAndStatusIsTrue(item.getPlaceName(),
             item.getX(), item.getY());
+        item.setStatus(true);
         item.setStoreId(store.getId());
+        item.setImages(store.getImages());
       }
     }).collect(Collectors.toList());
     return SearchNearbyStoresResponse.builder()

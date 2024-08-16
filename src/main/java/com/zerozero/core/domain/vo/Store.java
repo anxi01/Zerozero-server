@@ -99,7 +99,7 @@ public class Store extends ValueObject implements Serializable {
         .longitude(item.getX())
         .latitude(item.getY())
         .status(item.isStatus())
-        .images(null)
+        .images(item.getImages())
         .placeUrl(item.getPlaceUrl())
         .build();
   }
