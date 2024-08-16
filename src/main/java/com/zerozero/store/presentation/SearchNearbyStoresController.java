@@ -3,8 +3,8 @@ package com.zerozero.store.presentation;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.record.Store;
 import com.zerozero.core.domain.vo.AccessToken;
-import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.store.application.SearchNearbyStoresUseCase;
 import com.zerozero.store.application.SearchNearbyStoresUseCase.SearchNearbyStoresErrorCode;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,7 +61,11 @@ public class SearchNearbyStoresController {
             throw GlobalErrorCode.INTERNAL_ERROR.toException();
           });
     }
-    return ResponseEntity.ok(SearchNearbyStoresResponse.builder().stores(searchNearbyStoresResponse.getStores()).build());
+    return ResponseEntity.ok(SearchNearbyStoresResponse.builder()
+        .stores(searchNearbyStoresResponse.getStores().stream()
+            .map(Store::of)
+            .collect(Collectors.toList()))
+        .build());
   }
 
   @ToString

@@ -1,6 +1,7 @@
 package com.zerozero.external.kakao.search.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.zerozero.core.domain.vo.Image;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -80,5 +81,7 @@ public class KeywordSearchResponse {
     private boolean status;
 
     private UUID storeId;
+
+    private Image[] images;
   }
 }
