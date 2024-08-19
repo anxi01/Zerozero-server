@@ -5,6 +5,7 @@ import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.ZeroDrink;
+import com.zerozero.core.domain.vo.ZeroDrink.Type;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.review.application.CreateStoreReviewUseCase;
 import com.zerozero.review.application.CreateStoreReviewUseCase.CreateStoreReviewErrorCode;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -50,7 +52,12 @@ public class CreateStoreReviewController {
         CreateStoreReviewUseCase.CreateStoreReviewRequest.builder()
             .storeId(storeId)
             .content(request.getContent())
-            .zeroDrinks(request.getZeroDrinks())
+            .zeroDrinks(Optional.ofNullable(request.getZeroDrinks())
+                .map(zeroDrinks -> zeroDrinks.stream().map(zeroDrink -> ZeroDrink.builder()
+                        .type(zeroDrink)
+                        .build())
+                    .toArray(ZeroDrink[]::new))
+                .orElse(null))
             .accessToken(accessToken)
             .build());
     if (createStoreReviewResponse == null || !createStoreReviewResponse.isSuccess()) {
@@ -86,17 +93,7 @@ public class CreateStoreReviewController {
     @Schema(description = "리뷰 내용", example = "제로콜라 판매 중!")
     private String content;
 
-    @Schema(description = "제로 음료수 목록", example = "[\n" +
-        "    {\n" +
-        "      \"type\": \"COCA_COLA_ZERO\"\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"type\": \"PEPSI_ZERO\"\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"type\": \"SPRITE_ZERO\"\n" +
-        "    }\n" +
-        "]")
-    private ZeroDrink[] zeroDrinks;
+    @Schema(description = "제로 음료수 목록", example = "[\"COCA_COLA_ZERO\", \"PEPSI_ZERO\", \"SPRITE_ZERO\"]")
+    private List<Type> zeroDrinks;
   }
 }
