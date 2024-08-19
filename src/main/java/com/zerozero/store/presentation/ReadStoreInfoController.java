@@ -7,7 +7,6 @@ import com.zerozero.core.domain.entity.Review.Filter;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.domain.vo.User;
-import com.zerozero.core.domain.vo.ZeroDrink;
 import com.zerozero.core.domain.vo.ZeroDrink.Type;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.review.application.ReadStoreReviewUseCase;
@@ -20,6 +19,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -97,16 +97,19 @@ public class ReadStoreInfoController {
         .build();
   }
 
-  private ZeroDrink[] getTop3ZeroDrinks(ReadStoreReviewResponse.Review[] reviews) {
-    ZeroDrink[] allZeroDrinks = Arrays.stream(reviews).flatMap(review -> Arrays.stream(review.getReview().getZeroDrinks())).toArray(ZeroDrink[]::new);
-    return Arrays.stream(allZeroDrinks)
-        .collect(Collectors.groupingBy(ZeroDrink::getType, Collectors.counting()))
+  private List<Type> getTop3ZeroDrinks(ReadStoreReviewResponse.Review[] reviews) {
+    List<Type> allZeroDrinks = Arrays.stream(reviews)
+        .flatMap(review -> review.getReview().getZeroDrinks().stream())
+        .collect(Collectors.toList());
+
+    return allZeroDrinks.stream()
+        .collect(Collectors.groupingBy(type -> type, Collectors.counting()))
         .entrySet().stream()
-        .sorted(Map.Entry.<Type, Long>comparingByValue().reversed())
+        .sorted(Map.Entry.<Type, Long>comparingByValue().reversed()
+            .thenComparing(Map.Entry.comparingByKey()))
         .limit(3)
         .map(Map.Entry::getKey)
-        .flatMap(type -> Arrays.stream(allZeroDrinks).filter(drink -> drink.getType() == type))
-        .toArray(ZeroDrink[]::new);
+        .collect(Collectors.toList());
   }
 
   @ToString
@@ -125,7 +128,7 @@ public class ReadStoreInfoController {
     private Review[] reviews;
 
     @Schema(description = "제로 음료수 순위")
-    private ZeroDrink[] zeroDrinks;
+    private List<Type> zeroDrinks;
 
     record Review(com.zerozero.core.domain.vo.Review review, User user) {
 
