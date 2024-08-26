@@ -5,11 +5,11 @@ import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.Review;
 import com.zerozero.core.domain.entity.Review.Filter;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.ReviewJPARepository;
 import com.zerozero.core.domain.infra.repository.ReviewLikeJPARepository;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.domain.vo.AccessToken;
-import com.zerozero.core.domain.vo.User;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.util.JwtUtil;
@@ -17,6 +17,7 @@ import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewReq
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewResponse;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -64,23 +65,41 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
           .errorCode(ReadStoreReviewErrorCode.EXPIRED_TOKEN)
           .build();
     }
+    String userEmail = jwtUtil.extractUsername(accessToken.getToken());
+    User user = userJPARepository.findByEmail(userEmail);
+    if (user == null) {
+      log.error("[ReadStoreReviewUseCase] not found user with email {}", userEmail);
+      return ReadStoreReviewResponse.builder()
+          .success(false)
+          .errorCode(ReadStoreReviewErrorCode.NOT_EXIST_USER)
+          .build();
+    }
     List<Review> reviews = reviewJPARepository.findAllByStoreIdAndDeleted(request.getStoreId(), false);
-    List<Integer> reviewsCount = reviews.stream()
-        .map(review -> reviewLikeJPARepository.countByReviewId(review.getId()))
+    List<Integer> reviewLikeCounts = reviews.stream()
+        .map(review -> Optional.ofNullable(
+            reviewLikeJPARepository.countByReviewIdAndDeleted(review.getId(), false)).orElse(0))
         .collect(Collectors.toList());
-    com.zerozero.core.domain.vo.Review[] reviewsVO = Review.filter(reviews, request.getFilter(),
-            reviewsCount).stream().map(com.zerozero.core.domain.vo.Review::of)
+    com.zerozero.core.domain.vo.Review[] reviewsVO = Review.filter(reviews, request.getFilter(), reviewLikeCounts)
+        .stream().map(com.zerozero.core.domain.vo.Review::of)
         .toArray(com.zerozero.core.domain.vo.Review[]::new);
-    return ReadStoreReviewResponse.builder().reviews(convertReviewResponse(reviewsVO)).build();
+    return ReadStoreReviewResponse.builder().reviews(convertReviewResponse(reviewsVO, user)).build();
   }
 
-  private ReadStoreReviewResponse.Review[] convertReviewResponse(com.zerozero.core.domain.vo.Review[] reviewsVO) {
-    if (reviewsVO == null) {
+  private ReadStoreReviewResponse.Review[] convertReviewResponse(com.zerozero.core.domain.vo.Review[] reviewsVO, User user) {
+    if (reviewsVO == null || user == null) {
       return null;
     }
     return Arrays.stream(reviewsVO).map(review ->
-        ReadStoreReviewResponse.Review.builder().review(review)
-            .user(User.of(userJPARepository.findById(review.getUserId()).orElse(null))).build()
+        ReadStoreReviewResponse.Review.builder()
+            .review(review)
+            .user(
+                com.zerozero.core.domain.vo.User.of(userJPARepository.findById(review.getUserId()).orElse(null)))
+            .likeCount(Optional.ofNullable(
+                reviewLikeJPARepository.countByReviewIdAndDeleted(review.getId(), false)).orElse(0))
+            .isLiked(Optional.ofNullable(
+                reviewLikeJPARepository.existsByReviewIdAndUserIdAndDeleted(review.getId(),
+                    user.getId(), false)).orElse(false))
+            .build()
     ).toArray(ReadStoreReviewResponse.Review[]::new);
   }
 
@@ -88,7 +107,8 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
   @RequiredArgsConstructor
   public enum ReadStoreReviewErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "요청 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
+    NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다.");
 
     private final HttpStatus httpStatus;
 
@@ -120,7 +140,11 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
 
       private com.zerozero.core.domain.vo.Review review;
 
-      private User user;
+      private com.zerozero.core.domain.vo.User user;
+
+      private Integer likeCount;
+
+      private Boolean isLiked;
     }
   }
 

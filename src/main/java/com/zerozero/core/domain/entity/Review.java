@@ -42,7 +42,7 @@ public class Review extends BaseEntity {
         .build();
   }
 
-  public static List<Review> filter(List<Review> reviews, Filter filter, List<Integer> reviewCount) {
+  public static List<Review> filter(List<Review> reviews, Filter filter, List<Integer> reviewLikeCounts) {
     if (filter == null || reviews == null || reviews.isEmpty()) {
       return reviews;
     }
@@ -52,12 +52,12 @@ public class Review extends BaseEntity {
             Collectors.toList());
       }
       case RECOMMEND -> {
-        if (reviewCount == null || reviewCount.isEmpty() || reviewCount.size() != reviews.size()) {
+        if (reviewLikeCounts == null || reviewLikeCounts.isEmpty() || reviewLikeCounts.size() != reviews.size()) {
           return reviews;
         }
         return IntStream.range(0, reviews.size())
             .boxed()
-            .sorted((i, j) -> reviewCount.get(j).compareTo(reviewCount.get(i)))
+            .sorted((i, j) -> reviewLikeCounts.get(j).compareTo(reviewLikeCounts.get(i)))
             .map(reviews::get)
             .collect(Collectors.toList());
       }
