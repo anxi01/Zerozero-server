@@ -2,6 +2,7 @@ package com.zerozero.core.domain.vo;
 
 import com.zerozero.core.domain.shared.ValueObject;
 import com.zerozero.core.domain.vo.ZeroDrink.Type;
+import com.zerozero.core.util.TimeUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serial;
 import java.io.Serializable;
@@ -44,6 +45,9 @@ public class Review extends ValueObject implements Serializable {
   @Schema(description = "작성한 사용자 ID")
   private UUID userId;
 
+  @Schema(description = "리뷰 작성일자, YYYY.MM.DD", example = "2024.08.27")
+  private String createdAt;
+
   public static Review of(com.zerozero.core.domain.entity.Review review) {
     if (review == null) {
       return null;
@@ -57,6 +61,7 @@ public class Review extends ValueObject implements Serializable {
                 .collect(Collectors.toList()))
             .orElse(null))
         .userId(review.getUserId())
+        .createdAt(TimeUtil.toDotFormattedString(review.getCreatedAt().toLocalDate()))
         .build();
   }
 }
