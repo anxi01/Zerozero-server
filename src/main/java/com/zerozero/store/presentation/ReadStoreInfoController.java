@@ -130,10 +130,13 @@ public class ReadStoreInfoController {
     @Schema(description = "제로 음료수 순위")
     private List<Type> zeroDrinks;
 
-    record Review(com.zerozero.core.domain.vo.Review review, User user) {
+    record Review(com.zerozero.core.domain.vo.Review review, User user, Integer likeCount, Boolean isLiked) {
 
       public static Review of(ReadStoreReviewResponse.Review review) {
-        return new Review(review.getReview(), review.getUser());
+        if (review == null) {
+          return null;
+        }
+        return new Review(review.getReview(), review.getUser(), review.getLikeCount(), review.getIsLiked());
       }
     }
   }

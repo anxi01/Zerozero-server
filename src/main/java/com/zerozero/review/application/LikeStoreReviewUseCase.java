@@ -78,7 +78,7 @@ public class LikeStoreReviewUseCase implements BaseUseCase<LikeStoreReviewReques
           .errorCode(LikeStoreReviewErrorCode.NOT_EXIST_DELETABLE_REVIEW)
           .build();
     }
-    ReviewLike reviewLike = reviewLikeJPARepository.findByReviewIdAndUserId(review.getId(), user.getId());
+    ReviewLike reviewLike = reviewLikeJPARepository.findByReviewIdAndUserIdAndDeleted(review.getId(), user.getId(), false);
     if (reviewLike == null) {
       reviewLike = new ReviewLike(review, user);
       reviewLikeJPARepository.save(reviewLike);
