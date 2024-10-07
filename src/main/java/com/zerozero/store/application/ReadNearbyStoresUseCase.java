@@ -40,7 +40,7 @@ public class ReadNearbyStoresUseCase implements BaseUseCase<ReadNearbyStoresRequ
 
   private final StoreMongoRepository storeMongoRepository;
 
-  public static final Double DEFAULT_RADIUS = 100.0;
+  public static final Double DEFAULT_RADIUS = 1000.0;
 
   @Override
   public ReadNearbyStoresResponse execute(ReadNearbyStoresRequest request) {
