@@ -38,6 +38,9 @@ public class Store {
 
   private String latitude;
 
+  @Builder.Default
+  private Boolean status = true;
+
   private GeoJsonPoint location;
 
   private String placeUrl;
