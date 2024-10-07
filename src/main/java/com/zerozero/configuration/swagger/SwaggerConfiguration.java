@@ -4,6 +4,7 @@ import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.presentation.ErrorResponse;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -32,7 +33,7 @@ import org.springframework.web.method.HandlerMethod;
 @OpenAPIDefinition(
     info = @Info(title = "Zerozero API",
         description = "Zerozero : API 명세서",
-        version = "v1.0.0"))
+        version = "v1.0.0"), servers = {@Server(url = "${springdoc.server-url}", description = "Default Server URL")})
 @Configuration
 public class SwaggerConfiguration {
 
