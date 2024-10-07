@@ -42,6 +42,8 @@ public class Store {
 
   private String placeUrl;
 
+  private Boolean status;
+
   private UUID userId;
 
   public static Store of(com.zerozero.core.domain.entity.Store store) {
@@ -60,6 +62,7 @@ public class Store {
         .latitude(store.getLatitude())
         .location(GeoJsonConverter.of(store.getLongitude(), store.getLatitude()))
         .placeUrl(store.getPlaceUrl())
+        .status(true)
         .userId(store.getUserId())
         .build();
   }
