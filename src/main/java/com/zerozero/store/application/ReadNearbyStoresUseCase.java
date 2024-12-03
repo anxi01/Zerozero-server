@@ -14,6 +14,8 @@ import com.zerozero.core.util.JwtUtil;
 import com.zerozero.store.application.ReadNearbyStoresUseCase.ReadNearbyStoresRequest;
 import com.zerozero.store.application.ReadNearbyStoresUseCase.ReadNearbyStoresResponse;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,7 +70,10 @@ public class ReadNearbyStoresUseCase implements BaseUseCase<ReadNearbyStoresRequ
           .errorCode(ReadNearbyStoresErrorCode.NOT_EXIST_USER)
           .build();
     }
-    List<Store> stores = storeMongoRepository.findStoresWithinCoordinatesRadius(request.getLongitude(), request.getLatitude(), DEFAULT_RADIUS);
+    List<Store> mongoStores = storeMongoRepository.findStoresWithinCoordinatesRadius(request.getLongitude(), request.getLatitude(), DEFAULT_RADIUS);
+    List<com.zerozero.core.domain.vo.Store> stores = mongoStores.stream()
+            .map(com.zerozero.core.domain.vo.Store::of)
+            .collect(Collectors.toList());
     return ReadNearbyStoresResponse.builder()
         .success(true)
         .stores(stores)
@@ -100,7 +105,7 @@ public class ReadNearbyStoresUseCase implements BaseUseCase<ReadNearbyStoresRequ
   @AllArgsConstructor(access = AccessLevel.PROTECTED)
   public static class ReadNearbyStoresResponse extends BaseResponse<ReadNearbyStoresErrorCode> {
 
-    private List<Store> stores;
+    private List<com.zerozero.core.domain.vo.Store> stores;
   }
 
   @ToString

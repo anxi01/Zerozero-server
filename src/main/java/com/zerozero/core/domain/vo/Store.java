@@ -103,4 +103,23 @@ public class Store extends ValueObject implements Serializable {
         .placeUrl(item.getPlaceUrl())
         .build();
   }
+
+  public static Store of(com.zerozero.core.domain.infra.mongodb.store.Store store) {
+    if (store == null) {
+      return null;
+    }
+    return Store.builder()
+            .id(store.getStoreId())
+            .kakaoId(store.getKakaoId())
+            .name(store.getName())
+            .category(store.getCategory())
+            .phone(store.getPhone())
+            .address(store.getAddress())
+            .roadAddress(store.getRoadAddress())
+            .longitude(store.getLongitude())
+            .latitude(store.getLatitude())
+            .placeUrl(store.getPlaceUrl())
+            .status(store.getStatus())
+            .build();
+  }
 }
