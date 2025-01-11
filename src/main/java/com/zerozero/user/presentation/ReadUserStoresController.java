@@ -1,10 +1,10 @@
 package com.zerozero.user.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.ReadUserStoresUseCase;
@@ -13,19 +13,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +35,7 @@ public class ReadUserStoresController {
       operationId = "/user/stores"
   )
   @ApiErrorCode({GlobalErrorCode.class, ReadUserStoresErrorCode.class})
+  @Authorization
   @GetMapping("/user/stores")
   public ResponseEntity<ReadUserStoresResponse> readUserStores(@Parameter(hidden = true) @LoginUser User user) {
     ReadUserStoresUseCase.ReadUserStoresResponse readUserStoresResponse = readUserStoresUseCase.execute(

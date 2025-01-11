@@ -1,6 +1,7 @@
 package com.zerozero.review.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
@@ -39,6 +40,7 @@ public class UpdateStoreReviewController {
       operationId = "/review/{reviewId}"
   )
   @ApiErrorCode({GlobalErrorCode.class, UpdateStoreReviewErrorCode.class})
+  @Authorization
   @PatchMapping("/review/{reviewId}")
   public ResponseEntity<UpdateStoreReviewResponse> updateStoreReview(@PathVariable(name = "reviewId") @Schema(description = "리뷰 ID") UUID reviewId,
                                                                      @RequestBody UpdateStoreReviewRequest request,

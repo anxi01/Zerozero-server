@@ -1,6 +1,7 @@
 package com.zerozero.store.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.property.CreateStoreQueueProperty;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
@@ -45,6 +46,7 @@ public class CreateStoreController {
       operationId = "/store"
   )
   @ApiErrorCode({GlobalErrorCode.class, CreateStoreErrorCode.class})
+  @Authorization
   @PostMapping(value = "/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<CreateStoreResponse> createStore(@Valid @ParameterObject CreateStoreRequest request,
                                                          @RequestPart @Parameter(description = "이미지 원본 파일") List<MultipartFile> imageFiles,

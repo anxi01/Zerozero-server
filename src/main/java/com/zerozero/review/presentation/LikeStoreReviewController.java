@@ -1,6 +1,7 @@
 package com.zerozero.review.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.User;
@@ -34,6 +35,7 @@ public class LikeStoreReviewController {
       operationId = "/review/like/{reviewId}"
   )
   @ApiErrorCode({GlobalErrorCode.class, LikeStoreReviewErrorCode.class})
+  @Authorization
   @PatchMapping("/review/like/{reviewId}")
   public ResponseEntity<LikeStoreReviewResponse> likeStoreReview(@PathVariable(name = "reviewId") @Schema(description = "리뷰 ID") UUID reviewId,
                                                                  @Parameter(hidden = true) @LoginUser User user) {

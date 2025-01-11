@@ -1,11 +1,11 @@
 package com.zerozero.user.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.UpdateUserProfileUseCase;
 import com.zerozero.user.application.UpdateUserProfileUseCase.UpdateUserProfileErrorCode;
@@ -14,15 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
-import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
@@ -31,6 +23,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +39,7 @@ public class UpdateUserProfileController {
       operationId = "/user"
   )
   @ApiErrorCode({GlobalErrorCode.class, UpdateUserProfileErrorCode.class})
+  @Authorization
   @PatchMapping(value = "/user", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UpdateUserProfileResponse> uploadProfileImage(
           @ParameterObject UpdateUserProfileRequest userProfileRequest,

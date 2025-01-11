@@ -4,7 +4,6 @@ import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.Store;
-import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.StoreJPARepository;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
@@ -108,11 +107,9 @@ public class SearchStoreUseCase implements BaseUseCase<SearchStoreRequest, Searc
 
     private String query;
 
-    private User user;
-
     @Override
     public boolean isValid() {
-      return query != null && !query.isEmpty() && user != null;
+      return query != null && !query.isEmpty();
     }
   }
 
