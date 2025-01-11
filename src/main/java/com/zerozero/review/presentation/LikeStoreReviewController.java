@@ -1,8 +1,9 @@
 package com.zerozero.review.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.vo.AccessToken;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.review.application.LikeStoreReviewUseCase;
 import com.zerozero.review.application.LikeStoreReviewUseCase.LikeStoreReviewErrorCode;
@@ -10,19 +11,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Optional;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,11 +36,11 @@ public class LikeStoreReviewController {
   @ApiErrorCode({GlobalErrorCode.class, LikeStoreReviewErrorCode.class})
   @PatchMapping("/review/like/{reviewId}")
   public ResponseEntity<LikeStoreReviewResponse> likeStoreReview(@PathVariable(name = "reviewId") @Schema(description = "리뷰 ID") UUID reviewId,
-      @Parameter(hidden = true) AccessToken accessToken) {
+                                                                 @Parameter(hidden = true) @LoginUser User user) {
     LikeStoreReviewUseCase.LikeStoreReviewResponse likeStoreReviewResponse = likeStoreReviewUseCase.execute(
         LikeStoreReviewUseCase.LikeStoreReviewRequest.builder()
             .reviewId(reviewId)
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (likeStoreReviewResponse == null || !likeStoreReviewResponse.isSuccess()) {
       Optional.ofNullable(likeStoreReviewResponse)

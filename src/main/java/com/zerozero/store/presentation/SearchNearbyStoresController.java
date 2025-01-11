@@ -1,8 +1,10 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.record.Store;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -44,13 +46,13 @@ public class SearchNearbyStoresController {
   @ApiErrorCode({GlobalErrorCode.class, SearchNearbyStoresErrorCode.class})
   @GetMapping("/store/search/nearby")
   public ResponseEntity<SearchNearbyStoresResponse> searchNearbyStores(@ParameterObject SearchNearbyStoresRequest request,
-      @Parameter(hidden = true) AccessToken accessToken) {
+                                                                       @Parameter(hidden = true) @LoginUser User user) {
     SearchNearbyStoresUseCase.SearchNearbyStoresResponse searchNearbyStoresResponse = searchNearbyStoresUseCase.execute(
         SearchNearbyStoresUseCase.SearchNearbyStoresRequest.builder()
             .query(request.getQuery())
             .longitude(request.getLongitude())
             .latitude(request.getLatitude())
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (searchNearbyStoresResponse == null || !searchNearbyStoresResponse.isSuccess()) {
       Optional.ofNullable(searchNearbyStoresResponse)

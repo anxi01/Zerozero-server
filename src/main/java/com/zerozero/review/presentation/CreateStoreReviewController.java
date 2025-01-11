@@ -1,9 +1,10 @@
 package com.zerozero.review.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.vo.AccessToken;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.vo.ZeroDrink;
 import com.zerozero.core.domain.vo.ZeroDrink.Type;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -13,23 +14,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,8 +41,8 @@ public class CreateStoreReviewController {
   @ApiErrorCode({GlobalErrorCode.class, CreateStoreReviewErrorCode.class})
   @PostMapping("/review")
   public ResponseEntity<CreateStoreReviewResponse> createStoreReview(@RequestParam @Schema(description = "판매점 ID") UUID storeId,
-      @RequestBody CreateStoreReviewRequest request,
-      @Parameter(hidden = true) AccessToken accessToken) {
+                                                                     @RequestBody CreateStoreReviewRequest request,
+                                                                     @Parameter(hidden = true) @LoginUser User user) {
     CreateStoreReviewUseCase.CreateStoreReviewResponse createStoreReviewResponse = createStoreReviewUseCase.execute(
         CreateStoreReviewUseCase.CreateStoreReviewRequest.builder()
             .storeId(storeId)
@@ -58,7 +53,7 @@ public class CreateStoreReviewController {
                         .build())
                     .toArray(ZeroDrink[]::new))
                 .orElse(null))
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (createStoreReviewResponse == null || !createStoreReviewResponse.isSuccess()) {
       Optional.ofNullable(createStoreReviewResponse)

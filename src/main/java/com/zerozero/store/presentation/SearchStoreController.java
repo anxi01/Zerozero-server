@@ -1,8 +1,10 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.record.StoreWithoutImages;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -44,11 +46,11 @@ public class SearchStoreController {
   @ApiErrorCode({GlobalErrorCode.class, SearchStoreErrorCode.class})
   @GetMapping("/store/search")
   public ResponseEntity<SearchStoreResponse> searchStore(@ParameterObject SearchStoreRequest request,
-      @Parameter(hidden = true) AccessToken accessToken) {
+                                                         @Parameter(hidden = true) @LoginUser User user) {
     SearchStoreUseCase.SearchStoreResponse searchStoreResponse = searchStoreUseCase.execute(
         SearchStoreUseCase.SearchStoreRequest.builder()
             .query(request.getQuery())
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (searchStoreResponse == null || !searchStoreResponse.isSuccess()) {
       Optional.ofNullable(searchStoreResponse)

@@ -1,9 +1,10 @@
 package com.zerozero.review.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.vo.AccessToken;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.vo.ZeroDrink;
 import com.zerozero.core.domain.vo.ZeroDrink.Type;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -13,23 +14,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,8 +41,8 @@ public class UpdateStoreReviewController {
   @ApiErrorCode({GlobalErrorCode.class, UpdateStoreReviewErrorCode.class})
   @PatchMapping("/review/{reviewId}")
   public ResponseEntity<UpdateStoreReviewResponse> updateStoreReview(@PathVariable(name = "reviewId") @Schema(description = "리뷰 ID") UUID reviewId,
-      @RequestBody UpdateStoreReviewRequest request,
-      @Parameter(hidden = true) AccessToken accessToken) {
+                                                                     @RequestBody UpdateStoreReviewRequest request,
+                                                                     @Parameter(hidden = true) @LoginUser User user) {
     UpdateStoreReviewUseCase.UpdateStoreReviewResponse updateStoreReviewResponse = updateStoreReviewUseCase.execute(
         UpdateStoreReviewUseCase.UpdateStoreReviewRequest.builder()
             .reviewId(reviewId)
@@ -58,7 +53,7 @@ public class UpdateStoreReviewController {
                         .build())
                     .toArray(ZeroDrink[]::new))
                 .orElse(null))
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (updateStoreReviewResponse == null || !updateStoreReviewResponse.isSuccess()) {
       Optional.ofNullable(updateStoreReviewResponse)

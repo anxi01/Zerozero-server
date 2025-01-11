@@ -1,7 +1,9 @@
 package com.zerozero.user.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.record.UserProfile;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -38,10 +40,10 @@ public class ReadUserInfoController {
   )
   @ApiErrorCode({GlobalErrorCode.class, ReadUserInfoErrorCode.class})
   @GetMapping("/user/mypage")
-  public ResponseEntity<ReadUserInfoResponse> readUserInfo(@Parameter(hidden = true) AccessToken accessToken) {
+  public ResponseEntity<ReadUserInfoResponse> readUserInfo(@Parameter(hidden = true) @LoginUser User user) {
     ReadUserInfoUseCase.ReadUserInfoResponse readUserInfoResponse = readUserInfoUseCase.execute(
         ReadUserInfoUseCase.ReadUserInfoRequest.builder()
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (readUserInfoResponse == null || !readUserInfoResponse.isSuccess()) {
       Optional.ofNullable(readUserInfoResponse)
