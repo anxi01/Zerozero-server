@@ -1,11 +1,11 @@
 package com.zerozero.user.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.record.UserProfile;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.ReadUserInfoUseCase;
 import com.zerozero.user.application.ReadUserInfoUseCase.ReadUserInfoErrorCode;
@@ -13,18 +13,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +34,7 @@ public class ReadUserInfoController {
       operationId = "/user/mypage"
   )
   @ApiErrorCode({GlobalErrorCode.class, ReadUserInfoErrorCode.class})
+  @Authorization
   @GetMapping("/user/mypage")
   public ResponseEntity<ReadUserInfoResponse> readUserInfo(@Parameter(hidden = true) @LoginUser User user) {
     ReadUserInfoUseCase.ReadUserInfoResponse readUserInfoResponse = readUserInfoUseCase.execute(

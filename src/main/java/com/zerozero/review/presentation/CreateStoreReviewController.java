@@ -1,6 +1,7 @@
 package com.zerozero.review.presentation;
 
 import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
@@ -39,6 +40,7 @@ public class CreateStoreReviewController {
       operationId = "/review"
   )
   @ApiErrorCode({GlobalErrorCode.class, CreateStoreReviewErrorCode.class})
+  @Authorization
   @PostMapping("/review")
   public ResponseEntity<CreateStoreReviewResponse> createStoreReview(@RequestParam @Schema(description = "판매점 ID") UUID storeId,
                                                                      @RequestBody CreateStoreReviewRequest request,

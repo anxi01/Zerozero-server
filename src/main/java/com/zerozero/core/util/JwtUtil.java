@@ -1,23 +1,23 @@
 package com.zerozero.core.util;
 
+import com.zerozero.auth.error.AuthenticationErrorCode;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
-import com.zerozero.auth.error.AuthenticationErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -69,17 +69,19 @@ public class JwtUtil {
     return RefreshToken.of(refreshToken);
   }
 
+  public void validateExpiration(String token) {
+    if (isTokenExpired(token)) {
+      throw AuthenticationErrorCode.EXPIRED_TOKEN.toException();
+    }
+  }
+
   public boolean isTokenValid(String token, UserDetails userDetails) {
     final String username = extractUsername(token);
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
   }
 
   public boolean isTokenExpired(String token) {
-    try {
-      return extractExpiration(token).before(new Date());
-    } catch (Exception e) {
-      return true;
-    }
+    return extractExpiration(token).before(new Date());
   }
 
   private Date extractExpiration(String token) {

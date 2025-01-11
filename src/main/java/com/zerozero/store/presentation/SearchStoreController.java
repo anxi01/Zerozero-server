@@ -1,35 +1,26 @@
 package com.zerozero.store.presentation;
 
-import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.record.StoreWithoutImages;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.store.application.SearchStoreUseCase;
 import com.zerozero.store.application.SearchStoreUseCase.SearchStoreErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,13 +35,12 @@ public class SearchStoreController {
       operationId = "/store/search"
   )
   @ApiErrorCode({GlobalErrorCode.class, SearchStoreErrorCode.class})
+  @Authorization
   @GetMapping("/store/search")
-  public ResponseEntity<SearchStoreResponse> searchStore(@ParameterObject SearchStoreRequest request,
-                                                         @Parameter(hidden = true) @LoginUser User user) {
+  public ResponseEntity<SearchStoreResponse> searchStore(@ParameterObject SearchStoreRequest request) {
     SearchStoreUseCase.SearchStoreResponse searchStoreResponse = searchStoreUseCase.execute(
         SearchStoreUseCase.SearchStoreRequest.builder()
             .query(request.getQuery())
-            .user(user)
             .build());
     if (searchStoreResponse == null || !searchStoreResponse.isSuccess()) {
       Optional.ofNullable(searchStoreResponse)
