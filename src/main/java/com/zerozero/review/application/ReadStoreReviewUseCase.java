@@ -9,30 +9,22 @@ import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.ReviewJPARepository;
 import com.zerozero.core.domain.infra.repository.ReviewLikeJPARepository;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
-import com.zerozero.core.util.JwtUtil;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewRequest;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewResponse;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -46,8 +38,6 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
 
   private final UserJPARepository userJPARepository;
 
-  private final JwtUtil jwtUtil;
-
   @Override
   public ReadStoreReviewResponse execute(ReadStoreReviewRequest request) {
     if (request == null || !request.isValid()) {
@@ -57,23 +47,7 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
           .errorCode(ReadStoreReviewErrorCode.NOT_EXIST_REQUEST_CONDITION)
           .build();
     }
-    AccessToken accessToken = request.getAccessToken();
-    if (jwtUtil.isTokenExpired(accessToken.getToken())) {
-      log.error("[ReadStoreReviewUseCase] Expired access token");
-      return ReadStoreReviewResponse.builder()
-          .success(false)
-          .errorCode(ReadStoreReviewErrorCode.EXPIRED_TOKEN)
-          .build();
-    }
-    String userEmail = jwtUtil.extractUsername(accessToken.getToken());
-    User user = userJPARepository.findByEmail(userEmail);
-    if (user == null) {
-      log.error("[ReadStoreReviewUseCase] not found user with email {}", userEmail);
-      return ReadStoreReviewResponse.builder()
-          .success(false)
-          .errorCode(ReadStoreReviewErrorCode.NOT_EXIST_USER)
-          .build();
-    }
+    User user = request.getUser();
     List<Review> reviews = reviewJPARepository.findAllByStoreIdAndDeleted(request.getStoreId(), false);
     List<Integer> reviewLikeCounts = reviews.stream()
         .map(review -> Optional.ofNullable(
@@ -160,11 +134,11 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
 
     private Filter filter;
 
-    private AccessToken accessToken;
+    private User user;
 
     @Override
     public boolean isValid() {
-      return storeId != null && accessToken != null;
+      return storeId != null && user != null;
     }
   }
 

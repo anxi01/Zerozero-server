@@ -2,6 +2,7 @@ package com.zerozero.core.util;
 
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
+import com.zerozero.auth.error.AuthenticationErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Pattern;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -81,26 +82,21 @@ public class JwtUtil {
     }
   }
 
-  public static boolean isJWT(String token) {
-    final String JWT_REGEX = "^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$";
-    final Pattern JWT_PATTERN = Pattern.compile(JWT_REGEX);
-    if (token == null) {
-      return false;
-    }
-    return JWT_PATTERN.matcher(token).matches();
-  }
-
   private Date extractExpiration(String token) {
     return extractClaim(token, Claims::getExpiration);
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts
-        .parserBuilder()
-        .setSigningKey(getSignInKey())
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+    try {
+      return Jwts
+              .parserBuilder()
+              .setSigningKey(getSignInKey())
+              .build()
+              .parseClaimsJws(token)
+              .getBody();
+    } catch (Exception e) {
+      throw AuthenticationErrorCode.NOT_DEFINE_TOKEN.toException();
+    }
   }
 
   private Key getSignInKey() {

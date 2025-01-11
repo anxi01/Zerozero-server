@@ -1,8 +1,10 @@
 package com.zerozero.user.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.user.application.UpdateUserProfileUseCase;
@@ -45,14 +47,14 @@ public class UpdateUserProfileController {
   @ApiErrorCode({GlobalErrorCode.class, UpdateUserProfileErrorCode.class})
   @PatchMapping(value = "/user", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UpdateUserProfileResponse> uploadProfileImage(
-      @ParameterObject UpdateUserProfileRequest userProfileRequest,
-      @RequestPart(required = false) @Parameter(description = "이미지 원본 파일") MultipartFile imageFile,
-      @Parameter(hidden = true) AccessToken accessToken) {
+          @ParameterObject UpdateUserProfileRequest userProfileRequest,
+          @RequestPart(required = false) @Parameter(description = "이미지 원본 파일") MultipartFile imageFile,
+          @Parameter(hidden = true) @LoginUser User user) {
     UpdateUserProfileUseCase.UpdateUserProfileResponse updateUserProfileResponse = updateUserProfileUseCase.execute(
         UpdateUserProfileUseCase.UpdateUserProfileRequest.builder()
             .nickname(userProfileRequest.getNickname())
             .imageFile(imageFile)
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (updateUserProfileResponse == null || !updateUserProfileResponse.isSuccess()) {
       Optional.ofNullable(updateUserProfileResponse)

@@ -6,12 +6,9 @@ import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.Store;
 import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.StoreJPARepository;
-import com.zerozero.core.domain.infra.repository.UserJPARepository;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.util.AWSS3Service;
-import com.zerozero.core.util.JwtUtil;
 import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase;
 import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase.RequestKakaoKeywordSearchRequest;
 import com.zerozero.external.kakao.search.dto.KeywordSearchResponse;
@@ -19,17 +16,7 @@ import com.zerozero.external.kakao.search.dto.KeywordSearchResponse.Document;
 import com.zerozero.store.application.CreateStoreUseCase.CreateStoreRequest;
 import com.zerozero.store.application.CreateStoreUseCase.CreateStoreResponse;
 import io.jsonwebtoken.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -37,19 +24,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, CreateStoreResponse> {
 
-  private final JwtUtil jwtUtil;
-
   private final AWSS3Service awss3Service;
 
   private final RequestKakaoKeywordSearchUseCase requestKakaoKeywordSearchUseCase;
-
-  private final UserJPARepository userJPARepository;
 
   private final StoreJPARepository storeJPARepository;
 
@@ -62,23 +49,7 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
           .errorCode(CreateStoreErrorCode.NOT_EXIST_REQUEST_CONDITION)
           .build();
     }
-    AccessToken accessToken = request.getAccessToken();
-    if (jwtUtil.isTokenExpired(accessToken.getToken())) {
-      log.error("[CreateStoreUseCase] Expired access token");
-      return CreateStoreResponse.builder()
-          .success(false)
-          .errorCode(CreateStoreErrorCode.EXPIRED_TOKEN)
-          .build();
-    }
-    String userEmail = jwtUtil.extractUsername(accessToken.getToken());
-    User user = userJPARepository.findByEmail(userEmail);
-    if (user == null) {
-      log.error("[CreateStoreUseCase] not found user with email {}", userEmail);
-      return CreateStoreResponse.builder()
-          .success(false)
-          .errorCode(CreateStoreErrorCode.NOT_EXIST_USER)
-          .build();
-    }
+    User user = request.getUser();
     KeywordSearchResponse keywordSearchResponse = requestKakaoKeywordSearchUseCase.execute(
             RequestKakaoKeywordSearchRequest.builder()
                 .query(request.getPlaceName())
@@ -133,8 +104,6 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
   @RequiredArgsConstructor
   public enum CreateStoreErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REQUEST_CONDITION(HttpStatus.BAD_REQUEST, "등록 요청 조건이 올바르지 않습니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
-    NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
     NOT_EXIST_SEARCH_RESPONSE(HttpStatus.BAD_REQUEST, "검색 응답이 존재하지 않습니다."),
     NOT_EXIST_STORE(HttpStatus.BAD_REQUEST, "등록된 판매점이 존재하지 않습니다."),
     FAILED_IMAGE_CONVERT(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 변환에 실패하였습니다."),
@@ -176,13 +145,13 @@ public class CreateStoreUseCase implements BaseUseCase<CreateStoreRequest, Creat
 
     private List<MultipartFile> imageFiles;
 
-    private AccessToken accessToken;
+    private User user;
 
     @Override
     public boolean isValid() {
       return placeName != null && longitude != null && !longitude.isEmpty() && latitude != null
           && !latitude.isEmpty() && imageFiles != null && !imageFiles.isEmpty()
-          && accessToken != null;
+          && user != null;
     }
   }
 

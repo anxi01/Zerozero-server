@@ -1,12 +1,12 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.Review.Filter;
-import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.Store;
-import com.zerozero.core.domain.vo.User;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.vo.ZeroDrink.Type;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import com.zerozero.review.application.ReadStoreReviewUseCase;
@@ -18,25 +18,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,11 +45,11 @@ public class ReadStoreInfoController {
   @ApiErrorCode({GlobalErrorCode.class, ReadStoreInfoErrorCode.class})
   @GetMapping("/store")
   public ResponseEntity<ReadStoreInfoResponse> readStoreInfo(@ParameterObject ReadStoreInfoRequest request,
-      @Parameter(hidden = true) AccessToken accessToken) {
+                                                             @Parameter(hidden = true) @LoginUser User user) {
     ReadStoreInfoUseCase.ReadStoreInfoResponse readStoreInfoResponse = readStoreInfoUseCase.execute(
         ReadStoreInfoUseCase.ReadStoreInfoRequest.builder()
             .storeId(request.getStoreId())
-            .accessToken(accessToken)
+            .user(user)
             .build());
     if (readStoreInfoResponse == null || !readStoreInfoResponse.isSuccess()) {
       Optional.ofNullable(readStoreInfoResponse)
@@ -73,7 +63,7 @@ public class ReadStoreInfoController {
     ReadStoreReviewResponse readStoreReviewResponse = readStoreReviewUseCase.execute(ReadStoreReviewRequest.builder()
         .storeId(request.getStoreId())
         .filter(request.getFilter())
-        .accessToken(accessToken)
+        .user(user)
         .build());
     if (readStoreReviewResponse == null || !readStoreReviewResponse.isSuccess()) {
       Optional.ofNullable(readStoreReviewResponse)
@@ -130,7 +120,7 @@ public class ReadStoreInfoController {
     @Schema(description = "제로 음료수 순위")
     private List<Type> zeroDrinks;
 
-    record Review(com.zerozero.core.domain.vo.Review review, User user, Integer likeCount, Boolean isLiked) {
+    record Review(com.zerozero.core.domain.vo.Review review, com.zerozero.core.domain.vo.User user, Integer likeCount, Boolean isLiked) {
 
       public static Review of(ReadStoreReviewResponse.Review review) {
         if (review == null) {
