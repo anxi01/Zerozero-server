@@ -12,14 +12,20 @@ import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.review.application.LikeStoreReviewUseCase.LikeStoreReviewRequest;
 import com.zerozero.review.application.LikeStoreReviewUseCase.LikeStoreReviewResponse;
-import lombok.*;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Log4j2
 @Service
@@ -53,8 +59,9 @@ public class LikeStoreReviewUseCase implements BaseUseCase<LikeStoreReviewReques
     if (reviewLike == null) {
       reviewLike = new ReviewLike(review, user);
       reviewLikeJPARepository.save(reviewLike);
-    } else
-      reviewLike.setDeleted(!reviewLike.getDeleted());
+    } else {
+      reviewLikeJPARepository.delete(reviewLike);
+    }
     return LikeStoreReviewResponse.builder().build();
   }
 
