@@ -6,18 +6,25 @@ import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.Review;
 import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.ReviewJPARepository;
+import com.zerozero.core.domain.infra.repository.ReviewLikeJPARepository;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.review.application.DeleteStoreReviewUseCase.DeleteStoreReviewRequest;
 import com.zerozero.review.application.DeleteStoreReviewUseCase.DeleteStoreReviewResponse;
-import lombok.*;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Log4j2
 @Service
@@ -26,6 +33,8 @@ import java.util.UUID;
 public class DeleteStoreReviewUseCase implements BaseUseCase<DeleteStoreReviewRequest, DeleteStoreReviewResponse> {
 
   private final ReviewJPARepository reviewJPARepository;
+
+  private final ReviewLikeJPARepository reviewLikeJPARepository;
 
   @Override
   public DeleteStoreReviewResponse execute(DeleteStoreReviewRequest request) {
@@ -52,7 +61,8 @@ public class DeleteStoreReviewUseCase implements BaseUseCase<DeleteStoreReviewRe
           .errorCode(DeleteStoreReviewErrorCode.USER_VALIDATION_FAILED)
           .build();
     }
-    review.setDeleted(true);
+    reviewLikeJPARepository.deleteAll(review.getReviewLikes());
+    review.deleted(true);
     return DeleteStoreReviewResponse.builder().build();
   }
 

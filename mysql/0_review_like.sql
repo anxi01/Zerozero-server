@@ -10,3 +10,6 @@ CREATE TABLE IF NOT EXISTS review_like
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT '리뷰 좋아요';
+
+ALTER TABLE review_like
+    ADD FOREIGN KEY (review_id) REFERENCES review (id) ON DELETE CASCADE;

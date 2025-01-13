@@ -2,8 +2,12 @@ package com.zerozero.core.domain.entity;
 
 import com.zerozero.core.domain.shared.BaseEntity;
 import com.zerozero.core.domain.vo.ZeroDrink;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +36,10 @@ public class Review extends BaseEntity {
   private UUID userId;
 
   private UUID storeId;
+
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "reviewId")
+  private List<ReviewLike> reviewLikes = new ArrayList<>();
 
   public static Review of(String content, ZeroDrink[] zeroDrinks, User user, Store store) {
     return Review.builder()
@@ -69,6 +77,10 @@ public class Review extends BaseEntity {
 
   public boolean hasUserReviewed(User user) {
     return this.userId.equals(user.getId());
+  }
+
+  public void deleted(boolean deleted) {
+    setDeleted(deleted);
   }
 
   public enum Filter {
