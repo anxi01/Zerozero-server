@@ -1,10 +1,12 @@
 package com.zerozero.store.presentation;
 
+import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.entity.Review.Filter;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.vo.Store;
 import com.zerozero.core.domain.vo.ZeroDrink.Type;
 import com.zerozero.core.exception.error.GlobalErrorCode;
@@ -14,6 +16,7 @@ import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewRes
 import com.zerozero.store.application.ReadStoreInfoUseCase;
 import com.zerozero.store.application.ReadStoreInfoUseCase.ReadStoreInfoErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
@@ -43,7 +46,7 @@ public class ReadStoreInfoController {
   @ApiErrorCode({GlobalErrorCode.class, ReadStoreInfoErrorCode.class})
   @Authorization
   @GetMapping("/store")
-  public ResponseEntity<ReadStoreInfoResponse> readStoreInfo(@ParameterObject ReadStoreInfoRequest request) {
+  public ResponseEntity<ReadStoreInfoResponse> readStoreInfo(@ParameterObject ReadStoreInfoRequest request, @Parameter(hidden = true) @LoginUser User user) {
     ReadStoreInfoUseCase.ReadStoreInfoResponse readStoreInfoResponse = readStoreInfoUseCase.execute(
         ReadStoreInfoUseCase.ReadStoreInfoRequest.builder()
             .storeId(request.getStoreId())
@@ -57,10 +60,12 @@ public class ReadStoreInfoController {
             throw GlobalErrorCode.INTERNAL_ERROR.toException();
           });
     }
-    ReadStoreReviewResponse readStoreReviewResponse = readStoreReviewUseCase.execute(ReadStoreReviewRequest.builder()
-        .storeId(request.getStoreId())
-        .filter(request.getFilter())
-        .build());
+    ReadStoreReviewResponse readStoreReviewResponse = readStoreReviewUseCase.execute(
+        ReadStoreReviewRequest.builder()
+            .storeId(request.getStoreId())
+            .filter(request.getFilter())
+            .user(user)
+            .build());
     if (readStoreReviewResponse == null || !readStoreReviewResponse.isSuccess()) {
       Optional.ofNullable(readStoreReviewResponse)
           .map(BaseResponse::getErrorCode)
