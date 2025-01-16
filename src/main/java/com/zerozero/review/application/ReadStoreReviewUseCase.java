@@ -6,25 +6,26 @@ import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.Review;
 import com.zerozero.core.domain.entity.Review.Filter;
 import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.infra.repository.ReviewJPARepository;
-import com.zerozero.core.domain.infra.repository.ReviewLikeJPARepository;
-import com.zerozero.core.domain.infra.repository.UserJPARepository;
+import com.zerozero.core.domain.infra.querydsl.ReviewQueryRepository;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewRequest;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewResponse;
-import lombok.*;
+import java.util.List;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -32,11 +33,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewRequest, ReadStoreReviewResponse> {
 
-  private final ReviewJPARepository reviewJPARepository;
-
-  private final ReviewLikeJPARepository reviewLikeJPARepository;
-
-  private final UserJPARepository userJPARepository;
+  private final ReviewQueryRepository reviewQueryRepository;
 
   @Override
   public ReadStoreReviewResponse execute(ReadStoreReviewRequest request) {
@@ -48,33 +45,23 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
           .build();
     }
     User user = request.getUser();
-    List<Review> reviews = reviewJPARepository.findAllByStoreIdAndDeleted(request.getStoreId(), false);
-    List<Integer> reviewLikeCounts = reviews.stream()
-        .map(review -> Optional.ofNullable(
-            reviewLikeJPARepository.countByReviewIdAndDeleted(review.getId(), false)).orElse(0))
-        .collect(Collectors.toList());
-    com.zerozero.core.domain.vo.Review[] reviewsVO = Review.filter(reviews, request.getFilter(), reviewLikeCounts)
-        .stream().map(com.zerozero.core.domain.vo.Review::of)
-        .toArray(com.zerozero.core.domain.vo.Review[]::new);
-    return ReadStoreReviewResponse.builder().reviews(convertReviewResponse(reviewsVO, user)).build();
+    List<Review> reviews = reviewQueryRepository.findByStoreIdAndFilter(request.getStoreId(), request.getFilter());
+    return ReadStoreReviewResponse.builder().reviews(convertReviewResponse(reviews, user)).build();
   }
 
-  private ReadStoreReviewResponse.Review[] convertReviewResponse(com.zerozero.core.domain.vo.Review[] reviewsVO, User user) {
-    if (reviewsVO == null || user == null) {
+  private ReadStoreReviewResponse.Review[] convertReviewResponse(List<Review> reviews, User user) {
+    if (reviews.isEmpty() || user == null) {
       return null;
     }
-    return Arrays.stream(reviewsVO).map(review ->
-        ReadStoreReviewResponse.Review.builder()
-            .review(review)
-            .user(
-                com.zerozero.core.domain.vo.User.of(userJPARepository.findById(review.getUserId()).orElse(null)))
-            .likeCount(Optional.ofNullable(
-                reviewLikeJPARepository.countByReviewIdAndDeleted(review.getId(), false)).orElse(0))
-            .isLiked(Optional.ofNullable(
-                reviewLikeJPARepository.existsByReviewIdAndUserIdAndDeleted(review.getId(),
-                    user.getId(), false)).orElse(false))
-            .build()
-    ).toArray(ReadStoreReviewResponse.Review[]::new);
+    return reviews.stream()
+        .map(review -> ReadStoreReviewResponse.Review.builder()
+            .review(com.zerozero.core.domain.vo.Review.of(review))
+            .user(com.zerozero.core.domain.vo.User.of(user))
+            .likeCount(review.getReviewLikes().size())
+            .isLiked(review.getReviewLikes().stream()
+                .anyMatch(like -> user.getId().equals(like.getUserId())))
+            .build())
+        .toArray(ReadStoreReviewResponse.Review[]::new);
   }
 
   @Getter
