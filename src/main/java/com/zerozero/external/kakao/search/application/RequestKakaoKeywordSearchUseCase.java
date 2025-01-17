@@ -11,7 +11,6 @@ import com.zerozero.external.kakao.search.core.configuration.KakaoProperty;
 import com.zerozero.external.kakao.search.dto.CategoryGroupCode;
 import com.zerozero.external.kakao.search.dto.KeywordSearchResponse;
 import java.net.URI;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,17 +21,12 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Log4j2
@@ -59,20 +53,29 @@ public class RequestKakaoKeywordSearchUseCase implements BaseUseCase<RequestKaka
         .encode()
         .toUri();
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("Authorization", KAKAO_AUTHORIZATION_PREFIX + kakaoProperty.getRestApiKey());
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    HttpEntity httpEntity = new HttpEntity<>(headers);
-    ParameterizedTypeReference<KeywordSearchResponse> responseType = new ParameterizedTypeReference<>() {};
-    ResponseEntity<KeywordSearchResponse> responseEntity = new RestTemplate().exchange(uri, HttpMethod.GET, httpEntity, responseType);
-    return RequestKakaoKeywordSearchResponse.builder().keywordSearchResponse(responseEntity.getBody()).build();
+    try {
+      KeywordSearchResponse keywordSearchResponse = RestClient.create()
+          .get()
+          .uri(uri)
+          .headers(header -> {
+            header.set("Authorization", KAKAO_AUTHORIZATION_PREFIX + kakaoProperty.getRestApiKey());
+            header.setContentType(MediaType.APPLICATION_JSON);
+          })
+          .retrieve()
+          .body(KeywordSearchResponse.class);
+      return RequestKakaoKeywordSearchResponse.builder()
+          .keywordSearchResponse(keywordSearchResponse).build();
+    } catch (Exception e) {
+      throw RequestKakaoKeywordSearchErrorCode.KAKAO_SERVICE_UNAVAILABLE.toException();
+    }
   }
 
   @Getter
   @RequiredArgsConstructor
   public enum RequestKakaoKeywordSearchErrorCode implements BaseErrorCode<DomainException> {
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 값이 유효하지 않습니다.");
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 값이 유효하지 않습니다."),
+    KAKAO_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "KAKAO REST API가 동작하지 않습니다."),
+    ;
 
     private final HttpStatus httpStatus;
 
@@ -124,16 +127,33 @@ public class RequestKakaoKeywordSearchUseCase implements BaseUseCase<RequestKaka
     public MultiValueMap<String, String> createQueryParams() {
       LinkedMultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
 
-      queryParams.add("query", query);
-      queryParams.add("category_group_code",
-          Optional.ofNullable(categoryGroupCode).map(CategoryGroupCode::toString).orElse(null));
-      queryParams.add("x", longitude);
-      queryParams.add("y", latitude);
-      queryParams.add("radius", Optional.ofNullable(radius).map(String::valueOf).orElse(null));
-      queryParams.add("rect", rect);
-      queryParams.add("page", Optional.ofNullable(page).map(String::valueOf).orElse(null));
-      queryParams.add("size", Optional.ofNullable(size).map(String::valueOf).orElse(null));
-      queryParams.add("sort", sort);
+      if (query != null && !query.isEmpty()) {
+        queryParams.add("query", query);
+      }
+      if (categoryGroupCode != null) {
+        queryParams.add("category_group_code", categoryGroupCode.name());
+      }
+      if (longitude != null && !longitude.isEmpty()) {
+        queryParams.add("x", longitude);
+      }
+      if (latitude != null && !latitude.isEmpty()) {
+        queryParams.add("y", latitude);
+      }
+      if (radius != null) {
+        queryParams.add("radius", String.valueOf(radius));
+      }
+      if (rect != null && !rect.isEmpty()) {
+        queryParams.add("rect", rect);
+      }
+      if (page != null) {
+        queryParams.add("page", String.valueOf(page));
+      }
+      if (size != null) {
+        queryParams.add("size", String.valueOf(size));
+      }
+      if (sort != null && !sort.isEmpty()) {
+        queryParams.add("sort", sort);
+      }
 
       return queryParams;
     }
