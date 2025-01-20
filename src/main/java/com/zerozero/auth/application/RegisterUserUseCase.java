@@ -6,8 +6,6 @@ import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.entity.User.Role;
-import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import lombok.AccessLevel;
@@ -21,7 +19,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, RegisterUserResponse> {
 
-  private final PasswordEncoder passwordEncoder;
-
-  private final UserJPARepository userJPARepository;
-
   @Override
   public RegisterUserResponse execute(RegisterUserRequest request) {
     if (request == null || !request.isValid()) {
@@ -42,31 +35,19 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
       return RegisterUserResponse.builder().success(false)
           .errorCode(RegisterUserErrorCode.NOT_EXIST_REGISTER_CONDITION).build();
     }
-    if (isDuplicateEmail(request.getEmail())) {
-      log.error("[RegisterUserUseCase] Email already exists");
-      return RegisterUserResponse.builder().success(false)
-          .errorCode(RegisterUserErrorCode.ALREADY_EXIST_EMAIL).build();
-    }
-    User user = User.builder()
-        .nickname(request.getNickname())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(Role.USER)
+    User user = request.user;
+    user.completePendingUser(request.getNickname());
+    return RegisterUserResponse.builder()
+        .user(com.zerozero.core.domain.vo.User.of(user))
         .build();
-    userJPARepository.save(user);
-    return RegisterUserResponse.builder().build();
-  }
-
-  private boolean isDuplicateEmail(String email) {
-    return userJPARepository.existsByEmail(email);
   }
 
   @Getter
   @RequiredArgsConstructor
   public enum RegisterUserErrorCode implements BaseErrorCode<DomainException> {
-
     NOT_EXIST_REGISTER_CONDITION(HttpStatus.BAD_REQUEST, "회원가입 조건이 올바르지 않습니다."),
-    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다.");
+    NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
+    ;
 
     private final HttpStatus httpStatus;
 
@@ -84,6 +65,7 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
   @SuperBuilder
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   public static class RegisterUserResponse extends BaseResponse<RegisterUserErrorCode> {
+    private com.zerozero.core.domain.vo.User user;
   }
 
   @ToString
@@ -93,16 +75,13 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @AllArgsConstructor(access = AccessLevel.PROTECTED)
   public static class RegisterUserRequest implements BaseRequest {
+    private User user;
 
     private String nickname;
 
-    private String email;
-
-    private String password;
-
     @Override
     public boolean isValid() {
-      return nickname != null && email != null && password != null;
+      return user != null && nickname != null && !nickname.isEmpty();
     }
   }
 
