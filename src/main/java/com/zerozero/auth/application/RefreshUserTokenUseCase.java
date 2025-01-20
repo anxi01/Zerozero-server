@@ -14,6 +14,7 @@ import com.zerozero.core.domain.vo.RefreshToken;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.core.util.JwtUtil;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,13 +55,8 @@ public class RefreshUserTokenUseCase implements BaseUseCase<RefreshUserTokenRequ
           .errorCode(RefreshUserTokenErrorCode.EXPIRED_TOKEN)
           .build();
     }
-    String userEmail = jwtUtil.extractUsername(refreshToken.getToken());
-    if (userEmail == null) {
-      log.error("[RefreshUserTokenUseCase] User email not exist");
-      return RefreshUserTokenResponse.builder().success(false)
-          .errorCode(RefreshUserTokenErrorCode.NOT_EXIST_USER_EMAIL).build();
-    }
-    User user = userJPARepository.findByEmail(userEmail);
+    UUID userId = jwtUtil.extractUserId(refreshToken.getToken());
+    User user = userJPARepository.findById(userId).orElse(null);
     if (user == null) {
       log.error("[RefreshUserTokenUseCase] User not exist");
       return RefreshUserTokenResponse.builder().success(false)
@@ -74,7 +70,7 @@ public class RefreshUserTokenUseCase implements BaseUseCase<RefreshUserTokenRequ
     }
     if (RefreshToken.of(alreadyExistRefreshToken).equals(refreshToken)
         && jwtUtil.isTokenValid(refreshToken.getToken(), user)) {
-      AccessToken accessToken = jwtUtil.generateAccessToken(null, user);
+      AccessToken accessToken = jwtUtil.generateAccessToken(user);
       return RefreshUserTokenResponse.builder()
           .tokens(Tokens.builder().accessToken(accessToken).refreshToken(refreshToken).build())
           .build();
@@ -88,7 +84,6 @@ public class RefreshUserTokenUseCase implements BaseUseCase<RefreshUserTokenRequ
   public enum RefreshUserTokenErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "리프레시 토큰이 존재하지 않습니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
-    NOT_EXIST_USER_EMAIL(HttpStatus.BAD_REQUEST, "토큰에 사용자 메일이 존재하지 않습니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
     TOKEN_REFRESH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 재발급에 실패하였습니다.");
 

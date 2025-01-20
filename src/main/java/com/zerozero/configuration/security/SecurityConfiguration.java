@@ -19,8 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-  private final AuthenticationProvider authenticationProvider;
-
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
@@ -30,8 +28,7 @@ public class SecurityConfiguration {
             .requestMatchers("/swagger-ui/**").permitAll()
             .anyRequest().permitAll())
         .sessionManagement((sessionManagement) ->
-            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authenticationProvider(authenticationProvider);
+            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     return http.build();
   }
 
