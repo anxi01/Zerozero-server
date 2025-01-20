@@ -1,6 +1,6 @@
 package com.zerozero.configuration.interceptor;
 
-import com.zerozero.auth.error.AuthenticationErrorCode;
+import com.zerozero.auth.exception.AuthenticationErrorCode;
 import com.zerozero.core.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private final JwtUtil jwtUtil;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
             return true;
         }

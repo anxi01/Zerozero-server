@@ -14,6 +14,7 @@ import com.zerozero.core.util.JwtUtil;
 import com.zerozero.store.application.ReadNearbyStoresUseCase.ReadNearbyStoresRequest;
 import com.zerozero.store.application.ReadNearbyStoresUseCase.ReadNearbyStoresResponse;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
@@ -61,10 +62,10 @@ public class ReadNearbyStoresUseCase implements BaseUseCase<ReadNearbyStoresRequ
           .errorCode(ReadNearbyStoresErrorCode.EXPIRED_TOKEN)
           .build();
     }
-    String userEmail = jwtUtil.extractUsername(accessToken.getToken());
-    User user = userJPARepository.findByEmail(userEmail);
+    UUID userId = jwtUtil.extractUserId(accessToken.getToken());
+    User user = userJPARepository.findById(userId).orElse(null);
     if (user == null) {
-      log.error("[ReadNearbyStoresUseCase] not found user with email {}", userEmail);
+      log.error("[ReadNearbyStoresUseCase] not found user with id {}", userId);
       return ReadNearbyStoresResponse.builder()
           .success(false)
           .errorCode(ReadNearbyStoresErrorCode.NOT_EXIST_USER)

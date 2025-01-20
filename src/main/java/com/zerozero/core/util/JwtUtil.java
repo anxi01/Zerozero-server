@@ -1,6 +1,7 @@
 package com.zerozero.core.util;
 
-import com.zerozero.auth.error.AuthenticationErrorCode;
+import com.zerozero.auth.exception.AuthenticationErrorCode;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
 import io.jsonwebtoken.Claims;
@@ -8,16 +9,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +31,8 @@ public class JwtUtil {
   @Value("${jwt.refresh-token.expiration}")
   private long refreshExpiration;
 
-  public String extractUsername(String token) {
-    return extractClaim(token, Claims::getSubject);
+  public UUID extractUserId(String token) {
+    return UUID.fromString(extractClaim(token, claims -> claims.get("userId", String.class)));
   }
 
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -41,13 +40,12 @@ public class JwtUtil {
     return claimsResolver.apply(claims);
   }
 
-  public AccessToken generateAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-    if (extraClaims == null) {
-      extraClaims = new HashMap<>();
-    }
+  public AccessToken generateAccessToken(User user) {
     String accessToken = Jwts.builder()
-        .setClaims(extraClaims)
-        .setSubject(userDetails.getUsername())
+        .setClaims(Map.of(
+            "userId", user.getId(),
+            "email", user.getEmail()
+        ))
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -55,13 +53,12 @@ public class JwtUtil {
     return AccessToken.of(accessToken);
   }
 
-  public RefreshToken generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-    if (extraClaims == null) {
-      extraClaims = new HashMap<>();
-    }
+  public RefreshToken generateRefreshToken(User user) {
     String refreshToken = Jwts.builder()
-        .setClaims(extraClaims)
-        .setSubject(userDetails.getUsername())
+        .setClaims(Map.of(
+            "userId", user.getId(),
+            "email", user.getEmail()
+        ))
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -75,9 +72,9 @@ public class JwtUtil {
     }
   }
 
-  public boolean isTokenValid(String token, UserDetails userDetails) {
-    final String username = extractUsername(token);
-    return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+  public boolean isTokenValid(String token, User user) {
+    final UUID userId = extractUserId(token);
+    return (userId.equals(user.getId())) && !isTokenExpired(token);
   }
 
   public boolean isTokenExpired(String token) {
@@ -91,11 +88,11 @@ public class JwtUtil {
   private Claims extractAllClaims(String token) {
     try {
       return Jwts
-              .parserBuilder()
-              .setSigningKey(getSignInKey())
-              .build()
-              .parseClaimsJws(token)
-              .getBody();
+          .parserBuilder()
+          .setSigningKey(getSignInKey())
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
     } catch (Exception e) {
       throw AuthenticationErrorCode.NOT_DEFINE_TOKEN.toException();
     }
