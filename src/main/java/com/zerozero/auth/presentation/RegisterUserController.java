@@ -2,15 +2,18 @@ package com.zerozero.auth.presentation;
 
 import com.zerozero.auth.application.RegisterUserUseCase;
 import com.zerozero.auth.application.RegisterUserUseCase.RegisterUserErrorCode;
+import com.zerozero.configuration.argumentresolver.LoginUser;
+import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -40,13 +43,15 @@ public class RegisterUserController {
       operationId = "/register"
   )
   @ApiErrorCode({GlobalErrorCode.class, RegisterUserErrorCode.class})
+  @Authorization
   @PostMapping("/register")
-  public ResponseEntity<RegisterUserResponse> registerUser(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
+  public ResponseEntity<RegisterUserResponse> registerUser(
+      @Valid @RequestBody RegisterUserRequest registerUserRequest,
+      @Parameter(hidden = true) @LoginUser User user) {
     RegisterUserUseCase.RegisterUserResponse registerUserResponse = registerUserUseCase.execute(
         RegisterUserUseCase.RegisterUserRequest.builder()
+            .user(user)
             .nickname(registerUserRequest.getNickname())
-            .email(registerUserRequest.getEmail())
-            .password(registerUserRequest.getPassword())
             .build());
     if (registerUserResponse == null || !registerUserResponse.isSuccess()) {
       Optional.ofNullable(registerUserResponse)
@@ -57,7 +62,9 @@ public class RegisterUserController {
             throw GlobalErrorCode.INTERNAL_ERROR.toException();
           });
     }
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(RegisterUserResponse.builder()
+        .user(registerUserResponse.getUser())
+        .build());
   }
 
   @ToString
@@ -67,6 +74,8 @@ public class RegisterUserController {
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @Schema(description = "사용자 회원가입 응답")
   public static class RegisterUserResponse extends BaseResponse<GlobalErrorCode> {
+
+    private com.zerozero.core.domain.vo.User user;
   }
 
   @ToString
@@ -81,14 +90,5 @@ public class RegisterUserController {
     @NotNull(message = "닉네임은 필수 데이터입니다.")
     @Schema(description = "닉네임", example = "제로")
     private String nickname;
-
-    @NotNull(message = "이메일은 필수 데이터입니다.")
-    @Email
-    @Schema(description = "이메일", example = "zerozero@drink.com")
-    private String email;
-
-    @NotNull(message = "비밀번호는 필수 데이터입니다.")
-    @Schema(description = "비밀번호", example = "zero")
-    private String password;
   }
 }

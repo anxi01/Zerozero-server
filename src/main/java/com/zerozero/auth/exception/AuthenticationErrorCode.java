@@ -1,4 +1,4 @@
-package com.zerozero.auth.error;
+package com.zerozero.auth.exception;
 
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;

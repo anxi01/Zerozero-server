@@ -1,5 +1,6 @@
 package com.zerozero.core.domain.vo;
 
+import com.zerozero.core.domain.entity.Status;
 import com.zerozero.core.domain.shared.ValueObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serial;
@@ -39,6 +40,9 @@ public class User extends ValueObject implements Serializable {
   @Schema(description = "프로필 사진", example = "https://s3.ap-northeast-2.amazonaws.com/zerozero-upload/images/f98da6af-d78b-43da-afb9-83ca8c762167.png")
   private Image profileImage;
 
+  @Schema(description = "사용자 가입 여부 (COMPLETED, PENDING)", example = "COMPLETED")
+  private Status status;
+
   public static User of(com.zerozero.core.domain.entity.User user) {
     if (user == null) {
       return null;
@@ -48,6 +52,7 @@ public class User extends ValueObject implements Serializable {
         .nickname(user.getNickname())
         .email(user.getEmail())
         .profileImage(user.getProfileImage())
+        .status(user.getStatus())
         .build();
   }
 }
