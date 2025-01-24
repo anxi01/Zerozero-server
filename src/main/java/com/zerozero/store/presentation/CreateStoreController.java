@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springdoc.core.annotations.ParameterObject;
@@ -75,7 +76,10 @@ public class CreateStoreController {
             .build());
     createStoreMessageProducer.publishMessage();
 
-    return ResponseEntity.ok(CreateStoreResponse.builder().build());
+    return ResponseEntity.ok(
+        CreateStoreResponse.builder()
+            .storeId(createStoreResponse.getStoreId())
+            .build());
   }
 
   @ToString
@@ -85,6 +89,9 @@ public class CreateStoreController {
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @Schema(description = "판매점 등록 응답")
   public static class CreateStoreResponse extends BaseResponse<GlobalErrorCode> {
+
+    @Schema(description = "판매점 ID", example = "11ef3e05-f45b-7e6c-a084-7b554bfaa162")
+    private UUID storeId;
   }
 
   @ToString
