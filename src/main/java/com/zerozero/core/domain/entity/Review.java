@@ -8,11 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,31 +45,6 @@ public class Review extends BaseEntity {
         .storeId(store.getId())
         .userId(user.getId())
         .build();
-  }
-
-  public static List<Review> filter(List<Review> reviews, Filter filter, List<Integer> reviewLikeCounts) {
-    if (filter == null || reviews == null || reviews.isEmpty()) {
-      return reviews;
-    }
-    switch (filter) {
-      case RECENT -> {
-        return reviews.stream().sorted(Comparator.comparing(Review::getCreatedAt).reversed()).collect(
-            Collectors.toList());
-      }
-      case RECOMMEND -> {
-        if (reviewLikeCounts == null || reviewLikeCounts.isEmpty() || reviewLikeCounts.size() != reviews.size()) {
-          return reviews;
-        }
-        return IntStream.range(0, reviews.size())
-            .boxed()
-            .sorted((i, j) -> reviewLikeCounts.get(j).compareTo(reviewLikeCounts.get(i)))
-            .map(reviews::get)
-            .collect(Collectors.toList());
-      }
-      default -> {
-        return reviews;
-      }
-    }
   }
 
   public boolean hasUserReviewed(User user) {

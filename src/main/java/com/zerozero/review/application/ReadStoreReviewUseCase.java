@@ -7,12 +7,15 @@ import com.zerozero.core.domain.entity.Review;
 import com.zerozero.core.domain.entity.Review.Filter;
 import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.querydsl.ReviewQueryRepository;
+import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewRequest;
 import com.zerozero.review.application.ReadStoreReviewUseCase.ReadStoreReviewResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +38,8 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
 
   private final ReviewQueryRepository reviewQueryRepository;
 
+  private final UserJPARepository userJPARepository;
+
   @Override
   public ReadStoreReviewResponse execute(ReadStoreReviewRequest request) {
     if (request == null || !request.isValid()) {
@@ -46,22 +51,36 @@ public class ReadStoreReviewUseCase implements BaseUseCase<ReadStoreReviewReques
     }
     User user = request.getUser();
     List<Review> reviews = reviewQueryRepository.findByStoreIdAndFilter(request.getStoreId(), request.getFilter());
-    return ReadStoreReviewResponse.builder().reviews(convertReviewResponse(reviews, user)).build();
+    Map<UUID, User> reviewAuthorMap = getReviewAuthors(reviews);
+    return ReadStoreReviewResponse.builder().reviews(convertReviewResponse(user, reviews, reviewAuthorMap)).build();
   }
 
-  private ReadStoreReviewResponse.Review[] convertReviewResponse(List<Review> reviews, User user) {
-    if (reviews.isEmpty() || user == null) {
+  private ReadStoreReviewResponse.Review[] convertReviewResponse(User user, List<Review> reviews, Map<UUID, User> reviewAuthorMap) {
+    if (user == null || reviews.isEmpty() || reviewAuthorMap.isEmpty()) {
       return null;
     }
     return reviews.stream()
-        .map(review -> ReadStoreReviewResponse.Review.builder()
-            .review(com.zerozero.core.domain.vo.Review.of(review))
-            .user(com.zerozero.core.domain.vo.User.of(user))
-            .likeCount(review.getReviewLikes().size())
-            .isLiked(review.getReviewLikes().stream()
-                .anyMatch(like -> user.getId().equals(like.getUserId())))
-            .build())
+        .map(review -> {
+          User reviewAuthor = reviewAuthorMap.get(review.getUserId());
+          return ReadStoreReviewResponse.Review.builder()
+              .review(com.zerozero.core.domain.vo.Review.of(review))
+              .user(com.zerozero.core.domain.vo.User.of(reviewAuthor))
+              .likeCount(review.getReviewLikes().size())
+              .isLiked(review.getReviewLikes().stream()
+                  .anyMatch(like -> user.getId().equals(like.getUserId())))
+              .build();
+        })
         .toArray(ReadStoreReviewResponse.Review[]::new);
+  }
+
+  private Map<UUID, User> getReviewAuthors(List<Review> reviews) {
+    return userJPARepository.findAllByIdInAndDeleted(
+        reviews.stream()
+            .map(Review::getUserId)
+            .distinct()
+            .collect(Collectors.toList()),
+        false
+    ).stream().collect(Collectors.toMap(User::getId, reviewAuthor -> reviewAuthor));
   }
 
   @Getter
