@@ -19,15 +19,26 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,14 +92,19 @@ public class ReadStoreInfoController {
   private ReadStoreInfoResponse toResponse(ReadStoreInfoUseCase.ReadStoreInfoResponse readStoreInfoResponse, ReadStoreReviewResponse readStoreReviewResponse) {
     return ReadStoreInfoResponse.builder()
         .store(readStoreInfoResponse.getStore())
-        .reviews(Arrays.stream(readStoreReviewResponse.getReviews())
-            .map(ReadStoreInfoResponse.Review::of).toArray(
-                ReadStoreInfoResponse.Review[]::new))
+        .reviews(Optional.ofNullable(readStoreReviewResponse.getReviews())
+            .map(reviews -> Arrays.stream(reviews)
+                .map(ReadStoreInfoResponse.Review::of)
+                .toArray(ReadStoreInfoResponse.Review[]::new))
+            .orElse(new ReadStoreInfoResponse.Review[0]))
         .zeroDrinks(getTop3ZeroDrinks(readStoreReviewResponse.getReviews()))
         .build();
   }
 
   private List<Type> getTop3ZeroDrinks(ReadStoreReviewResponse.Review[] reviews) {
+    if (reviews == null) {
+      return Collections.emptyList();
+    }
     List<Type> allZeroDrinks = Arrays.stream(reviews)
         .flatMap(review -> review.getReview().getZeroDrinks().stream())
         .collect(Collectors.toList());
