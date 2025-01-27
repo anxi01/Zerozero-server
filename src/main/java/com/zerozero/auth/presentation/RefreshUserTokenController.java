@@ -5,25 +5,27 @@ import com.zerozero.auth.application.RefreshUserTokenUseCase.RefreshUserTokenErr
 import com.zerozero.auth.application.RefreshUserTokenUseCase.RefreshUserTokenResponse.Tokens;
 import com.zerozero.auth.presentation.RefreshUserTokenController.RefreshUserTokenResponse.Token;
 import com.zerozero.configuration.swagger.ApiErrorCode;
+import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,11 +41,11 @@ public class RefreshUserTokenController {
       operationId = "/refresh/token"
   )
   @ApiErrorCode({GlobalErrorCode.class, RefreshUserTokenErrorCode.class})
-  @PostMapping("/refresh/token")
-  public ResponseEntity<RefreshUserTokenResponse> refreshUserToken(@Parameter(hidden = true) RefreshToken refreshToken) {
+  @GetMapping("/refresh/token")
+  public ResponseEntity<RefreshUserTokenResponse> refreshUserToken(@ParameterObject RefreshUserTokenRequest refreshUserTokenRequest) {
     RefreshUserTokenUseCase.RefreshUserTokenResponse refreshUserTokenResponse = refreshUserTokenUseCase.execute(
         RefreshUserTokenUseCase.RefreshUserTokenRequest.builder()
-            .refreshToken(refreshToken)
+            .refreshToken(RefreshToken.of(refreshUserTokenRequest.getRefreshToken()))
             .build());
     if (refreshUserTokenResponse == null || !refreshUserTokenResponse.isSuccess()) {
       Optional.ofNullable(refreshUserTokenResponse)
@@ -79,5 +81,18 @@ public class RefreshUserTokenController {
 
     record Token(String accessToken, String refreshToken) {
     }
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @AllArgsConstructor(access = AccessLevel.PROTECTED)
+  @Schema(description = "토큰 재발급 요청")
+  public static class RefreshUserTokenRequest implements BaseRequest {
+
+    @Schema(description = "리프레시 토큰")
+    private String refreshToken;
   }
 }

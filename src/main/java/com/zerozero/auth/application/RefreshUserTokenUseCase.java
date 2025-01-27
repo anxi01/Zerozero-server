@@ -7,7 +7,7 @@ import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.infra.repository.RefreshTokenJPARepository;
+import com.zerozero.core.domain.infra.repository.RefreshTokenRepository;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
@@ -39,7 +39,7 @@ public class RefreshUserTokenUseCase implements BaseUseCase<RefreshUserTokenRequ
 
   private final UserJPARepository userJPARepository;
 
-  private final RefreshTokenJPARepository refreshTokenJPARepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
   public RefreshUserTokenResponse execute(RefreshUserTokenRequest request) {
@@ -62,7 +62,7 @@ public class RefreshUserTokenUseCase implements BaseUseCase<RefreshUserTokenRequ
       return RefreshUserTokenResponse.builder().success(false)
           .errorCode(RefreshUserTokenErrorCode.NOT_EXIST_USER).build();
     }
-    com.zerozero.core.domain.entity.RefreshToken alreadyExistRefreshToken = refreshTokenJPARepository.findByUserId(user.getId());
+    com.zerozero.core.domain.entity.RefreshToken alreadyExistRefreshToken = refreshTokenRepository.findById(user.getId()).orElse(null);
     if (alreadyExistRefreshToken == null) {
       log.error("[RefreshUserTokenUseCase] Refresh token not exist");
       return RefreshUserTokenResponse.builder().success(false)

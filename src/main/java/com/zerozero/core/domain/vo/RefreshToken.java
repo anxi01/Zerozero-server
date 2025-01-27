@@ -42,8 +42,9 @@ public class RefreshToken extends ValueObject implements Token {
         .build();
   }
 
-  public com.zerozero.core.domain.entity.RefreshToken toEntity() {
+  public com.zerozero.core.domain.entity.RefreshToken toEntity(UUID userId) {
     return com.zerozero.core.domain.entity.RefreshToken.builder()
+        .userId(userId)
         .refreshToken(this.getToken())
         .build();
   }

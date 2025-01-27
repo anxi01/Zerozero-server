@@ -1,29 +1,18 @@
 package com.zerozero.core.domain.entity;
 
-import com.zerozero.core.domain.shared.BaseAutoIncrementEntity;
-import jakarta.persistence.Entity;
 import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
-@SuperBuilder
-public class RefreshToken extends BaseAutoIncrementEntity {
+@Builder
+@RedisHash(value = "refreshToken", timeToLive = 604_800_000)
+public class RefreshToken {
 
-  private String refreshToken;
-
+  @Id
   private UUID userId;
 
-  public RefreshToken update(String refreshToken) {
-    this.refreshToken = refreshToken;
-    return this;
-  }
+  private String refreshToken;
 }
