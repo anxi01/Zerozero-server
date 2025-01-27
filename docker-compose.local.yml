@@ -45,6 +45,16 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
+  redis:
+    container_name: zerozero_redis
+    image: redis:6.0.9
+    ports:
+      - '6379:6379'
+    restart: always
+    volumes:
+      - ./docker/redis/data:/data
+      - ./docker/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+
 volumes:
   mongo-data:
   rabbitmq-data:

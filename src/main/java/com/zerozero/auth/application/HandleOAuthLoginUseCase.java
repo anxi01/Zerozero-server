@@ -14,7 +14,7 @@ import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.application.BaseUseCase;
 import com.zerozero.core.domain.entity.Status;
 import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.infra.repository.RefreshTokenJPARepository;
+import com.zerozero.core.domain.infra.repository.RefreshTokenRepository;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.domain.vo.AccessToken;
 import com.zerozero.core.domain.vo.RefreshToken;
@@ -47,7 +47,7 @@ public class HandleOAuthLoginUseCase implements BaseUseCase<HandleOAuthLoginRequ
 
   private final JwtUtil jwtUtil;
 
-  private final RefreshTokenJPARepository refreshTokenJPARepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
   public HandleOAuthLoginResponse execute(HandleOAuthLoginRequest request) {
@@ -89,7 +89,7 @@ public class HandleOAuthLoginUseCase implements BaseUseCase<HandleOAuthLoginRequ
   private HandleOAuthLoginResponse generateAndBuildResponse(User user) {
     AccessToken accessToken = jwtUtil.generateAccessToken(user);
     RefreshToken refreshToken = jwtUtil.generateRefreshToken(user);
-    refreshTokenJPARepository.save(refreshToken.toEntity());
+    refreshTokenRepository.save(refreshToken.toEntity(user.getId()));
 
     return HandleOAuthLoginResponse.builder()
         .user(com.zerozero.core.domain.vo.User.of(user))
