@@ -13,18 +13,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,15 +44,14 @@ public class UpdateUserProfileController {
   )
   @ApiErrorCode({GlobalErrorCode.class, UpdateUserProfileErrorCode.class})
   @Authorization
-  @PatchMapping(value = "/user", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PatchMapping("/user")
   public ResponseEntity<UpdateUserProfileResponse> uploadProfileImage(
-          @ParameterObject UpdateUserProfileRequest userProfileRequest,
-          @RequestPart(required = false) @Parameter(description = "이미지 원본 파일") MultipartFile imageFile,
-          @Parameter(hidden = true) @LoginUser User user) {
+      @Valid @RequestBody UpdateUserProfileRequest request,
+      @Parameter(hidden = true) @LoginUser User user) {
     UpdateUserProfileUseCase.UpdateUserProfileResponse updateUserProfileResponse = updateUserProfileUseCase.execute(
         UpdateUserProfileUseCase.UpdateUserProfileRequest.builder()
-            .nickname(userProfileRequest.getNickname())
-            .imageFile(imageFile)
+            .nickname(request.getNickname())
+            .image(request.getImage())
             .user(user)
             .build());
     if (updateUserProfileResponse == null || !updateUserProfileResponse.isSuccess()) {
@@ -84,5 +87,8 @@ public class UpdateUserProfileController {
     @NotNull(message = "닉네임은 필수 데이터입니다.")
     @Schema(description = "닉네임", example = "제로")
     private String nickname;
+
+    @Schema(description = "판매점 업로드 이미지 URL", example = "https://s3.ap-northeast-2.amazonaws.com/zerozero-upload/images/store/0cbf3b99-b0ba-4148-a891-d04cb71ae236-test.png")
+    private String image;
   }
 }

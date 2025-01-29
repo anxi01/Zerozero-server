@@ -18,19 +18,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,16 +53,15 @@ public class CreateStoreController {
   )
   @ApiErrorCode({GlobalErrorCode.class, CreateStoreErrorCode.class})
   @Authorization
-  @PostMapping(value = "/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<CreateStoreResponse> createStore(@Valid @ParameterObject CreateStoreRequest request,
-                                                         @RequestPart @Parameter(description = "이미지 원본 파일") List<MultipartFile> imageFiles,
+  @PostMapping("/store")
+  public ResponseEntity<CreateStoreResponse> createStore(@Valid @RequestBody CreateStoreRequest request,
                                                          @Parameter(hidden = true) @LoginUser User user) {
     CreateStoreUseCase.CreateStoreResponse createStoreResponse = createStoreUseCase.execute(
         CreateStoreUseCase.CreateStoreRequest.builder()
             .placeName(request.getPlaceName())
             .longitude(request.getLongitude())
             .latitude(request.getLatitude())
-            .imageFiles(imageFiles)
+            .images(request.getImages())
             .user(user)
             .build());
     if (createStoreResponse == null || !createStoreResponse.isSuccess()) {
@@ -114,5 +118,10 @@ public class CreateStoreController {
     @NotNull(message = "판매점 y좌표(위도)는 필수 값입니다.")
     @Schema(description = "판매점 y좌표(위도)", example = "37.49206032952165")
     private String latitude;
+
+    @NotNull(message = "판매점 사진은 필수 값입니다.")
+    @Schema(description = "판매점 업로드 이미지 URL 리스트",
+        example = "[\"https://s3.ap-northeast-2.amazonaws.com/zerozero-upload/images/store/0cbf3b99-b0ba-4148-a891-d04cb71ae236-test.png\", \"https://s3.ap-northeast-2.amazonaws.com/zerozero-upload/images/store/another-image.png\"]")
+    private List<String> images;
   }
 }

@@ -60,46 +60,34 @@ public class AWSS3Service {
     }
   }
 
-  public String uploadImage(MultipartFile multipartFile) throws IOException {
-    String fileName = createFileName(multipartFile.getOriginalFilename());
+  public String uploadImage(String prefix, MultipartFile multipartFile) throws IOException {
+    String fileName = createFilePath(prefix, multipartFile.getOriginalFilename());
 
-    String fileExtension = getFileExtension(fileName);
+    ObjectMetadata objectMetadata = new ObjectMetadata();
+    objectMetadata.setContentLength(multipartFile.getSize());
+    objectMetadata.setContentType(multipartFile.getContentType());
 
-    if (isValidImageFileExtension(fileExtension)) {
-
-      ObjectMetadata objectMetadata = new ObjectMetadata();
-      objectMetadata.setContentLength(multipartFile.getSize());
-      objectMetadata.setContentType(multipartFile.getContentType());
-
-      amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), objectMetadata);
-      return getUrl(bucket, fileName);
-    } else {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원되지 않는 이미지 형식입니다.");
-    }
+    amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), objectMetadata);
+    return getUrl(bucket, fileName);
   }
 
-  public List<String> uploadImages(List<MultipartFile> multipartFiles) {
+  public List<String> uploadImages(String prefix, List<MultipartFile> multipartFiles) {
     List<String> imageUrls = new ArrayList<>();
 
     multipartFiles.forEach(file -> {
-          String fileName = createFileName(file.getOriginalFilename());
-          String fileExtension = getFileExtension(fileName);
+      String fileName = createFilePath(prefix, file.getOriginalFilename());
 
-      if (isValidImageFileExtension(fileExtension)) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(file.getSize());
-        objectMetadata.setContentType(file.getContentType());
+      ObjectMetadata objectMetadata = new ObjectMetadata();
+      objectMetadata.setContentLength(file.getSize());
+      objectMetadata.setContentType(file.getContentType());
 
-        try (InputStream inputStream = file.getInputStream()) {
-          amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-              .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-        }
-        imageUrls.add(getUrl(bucket, fileName));
-      } else {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원되지 않는 이미지 형식입니다.");
+      try (InputStream inputStream = file.getInputStream()) {
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+            .withCannedAcl(CannedAccessControlList.PublicRead));
+      } catch (IOException e) {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
       }
+      imageUrls.add(getUrl(bucket, fileName));
     });
     return imageUrls;
   }
@@ -131,21 +119,8 @@ public class AWSS3Service {
     return String.format("%s/%s-%s", prefix, fileUuid, fileName);
   }
 
-  private String getFileExtension(String fileName){
-    try{
-      return fileName.substring(fileName.lastIndexOf("."));
-    } catch (StringIndexOutOfBoundsException e){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일" + fileName + ") 입니다.");
-    }
-  }
-
   private String getUrl(String bucket, String fileName) {
     return amazonS3.getUrl(bucket, fileName).toString();
-  }
-
-  private boolean isValidImageFileExtension(String fileExtension) {
-    return fileExtension.equalsIgnoreCase(".png") || fileExtension.equalsIgnoreCase(".jpeg")
-        || fileExtension.equalsIgnoreCase(".jpg");
   }
 
   @Getter
