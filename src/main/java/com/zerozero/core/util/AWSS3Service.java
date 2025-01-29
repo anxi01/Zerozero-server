@@ -1,14 +1,23 @@
 package com.zerozero.core.util;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,6 +33,32 @@ public class AWSS3Service {
   private String bucket;
 
   private final AmazonS3 amazonS3;
+
+  public String getPreSignedUrl(String prefix, String fileName) {
+    if (prefix == null || prefix.isEmpty()) {
+      return null;
+    }
+    String filePath = createFilePath(prefix, fileName);
+    GeneratePresignedUrlRequest generatePresignedUrlRequest = createGeneratePresignedUrlRequest(bucket, filePath);
+    try {
+      URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
+      return url.toString();
+    } catch (SdkClientException e) {
+      return null;
+    }
+  }
+
+  public String getObjectUrlFromPreSignedUrl(String preSignedUrl) {
+    if (preSignedUrl == null || preSignedUrl.isEmpty()) {
+      return null;
+    }
+    try {
+      URL url = new URL(preSignedUrl);
+      return String.format("%s://%s%s", url.getProtocol(), url.getHost(), url.getPath());
+    } catch (MalformedURLException e) {
+      return null;
+    }
+  }
 
   public String uploadImage(MultipartFile multipartFile) throws IOException {
     String fileName = createFileName(multipartFile.getOriginalFilename());
@@ -69,8 +104,31 @@ public class AWSS3Service {
     return imageUrls;
   }
 
-  private String createFileName(String fileName){
-    return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+  private GeneratePresignedUrlRequest createGeneratePresignedUrlRequest(String bucket, String filePath) {
+    GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, filePath)
+        .withMethod(HttpMethod.PUT)
+        .withExpiration(getPreSignedUrlExpiration());
+    generatePresignedUrlRequest.addRequestParameter(
+        Headers.S3_CANNED_ACL,
+        CannedAccessControlList.PublicRead.toString());
+    return generatePresignedUrlRequest;
+  }
+
+  private Date getPreSignedUrlExpiration() {
+    Date expiration = new Date();
+    long expTimeMillis = expiration.getTime();
+    expTimeMillis += 1000 * 60;
+    expiration.setTime(expTimeMillis);
+    return expiration;
+  }
+
+  private String createFileUuid() {
+    return UUID.randomUUID().toString();
+  }
+
+  private String createFilePath(String prefix, String fileName) {
+    String fileUuid = createFileUuid();
+    return String.format("%s/%s-%s", prefix, fileUuid, fileName);
   }
 
   private String getFileExtension(String fileName){
@@ -88,5 +146,22 @@ public class AWSS3Service {
   private boolean isValidImageFileExtension(String fileExtension) {
     return fileExtension.equalsIgnoreCase(".png") || fileExtension.equalsIgnoreCase(".jpeg")
         || fileExtension.equalsIgnoreCase(".jpg");
+  }
+
+  @Getter
+  @RequiredArgsConstructor
+  public enum Prefix {
+    STORE("store"),
+    USER("user"),
+    ;
+
+    private final String prefix;
+
+    public static Prefix fromString(String value) {
+      return Arrays.stream(Prefix.values())
+          .filter(prefix -> prefix.getPrefix().equalsIgnoreCase(value))
+          .findFirst()
+          .orElse(null);
+    }
   }
 }
