@@ -2,12 +2,10 @@ package com.zerozero.auth.presentation;
 
 import com.zerozero.auth.application.RegisterUserUseCase;
 import com.zerozero.auth.application.RegisterUserUseCase.RegisterUserErrorCode;
-import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.exception.error.GlobalErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,20 +13,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,14 +38,13 @@ public class RegisterUserController {
   @ApiErrorCode({GlobalErrorCode.class, RegisterUserErrorCode.class})
   @Authorization
   @PostMapping("/register")
-  public ResponseEntity<RegisterUserResponse> registerUser(
-      @Valid @RequestBody RegisterUserRequest registerUserRequest,
-      @Parameter(hidden = true) @LoginUser User user) {
+  public ResponseEntity<RegisterUserResponse> registerUser(@Valid @RequestBody RegisterUserRequest registerUserRequest,
+                                                           @Parameter(hidden = true) @RequestHeader("Authorization") String authorizationHeader) {
     RegisterUserUseCase.RegisterUserResponse registerUserResponse = registerUserUseCase.execute(
-        RegisterUserUseCase.RegisterUserRequest.builder()
-            .user(user)
-            .nickname(registerUserRequest.getNickname())
-            .build());
+            RegisterUserUseCase.RegisterUserRequest.builder()
+                    .accessToken(authorizationHeader.substring(7))
+                    .nickname(registerUserRequest.getNickname())
+                    .build());
     if (registerUserResponse == null || !registerUserResponse.isSuccess()) {
       Optional.ofNullable(registerUserResponse)
           .map(BaseResponse::getErrorCode)

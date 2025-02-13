@@ -5,9 +5,13 @@ import com.zerozero.auth.application.RegisterUserUseCase.RegisterUserResponse;
 import com.zerozero.core.application.BaseRequest;
 import com.zerozero.core.application.BaseResponse;
 import com.zerozero.core.application.BaseUseCase;
+import com.zerozero.core.domain.entity.Status;
 import com.zerozero.core.domain.entity.User;
+import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.exception.DomainException;
 import com.zerozero.core.exception.error.BaseErrorCode;
+import com.zerozero.core.util.JwtUtil;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,14 +32,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, RegisterUserResponse> {
 
+  private final JwtUtil jwtUtil;
+
+  private final UserJPARepository userJPARepository;
+
   @Override
   public RegisterUserResponse execute(RegisterUserRequest request) {
     if (request == null || !request.isValid()) {
       log.error("[RegisterUserUseCase] Invalid register request");
-      return RegisterUserResponse.builder().success(false)
-          .errorCode(RegisterUserErrorCode.NOT_EXIST_REGISTER_CONDITION).build();
+      return RegisterUserResponse.builder()
+          .success(false)
+          .errorCode(RegisterUserErrorCode.NOT_EXIST_REGISTER_CONDITION)
+          .build();
     }
-    User user = request.user;
+    UUID userId = jwtUtil.extractUserId(request.getAccessToken());
+    User user = userJPARepository.findById(userId).orElse(null);
+    if (user == null) {
+      log.error("[RegisterUserUseCase] User with id {} not found", userId);
+      return RegisterUserResponse.builder()
+              .success(false)
+              .errorCode(RegisterUserErrorCode.NOT_EXIST_USER)
+              .build();
+    }
+    if (user.getStatus() == Status.COMPLETED) {
+      log.error("[RegisterUserUseCase] User with id {} is already registered", userId);
+      return RegisterUserResponse.builder()
+              .success(false)
+              .errorCode(RegisterUserErrorCode.ALREADY_REGISTERED_USER)
+              .build();
+    }
     user.completePendingUser(request.getNickname());
     return RegisterUserResponse.builder()
         .user(com.zerozero.core.domain.vo.User.of(user))
@@ -47,6 +72,7 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
   public enum RegisterUserErrorCode implements BaseErrorCode<DomainException> {
     NOT_EXIST_REGISTER_CONDITION(HttpStatus.BAD_REQUEST, "회원가입 조건이 올바르지 않습니다."),
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 사용자입니다."),
+    ALREADY_REGISTERED_USER(HttpStatus.BAD_REQUEST, "이미 회원가입이 완료된 사용자입니다."),
     ;
 
     private final HttpStatus httpStatus;
@@ -75,13 +101,13 @@ public class RegisterUserUseCase implements BaseUseCase<RegisterUserRequest, Reg
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @AllArgsConstructor(access = AccessLevel.PROTECTED)
   public static class RegisterUserRequest implements BaseRequest {
-    private User user;
+    private String accessToken;
 
     private String nickname;
 
     @Override
     public boolean isValid() {
-      return user != null && nickname != null && !nickname.isEmpty();
+      return accessToken != null && !accessToken.isEmpty() && nickname != null && !nickname.isEmpty();
     }
   }
 
