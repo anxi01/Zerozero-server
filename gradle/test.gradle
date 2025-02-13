@@ -1,0 +1,8 @@
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+dependencies {
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+}
