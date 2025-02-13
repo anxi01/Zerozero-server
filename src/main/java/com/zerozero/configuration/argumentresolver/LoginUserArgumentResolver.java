@@ -1,6 +1,8 @@
 package com.zerozero.configuration.argumentresolver;
 
 import com.zerozero.auth.exception.AuthenticationErrorCode;
+import com.zerozero.core.domain.entity.Status;
+import com.zerozero.core.domain.entity.User;
 import com.zerozero.core.domain.infra.repository.UserJPARepository;
 import com.zerozero.core.util.JwtUtil;
 import java.util.UUID;
@@ -34,7 +36,12 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         String authorizationHeader = webRequest.getHeader(AUTHORIZATION_HEADER);
         String token = extractToken(authorizationHeader);
         UUID userId = jwtUtil.extractUserId(token);
-        return userJPARepository.findById(userId).orElseThrow(AuthenticationErrorCode.NOT_FOUND_MEMBER::toException);
+        User user = userJPARepository.findById(userId)
+                .orElseThrow(AuthenticationErrorCode.NOT_FOUND_MEMBER::toException);
+        if (user.getStatus() != Status.COMPLETED) {
+            throw AuthenticationErrorCode.NOT_COMPLETED_MEMBER.toException();
+        }
+        return user;
     }
 
     private String extractToken(String authorizationHeader) {

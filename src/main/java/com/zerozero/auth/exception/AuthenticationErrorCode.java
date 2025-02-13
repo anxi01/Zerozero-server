@@ -22,6 +22,7 @@ public enum AuthenticationErrorCode implements BaseErrorCode<DomainException> {
   ACCESS_TOKEN_NOT_ISSUED(HttpStatus.BAD_GATEWAY, "OAuth 써드파티 제공자에서 액세스 토큰이 발급되지 않았습니다."),
   NOT_EXIST_RESOURCE_RESPONSE(HttpStatus.BAD_GATEWAY, "OAuth 써드파티 리소스 서버에서 자원이 존재하지 않습니다."),
   RESOURCE_SERVER_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "OAuth Resource Server에 접근할 수 없습니다."),
+  NOT_COMPLETED_MEMBER(HttpStatus.FORBIDDEN, "회원가입이 완료되지 않은 사용자입니다."),
   ;
 
   private final HttpStatus httpStatus;
