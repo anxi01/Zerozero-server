@@ -1,6 +1,7 @@
 package com.zerozero.configuration.swagger;
 
-import com.zerozero.core.exception.error.BaseErrorCode;
+import com.zerozero.core.support.error.ErrorType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiErrorCode {
 
-  Class<? extends BaseErrorCode>[] value();
+    Class<? extends ErrorType>[] value();
 }
