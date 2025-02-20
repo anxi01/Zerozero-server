@@ -1,6 +1,6 @@
 package com.zerozero.configuration;
 
-import com.zerozero.configuration.property.CreateStoreQueueProperty;
+import com.zerozero.store.infrastructure.rabbitmq.CreateStoreQueueProperty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -18,43 +18,43 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class RabbitMQConfiguration {
 
-  private final CreateStoreQueueProperty createStoreQueueProperty;
+    private final CreateStoreQueueProperty createStoreQueueProperty;
 
-  @Bean
-  RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-    RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-    rabbitTemplate.setMessageConverter(jsonMessageConverter());
-    return rabbitTemplate;
-  }
+    @Bean
+    RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        return rabbitTemplate;
+    }
 
-  @Bean
-  MessageConverter jsonMessageConverter() {
-    return new Jackson2JsonMessageConverter();
-  }
+    @Bean
+    MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
 
-  @Bean
-  public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
-    final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-    factory.setConnectionFactory(connectionFactory);
-    factory.setMessageConverter(jsonMessageConverter());
-    return factory;
-  }
+    @Bean
+    public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+        final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(jsonMessageConverter());
+        return factory;
+    }
 
-  @Bean
-  DirectExchange createStoreExchange() {
-    return new DirectExchange(createStoreQueueProperty.getExchange());
-  }
+    @Bean
+    DirectExchange createStoreExchange() {
+        return new DirectExchange(createStoreQueueProperty.getExchange());
+    }
 
-  @Bean
-  Queue createStoreQueue() {
-    return new Queue(createStoreQueueProperty.getQueue(), false);
-  }
+    @Bean
+    Queue createStoreQueue() {
+        return new Queue(createStoreQueueProperty.getQueue(), false);
+    }
 
-  @Bean
-  Binding bindingCreateStoreQueue(DirectExchange createRegionExchange) {
-    return BindingBuilder.bind(createStoreQueue())
-        .to(createRegionExchange)
-        .with(createStoreQueueProperty.getRoutingKey());
-  }
+    @Bean
+    Binding bindingCreateStoreQueue(DirectExchange createRegionExchange) {
+        return BindingBuilder.bind(createStoreQueue())
+                .to(createRegionExchange)
+                .with(createStoreQueueProperty.getRoutingKey());
+    }
 
 }
