@@ -3,18 +3,18 @@ package com.zerozero.auth.infrastructure.oauth.kakao.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record KakaoResourceResponse(
-    Long id,
+        Long id,
 
-    @JsonProperty("kakao_account")
-    Response kakaoAccount
+        @JsonProperty("kakao_account")
+        Response kakaoAccount
 ) {
-  public record Response(
-      String email,
-      Profile profile
-  ) {
-    public record Profile(
-        String nickname
+    public record Response(
+            String email,
+            Profile profile
     ) {
+        public record Profile(
+                String nickname
+        ) {
+        }
     }
-  }
 }
