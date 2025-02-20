@@ -3,28 +3,23 @@ package com.zerozero.review.presentation;
 import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
-import com.zerozero.core.application.BaseRequest;
-import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.vo.ZeroDrink;
-import com.zerozero.core.domain.vo.ZeroDrink.Type;
-import com.zerozero.core.exception.error.GlobalErrorCode;
-import com.zerozero.review.application.CreateStoreReviewUseCase;
-import com.zerozero.review.application.CreateStoreReviewUseCase.CreateStoreReviewErrorCode;
+import com.zerozero.core.support.error.GlobalErrorType;
+import com.zerozero.core.support.response.ApiResponse;
+import com.zerozero.review.application.ReviewService;
+import com.zerozero.review.exception.ReviewErrorType;
+import com.zerozero.review.presentation.request.ReviewRequest;
+import com.zerozero.user.domain.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -32,65 +27,21 @@ import java.util.UUID;
 @Tag(name = "Review", description = "리뷰")
 public class CreateStoreReviewController {
 
-  private final CreateStoreReviewUseCase createStoreReviewUseCase;
+    private final ReviewService reviewService;
 
-  @Operation(
-      summary = "리뷰 등록 API",
-      description = "판매점에 대한 리뷰를 등록합니다.",
-      operationId = "/review"
-  )
-  @ApiErrorCode({GlobalErrorCode.class, CreateStoreReviewErrorCode.class})
-  @Authorization
-  @PostMapping("/review")
-  public ResponseEntity<CreateStoreReviewResponse> createStoreReview(@RequestParam @Schema(description = "판매점 ID") UUID storeId,
-                                                                     @RequestBody CreateStoreReviewRequest request,
-                                                                     @Parameter(hidden = true) @LoginUser User user) {
-    CreateStoreReviewUseCase.CreateStoreReviewResponse createStoreReviewResponse = createStoreReviewUseCase.execute(
-        CreateStoreReviewUseCase.CreateStoreReviewRequest.builder()
-            .storeId(storeId)
-            .content(request.getContent())
-            .zeroDrinks(Optional.ofNullable(request.getZeroDrinks())
-                .map(zeroDrinks -> zeroDrinks.stream().map(zeroDrink -> ZeroDrink.builder()
-                        .type(zeroDrink)
-                        .build())
-                    .toArray(ZeroDrink[]::new))
-                .orElse(null))
-            .user(user)
-            .build());
-    if (createStoreReviewResponse == null || !createStoreReviewResponse.isSuccess()) {
-      Optional.ofNullable(createStoreReviewResponse)
-          .map(BaseResponse::getErrorCode)
-          .ifPresentOrElse(errorCode -> {
-            throw errorCode.toException();
-          }, () -> {
-            throw GlobalErrorCode.INTERNAL_ERROR.toException();
-          });
+    @Operation(
+            summary = "리뷰 등록 API",
+            description = "판매점에 대한 리뷰를 등록합니다.",
+            operationId = "/review"
+    )
+    @ApiErrorCode({GlobalErrorType.class, ReviewErrorType.class})
+    @Authorization
+    @PostMapping("/review")
+    public ApiResponse<?> createStoreReview(@RequestParam @Schema(description = "판매점 ID") UUID storeId,
+                                            @Valid @RequestBody ReviewRequest reviewRequest,
+                                            @Parameter(hidden = true) @LoginUser User user) {
+        reviewService.createStoreReview(storeId, reviewRequest, user);
+        return ApiResponse.success();
     }
-    return ResponseEntity.ok().build();
-  }
 
-  @ToString
-  @Getter
-  @Setter
-  @SuperBuilder
-  @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  @Schema(description = "리뷰 등록 응답")
-  public static class CreateStoreReviewResponse extends BaseResponse<GlobalErrorCode> {
-  }
-
-  @ToString
-  @Getter
-  @Setter
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  @AllArgsConstructor(access = AccessLevel.PROTECTED)
-  @Schema(description = "리뷰 등록 요청")
-  public static class CreateStoreReviewRequest implements BaseRequest {
-
-    @Schema(description = "리뷰 내용", example = "제로콜라 판매 중!")
-    private String content;
-
-    @Schema(description = "제로 음료수 목록", example = "[\"COCA_COLA_ZERO\", \"PEPSI_ZERO\", \"SPRITE_ZERO\"]")
-    private List<Type> zeroDrinks;
-  }
 }

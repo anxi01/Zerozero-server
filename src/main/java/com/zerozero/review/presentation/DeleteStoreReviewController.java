@@ -3,23 +3,20 @@ package com.zerozero.review.presentation;
 import com.zerozero.configuration.argumentresolver.LoginUser;
 import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
-import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.exception.error.GlobalErrorCode;
-import com.zerozero.review.application.DeleteStoreReviewUseCase;
-import com.zerozero.review.application.DeleteStoreReviewUseCase.DeleteStoreReviewErrorCode;
+import com.zerozero.core.support.error.GlobalErrorType;
+import com.zerozero.core.support.response.ApiResponse;
+import com.zerozero.review.domain.service.DeleteStoreReviewUseCase;
+import com.zerozero.review.exception.ReviewErrorType;
+import com.zerozero.user.domain.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -27,42 +24,20 @@ import java.util.UUID;
 @Tag(name = "Review", description = "리뷰")
 public class DeleteStoreReviewController {
 
-  private final DeleteStoreReviewUseCase deleteStoreReviewUseCase;
+    private final DeleteStoreReviewUseCase deleteStoreReviewUseCase;
 
-  @Operation(
-      summary = "리뷰 삭제 API",
-      description = "리뷰 ID를 통해 리뷰를 삭제합니다.",
-      operationId = "/review/{reviewId}"
-  )
-  @ApiErrorCode({GlobalErrorCode.class, DeleteStoreReviewErrorCode.class})
-  @Authorization
-  @DeleteMapping("/review/{reviewId}")
-  public ResponseEntity<DeleteStoreReviewResponse> deleteStoreReview(@PathVariable(name = "reviewId") @Schema(description = "리뷰 ID") UUID reviewId,
-                                                                     @Parameter(hidden = true) @LoginUser User user) {
-    DeleteStoreReviewUseCase.DeleteStoreReviewResponse deleteStoreReviewResponse = deleteStoreReviewUseCase.execute(
-        DeleteStoreReviewUseCase.DeleteStoreReviewRequest.builder()
-            .reviewId(reviewId)
-            .user(user)
-            .build());
-    if (deleteStoreReviewResponse == null || !deleteStoreReviewResponse.isSuccess()) {
-      Optional.ofNullable(deleteStoreReviewResponse)
-          .map(BaseResponse::getErrorCode)
-          .ifPresentOrElse(errorCode -> {
-            throw errorCode.toException();
-          }, () -> {
-            throw GlobalErrorCode.INTERNAL_ERROR.toException();
-          });
+    @Operation(
+            summary = "리뷰 삭제 API",
+            description = "리뷰 ID를 통해 리뷰를 삭제합니다.",
+            operationId = "/review/{reviewId}"
+    )
+    @ApiErrorCode({GlobalErrorType.class, ReviewErrorType.class})
+    @Authorization
+    @DeleteMapping("/review/{reviewId}")
+    public ApiResponse<?> deleteStoreReview(@PathVariable(name = "reviewId") @Schema(description = "리뷰 ID") UUID reviewId,
+                                            @Parameter(hidden = true) @LoginUser User user) {
+        deleteStoreReviewUseCase.execute(reviewId, user);
+        return ApiResponse.success();
     }
-    return ResponseEntity.ok(DeleteStoreReviewResponse.builder().build());
-  }
-
-  @ToString
-  @Getter
-  @Setter
-  @SuperBuilder
-  @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  @Schema(description = "리뷰 삭제 응답")
-  public static class DeleteStoreReviewResponse extends BaseResponse<GlobalErrorCode> {
-  }
 
 }
