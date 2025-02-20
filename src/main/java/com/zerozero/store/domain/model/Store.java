@@ -47,7 +47,7 @@ public class Store extends BaseEntity {
 
     private UUID userId;
 
-    public static Store of(UUID userId, StoreSearchResponse store, List<String> images) {
+    public static Store create(UUID userId, StoreSearchResponse store, List<String> images) {
         return Store.builder()
                 .kakaoId(store.id())
                 .name(store.placeName())
