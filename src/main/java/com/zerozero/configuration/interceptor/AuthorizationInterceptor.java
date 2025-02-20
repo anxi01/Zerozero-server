@@ -1,6 +1,7 @@
 package com.zerozero.configuration.interceptor;
 
-import com.zerozero.auth.exception.AuthenticationErrorCode;
+import com.zerozero.auth.exception.AuthErrorType;
+import com.zerozero.auth.exception.AuthException;
 import com.zerozero.core.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,12 +42,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private String extractToken(String authorizationHeader) {
         if (authorizationHeader == null) {
-            throw AuthenticationErrorCode.NOT_EXIST_HEADER.toException();
+            throw new AuthException(AuthErrorType.NOT_EXIST_HEADER);
         }
         try {
             return authorizationHeader.split(AUTHORIZATION_BEARER_PREFIX)[1].replace(" ", "");
         } catch (Exception e) {
-            throw AuthenticationErrorCode.NOT_EXIST_TOKEN.toException();
+            throw new AuthException(AuthErrorType.NOT_EXIST_TOKEN);
         }
     }
 }

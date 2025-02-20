@@ -2,9 +2,9 @@ package com.zerozero.external.kakao.search.core.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase;
-import com.zerozero.external.kakao.search.application.RequestKakaoKeywordSearchUseCase.RequestKakaoKeywordSearchRequest;
-import com.zerozero.external.kakao.search.dto.KeywordSearchResponse;
+import com.zerozero.store.infrastructure.kakao.search.application.SearchKakaoKeywordUseCase;
+import com.zerozero.store.infrastructure.kakao.search.application.SearchKakaoKeywordUseCase.RequestKakaoKeywordSearchRequest;
+import com.zerozero.store.infrastructure.kakao.search.response.KakaoSearchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 class KakaoPropertyTest {
 
   @Autowired
-  RequestKakaoKeywordSearchUseCase requestKakaoKeywordSearchUseCase;
+  SearchKakaoKeywordUseCase searchKakaoKeywordUseCase;
 
   @Test
   @DisplayName("서울 강남구 삼성동 20km 반경에서 카카오프렌즈 매장 검색한다.")
@@ -31,7 +31,7 @@ class KakaoPropertyTest {
         .build();
 
     // when
-    KeywordSearchResponse response = requestKakaoKeywordSearchUseCase.execute(request).getKeywordSearchResponse();
+    KakaoSearchResponse response = searchKakaoKeywordUseCase.execute(request).getKeywordSearchResponse();
 
     // then
     assertThat(response).isNotNull();
