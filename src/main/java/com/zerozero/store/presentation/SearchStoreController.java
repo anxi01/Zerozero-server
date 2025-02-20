@@ -2,85 +2,39 @@ package com.zerozero.store.presentation;
 
 import com.zerozero.configuration.interceptor.Authorization;
 import com.zerozero.configuration.swagger.ApiErrorCode;
-import com.zerozero.core.application.BaseRequest;
-import com.zerozero.core.application.BaseResponse;
-import com.zerozero.core.domain.record.StoreWithoutImages;
-import com.zerozero.core.exception.error.GlobalErrorCode;
-import com.zerozero.store.application.SearchStoreUseCase;
-import com.zerozero.store.application.SearchStoreUseCase.SearchStoreErrorCode;
+import com.zerozero.core.support.error.GlobalErrorType;
+import com.zerozero.core.support.response.ApiResponse;
+import com.zerozero.store.domain.response.StoreResponse;
+import com.zerozero.store.domain.service.SearchStoreUseCase;
+import com.zerozero.store.exception.StoreErrorType;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Store", description = "판매점")
 public class SearchStoreController {
 
-  private final SearchStoreUseCase searchStoreUseCase;
+    private final SearchStoreUseCase searchStoreUseCase;
 
-  @Operation(
-      summary = "[가게제보] 판매점 검색 API",
-      description = "가게제보 페이지에서 등록할 판매점을 쿼리를 통해 검색합니다.",
-      operationId = "/store/search"
-  )
-  @ApiErrorCode({GlobalErrorCode.class, SearchStoreErrorCode.class})
-  @Authorization
-  @GetMapping("/store/search")
-  public ResponseEntity<SearchStoreResponse> searchStore(@ParameterObject SearchStoreRequest request) {
-    SearchStoreUseCase.SearchStoreResponse searchStoreResponse = searchStoreUseCase.execute(
-        SearchStoreUseCase.SearchStoreRequest.builder()
-            .query(request.getQuery())
-            .build());
-    if (searchStoreResponse == null || !searchStoreResponse.isSuccess()) {
-      Optional.ofNullable(searchStoreResponse)
-          .map(BaseResponse::getErrorCode)
-          .ifPresentOrElse(errorCode -> {
-            throw errorCode.toException();
-          }, () -> {
-            throw GlobalErrorCode.INTERNAL_ERROR.toException();
-          });
+    @Operation(
+            summary = "[가게제보] 판매점 검색 API",
+            description = "가게제보 페이지에서 등록할 판매점을 쿼리를 통해 검색합니다.",
+            operationId = "/store/search"
+    )
+    @ApiErrorCode({GlobalErrorType.class, StoreErrorType.class})
+    @Authorization
+    @GetMapping("/store/search")
+    public ApiResponse<List<StoreResponse>> searchStore(@Parameter(description = "판매점 검색 쿼리", example = "꿉당") @RequestParam String query) {
+        List<StoreResponse> storeResponses = searchStoreUseCase.execute(query);
+        return ApiResponse.success(storeResponses);
     }
-    return ResponseEntity.ok(SearchStoreResponse.builder()
-        .stores(searchStoreResponse.getStores().stream()
-            .map(StoreWithoutImages::of)
-            .collect(Collectors.toList()))
-        .build());
-  }
 
-  @ToString
-  @Getter
-  @Setter
-  @SuperBuilder
-  @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  @AllArgsConstructor(access = AccessLevel.PROTECTED)
-  @Schema(description = "판매점 검색 응답")
-  public static class SearchStoreResponse extends BaseResponse<GlobalErrorCode> {
-
-    @Schema(description = "판매점 목록")
-    private List<StoreWithoutImages> stores;
-  }
-
-  @ToString
-  @Getter
-  @Setter
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PROTECTED)
-  @AllArgsConstructor(access = AccessLevel.PROTECTED)
-  @Schema(description = "판매점 검색 요청")
-  public static class SearchStoreRequest implements BaseRequest {
-
-    @Schema(description = "판매점 검색 쿼리", example = "꿉당")
-    private String query;
-  }
 }
