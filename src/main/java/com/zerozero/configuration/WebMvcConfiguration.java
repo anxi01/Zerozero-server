@@ -14,17 +14,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-  private final AuthorizationInterceptor authorizationInterceptor;
+    private final AuthorizationInterceptor authorizationInterceptor;
 
-  private final LoginUserArgumentResolver loginUserArgumentResolver;
+    private final LoginUserArgumentResolver loginUserArgumentResolver;
 
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(authorizationInterceptor);
-  }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authorizationInterceptor);
+    }
 
-  @Override
-  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-    resolvers.add(loginUserArgumentResolver);
-  }
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(loginUserArgumentResolver);
+    }
 }

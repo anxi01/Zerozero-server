@@ -1,4 +1,4 @@
-package com.zerozero.queue;
+package com.zerozero.core.infrastructure.rabbitmq;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BaseQueueProperty {
 
-  protected String exchange;
+    protected String exchange;
 
-  protected String queue;
+    protected String queue;
 
-  protected String routingKey;
+    protected String routingKey;
 }

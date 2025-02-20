@@ -1,7 +1,7 @@
 package com.zerozero.configuration.swagger;
 
-import com.zerozero.core.exception.error.BaseErrorCode;
-import com.zerozero.core.presentation.ErrorResponse;
+import com.zerozero.core.support.error.ErrorMessage;
+import com.zerozero.core.support.error.ErrorType;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
@@ -17,12 +17,6 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import org.springdoc.core.customizers.OperationCustomizer;
@@ -30,90 +24,90 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.HandlerMethod;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @OpenAPIDefinition(
-    info = @Info(title = "Zerozero API",
-        description = "Zerozero : API 명세서",
-        version = "v1.0.0"), servers = {@Server(url = "${springdoc.server-url}", description = "Default Server URL")})
+        info = @Info(title = "Zerozero API",
+                description = "Zerozero : API 명세서",
+                version = "v1.0.0"), servers = {@Server(url = "${springdoc.server-url}", description = "Default Server URL")})
 @Configuration
 public class SwaggerConfiguration {
 
-  @Bean
-  public OpenAPI openAPI(){
-    SecurityScheme securityScheme = new SecurityScheme()
-        .type(Type.HTTP).scheme("bearer").bearerFormat("JWT")
-        .in(In.HEADER).name("Authorization");
-    SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+    @Bean
+    public OpenAPI openAPI() {
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .in(In.HEADER).name("Authorization");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
 
-    return new OpenAPI()
-        .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
-        .security(Arrays.asList(securityRequirement));
-  }
-
-  @Bean
-  public OperationCustomizer operationCustomizer() {
-    return (Operation operation, HandlerMethod handlerMethod) -> {
-      ApiErrorCode apiErrorCode = handlerMethod.getMethodAnnotation(ApiErrorCode.class);
-      if (apiErrorCode != null) {
-        generateErrorCodeResponseExample(operation, apiErrorCode.value());
-      }
-      return operation;
-    };
-  }
-
-  private void generateErrorCodeResponseExample(Operation operation, Class<? extends BaseErrorCode>[] types) {
-    ApiResponses responses = operation.getResponses();
-    List<ExampleHolder> exampleHolders = new ArrayList<>();
-
-    for (Class<? extends BaseErrorCode> type : types) {
-      BaseErrorCode[] errorCodes = type.getEnumConstants();
-      Arrays.stream(errorCodes).map(
-          baseErrorCode -> ExampleHolder.builder()
-              .holder(getSwaggerExample(baseErrorCode))
-              .code(baseErrorCode.getHttpStatus().value())
-              .name(baseErrorCode.name())
-              .build()
-      ).forEach(exampleHolders::add);
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
+                .security(Arrays.asList(securityRequirement));
     }
 
-    Map<Integer, List<ExampleHolder>> statusWithExampleHolders = new HashMap<>(
-        exampleHolders.stream()
-            .collect(Collectors.groupingBy(ExampleHolder::getCode)));
+    @Bean
+    public OperationCustomizer operationCustomizer() {
+        return (Operation operation, HandlerMethod handlerMethod) -> {
+            ApiErrorCode apiErrorCode = handlerMethod.getMethodAnnotation(ApiErrorCode.class);
+            if (apiErrorCode != null) {
+                generateErrorCodeResponseExample(operation, apiErrorCode.value());
+            }
+            return operation;
+        };
+    }
 
-    addExamplesToResponses(responses, statusWithExampleHolders);
-  }
+    private void generateErrorCodeResponseExample(Operation operation, Class<? extends ErrorType>[] types) {
+        ApiResponses responses = operation.getResponses();
+        List<ExampleHolder> exampleHolders = new ArrayList<>();
 
-
-  private Example getSwaggerExample(BaseErrorCode baseErrorCode) {
-    ErrorResponse errorResponse = ErrorResponse.createErrorCode()
-        .statusCode(baseErrorCode.getHttpStatus().value())
-        .exception(baseErrorCode.toException())
-        .build();
-    Example example = new Example();
-    example.setValue(errorResponse);
-    return example;
-  }
-
-  private void addExamplesToResponses(ApiResponses responses, Map<Integer, List<ExampleHolder>> statusWithExampleHolders) {
-    statusWithExampleHolders.forEach(
-        (status, value) -> {
-          Content content = new Content();
-          MediaType mediaType = new MediaType();
-          ApiResponse apiResponse = new ApiResponse();
-          value.forEach(exampleHolder -> mediaType.addExamples(exampleHolder.getName(),
-              exampleHolder.getHolder()));
-          content.addMediaType("application/json", mediaType);
-          apiResponse.setContent(content);
-          responses.addApiResponse(status.toString(), apiResponse);
+        for (Class<? extends ErrorType> type : types) {
+            ErrorType[] errorTypes = type.getEnumConstants();
+            Arrays.stream(errorTypes).map(
+                    errorType -> ExampleHolder.builder()
+                            .holder(getSwaggerExample(errorType))
+                            .code(errorType.getStatus().value())
+                            .name(errorType.name())
+                            .build()
+            ).forEach(exampleHolders::add);
         }
-    );
-  }
 
-  @Getter
-  @Builder
-  public static class ExampleHolder {
+        Map<Integer, List<ExampleHolder>> statusWithExampleHolders = new HashMap<>(
+                exampleHolders.stream()
+                        .collect(Collectors.groupingBy(ExampleHolder::getCode)));
 
-    private Example holder;
-    private int code;
-    private String name;
-  }
+        addExamplesToResponses(responses, statusWithExampleHolders);
+    }
+
+
+    private Example getSwaggerExample(ErrorType errorType) {
+        ErrorMessage errorMessage = new ErrorMessage(errorType);
+        Example example = new Example();
+        example.setValue(errorMessage);
+        return example;
+    }
+
+    private void addExamplesToResponses(ApiResponses responses, Map<Integer, List<ExampleHolder>> statusWithExampleHolders) {
+        statusWithExampleHolders.forEach(
+                (status, value) -> {
+                    Content content = new Content();
+                    MediaType mediaType = new MediaType();
+                    ApiResponse apiResponse = new ApiResponse();
+                    value.forEach(exampleHolder -> mediaType.addExamples(exampleHolder.getName(),
+                            exampleHolder.getHolder()));
+                    content.addMediaType("application/json", mediaType);
+                    apiResponse.setContent(content);
+                    responses.addApiResponse(status.toString(), apiResponse);
+                }
+        );
+    }
+
+    @Getter
+    @Builder
+    public static class ExampleHolder {
+
+        private Example holder;
+        private int code;
+        private String name;
+    }
 }

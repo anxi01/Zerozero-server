@@ -1,11 +1,13 @@
 package com.zerozero.configuration.argumentresolver;
 
-import com.zerozero.auth.exception.AuthenticationErrorCode;
-import com.zerozero.core.domain.entity.Status;
-import com.zerozero.core.domain.entity.User;
-import com.zerozero.core.domain.infra.repository.UserJPARepository;
+import com.zerozero.auth.exception.AuthErrorType;
+import com.zerozero.auth.exception.AuthException;
 import com.zerozero.core.util.JwtUtil;
-import java.util.UUID;
+import com.zerozero.user.domain.model.User;
+import com.zerozero.user.domain.model.UserStatus;
+import com.zerozero.user.domain.repository.UserRepository;
+import com.zerozero.user.exception.UserErrorType;
+import com.zerozero.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +28,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     private final JwtUtil jwtUtil;
 
-    private final UserJPARepository userJPARepository;
+    private final UserRepository userRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -36,22 +40,22 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         String authorizationHeader = webRequest.getHeader(AUTHORIZATION_HEADER);
         String token = extractToken(authorizationHeader);
         UUID userId = jwtUtil.extractUserId(token);
-        User user = userJPARepository.findById(userId)
-                .orElseThrow(AuthenticationErrorCode.NOT_FOUND_MEMBER::toException);
-        if (user.getStatus() != Status.COMPLETED) {
-            throw AuthenticationErrorCode.NOT_COMPLETED_MEMBER.toException();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorType.NOT_EXIST_USER));
+        if (user.getUserStatus() != UserStatus.COMPLETED) {
+            throw new UserException(UserErrorType.NOT_COMPLETED_MEMBER);
         }
         return user;
     }
 
     private String extractToken(String authorizationHeader) {
         if (authorizationHeader == null) {
-            throw AuthenticationErrorCode.NOT_EXIST_HEADER.toException();
+            throw new AuthException(AuthErrorType.NOT_EXIST_HEADER);
         }
         try {
             return authorizationHeader.split(AUTHORIZATION_BEARER_PREFIX)[1].replace(" ", "");
         } catch (Exception e) {
-            throw AuthenticationErrorCode.NOT_EXIST_TOKEN.toException();
+            throw new AuthException(AuthErrorType.NOT_EXIST_TOKEN);
         }
     }
 }
