@@ -29,7 +29,7 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "reviewId")
     private List<ReviewLike> reviewLikes = new ArrayList<>();
 
-    public static Review of(String content, Set<ZeroDrink> zeroDrinks, UUID userId, UUID storeId) {
+    public static Review create(String content, Set<ZeroDrink> zeroDrinks, UUID userId, UUID storeId) {
         return Review.builder()
                 .content(content)
                 .zeroDrinks(zeroDrinks)

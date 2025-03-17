@@ -33,7 +33,7 @@ public class ReviewService {
             log.error("[ReviewService] User already reviewed");
             throw new ReviewException(ReviewErrorType.ALREADY_USER_REVIEWED);
         }
-        Review review = Review.of(reviewRequest.content(), reviewRequest.zeroDrinks(), user.getId(), store.getId());
+        Review review = Review.create(reviewRequest.content(), reviewRequest.zeroDrinks(), user.getId(), store.getId());
         reviewRepository.save(review);
     }
 

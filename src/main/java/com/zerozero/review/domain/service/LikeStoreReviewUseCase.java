@@ -27,15 +27,19 @@ public class LikeStoreReviewUseCase {
     public void execute(UUID reviewId, User user) {
         Review review = reviewRepository.findByIdAndDeleted(reviewId, false)
                 .orElseThrow(() -> new ReviewException(ReviewErrorType.NOT_EXIST_DELETABLE_REVIEW));
-        ReviewLike reviewLike = reviewLikeRepository.findByReviewIdAndUserIdAndDeleted(review.getId(), user.getId(), false);
-        if (reviewLike == null) {
-            log.info("[Like] User {} liked Review {}", user.getId(), review.getId());
-            reviewLike = new ReviewLike(review.getId(), user.getId());
-            reviewLikeRepository.save(reviewLike);
-        } else {
-            log.info("[Unlike] User {} unliked Review {}", user.getId(), review.getId());
-            reviewLikeRepository.delete(reviewLike);
-        }
+
+        reviewLikeRepository.findByReviewIdAndUserIdAndDeleted(review.getId(), user.getId(), false)
+                .ifPresentOrElse(
+                        existingLike -> {
+                            log.info("[Unlike] User {} unliked Review {}", user.getId(), review.getId());
+                            reviewLikeRepository.delete(existingLike);
+                        },
+                        () -> {
+                            log.info("[Like] User {} liked Review {}", user.getId(), review.getId());
+                            ReviewLike newLike = ReviewLike.create(review.getId(), user.getId());
+                            reviewLikeRepository.save(newLike);
+                        }
+                );
     }
 
 }
