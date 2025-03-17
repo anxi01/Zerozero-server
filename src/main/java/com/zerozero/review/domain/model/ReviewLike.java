@@ -19,8 +19,11 @@ public class ReviewLike extends BaseAutoIncrementEntity {
 
     private UUID userId;
 
-    public ReviewLike(UUID reviewId, UUID userId) {
-        this.reviewId = reviewId;
-        this.userId = userId;
+    public static ReviewLike create(UUID reviewId, UUID userId) {
+        return ReviewLike.builder()
+                .reviewId(reviewId)
+                .userId(userId)
+                .build();
     }
+
 }
