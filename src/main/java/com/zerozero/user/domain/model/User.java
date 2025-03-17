@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+@Table(name = "users")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
