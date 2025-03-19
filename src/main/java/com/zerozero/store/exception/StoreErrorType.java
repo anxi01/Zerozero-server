@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 public enum StoreErrorType implements ErrorType {
     NOT_EXIST_STORE(HttpStatus.BAD_REQUEST, "판매점이 존재하지 않습니다."),
     NOT_EXIST_SEARCH_RESPONSE(HttpStatus.BAD_REQUEST, "검색 응답이 존재하지 않습니다."),
-    KAKAO_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "KAKAO REST API가 동작하지 않습니다."),
     ;
 
     private final HttpStatus status;
