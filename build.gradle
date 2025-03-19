@@ -20,6 +20,16 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+ext {
+    springCloudVersion = "2023.0.0"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
+}
+
 apply from: "gradle/cloud.gradle"
 apply from: "gradle/db.gradle"
 apply from: "gradle/docs.gradle"

@@ -12,6 +12,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
