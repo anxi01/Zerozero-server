@@ -1,6 +1,6 @@
 package com.zerozero.store.domain.response;
 
-import com.zerozero.store.infrastructure.kakao.search.response.KakaoSearchResponse.Document;
+import com.zerozero.store.infrastructure.kakao.search.response.KakaoSearchResponseWrapper.KakaoSearchResponse;
 
 public record StoreSearchResponse(
         String id,
@@ -14,18 +14,18 @@ public record StoreSearchResponse(
         String placeUrl,
         String distance
 ) {
-    public static StoreSearchResponse from(Document document) {
+    public static StoreSearchResponse from(KakaoSearchResponse kakaoSearchResponse) {
         return new StoreSearchResponse(
-                document.getId(),
-                document.getPlaceName(),
-                document.getCategoryName(),
-                document.getPhone(),
-                document.getAddressName(),
-                document.getRoadAddressName(),
-                document.getX(),
-                document.getY(),
-                document.getPlaceUrl(),
-                document.getDistance()
+                kakaoSearchResponse.getId(),
+                kakaoSearchResponse.getPlaceName(),
+                kakaoSearchResponse.getCategoryName(),
+                kakaoSearchResponse.getPhone(),
+                kakaoSearchResponse.getAddressName(),
+                kakaoSearchResponse.getRoadAddressName(),
+                kakaoSearchResponse.getX(),
+                kakaoSearchResponse.getY(),
+                kakaoSearchResponse.getPlaceUrl(),
+                kakaoSearchResponse.getDistance()
         );
     }
 }
