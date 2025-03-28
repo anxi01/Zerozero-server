@@ -40,7 +40,9 @@ public class Store extends BaseEntity {
     @Builder.Default
     private boolean status = false;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @ElementCollection
+    @CollectionTable(name = "store_images",
+            joinColumns = @JoinColumn(name = "storeId"))
     private List<Image> images = new ArrayList<>();
 
     private String placeUrl;

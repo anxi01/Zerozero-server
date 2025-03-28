@@ -19,7 +19,7 @@ public class User extends BaseEntity {
 
     private String email;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @Embedded
     private Image profileImage;
 
     @Enumerated(EnumType.STRING)

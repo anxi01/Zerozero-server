@@ -59,7 +59,7 @@ public record StoreResponse(
                 .longitude(store.getGeoLocation().getLongitude())
                 .latitude(store.getGeoLocation().getLatitude())
                 .status(store.isStatus())
-                .images(store.getImages().stream().map(Image::getUrl).collect(Collectors.toList()))
+                .images(store.getImages().stream().map(Image::getImageUrl).collect(Collectors.toList()))
                 .placeUrl(store.getPlaceUrl())
                 .build();
     }

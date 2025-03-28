@@ -22,7 +22,7 @@ public class UserService {
         StoreUserRankResponse storeUserRankResponse = getStoreUserRankUseCase.execute(user.getId());
         return ReadUserInfoResponse.builder()
                 .nickname(user.getNickname())
-                .profileImage(Optional.ofNullable(user.getProfileImage()).map(Image::getUrl).orElse(null))
+                .profileImage(Optional.ofNullable(user.getProfileImage()).map(Image::getImageUrl).orElse(null))
                 .rank(storeUserRankResponse.rank())
                 .storeReportCount(storeUserRankResponse.storeReportCount())
                 .build();
