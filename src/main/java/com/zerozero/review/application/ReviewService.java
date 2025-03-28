@@ -38,7 +38,7 @@ public class ReviewService {
     }
 
     private boolean isUserAlreadyReviewed(UUID userId, UUID storeId) {
-        return reviewRepository.existsByUserIdAndStoreIdAndDeleted(userId, storeId, false);
+        return reviewRepository.existsByUserIdAndStoreId(userId, storeId);
     }
 
 }

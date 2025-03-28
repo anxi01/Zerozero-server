@@ -22,7 +22,7 @@ public class UpdateStoreReviewUseCase {
     private final ReviewRepository reviewRepository;
 
     public void execute(UUID reviewId, ReviewRequest reviewRequest, User user) {
-        Review review = reviewRepository.findByIdAndDeleted(reviewId, false).orElseThrow(() -> new ReviewException(ReviewErrorType.NOT_EXIST_REVIEW));
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewException(ReviewErrorType.NOT_EXIST_REVIEW));
         if (!review.isWrittenBy(user.getId())) {
             log.error("[UpdateStoreReviewUseCase] User does not have review with id {}", reviewId);
             throw new ReviewException(ReviewErrorType.USER_VALIDATION_FAILED);

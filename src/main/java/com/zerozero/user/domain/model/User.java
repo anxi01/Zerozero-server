@@ -7,12 +7,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Table(name = "users")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SuperBuilder
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class User extends BaseEntity {
 
     private String nickname;

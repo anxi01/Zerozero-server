@@ -19,7 +19,7 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
                 FROM (
                     SELECT u.id AS user_id,
                            RANK() OVER (ORDER BY COUNT(s.id) DESC) AS r
-                    FROM user u
+                    FROM users u
                     JOIN store s ON u.id = s.user_id
                     GROUP BY u.id
                 ) AS user_rank
@@ -29,5 +29,5 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
 
     Store findByNameAndGeoLocation(String name, GeoLocation geoLocation);
 
-    List<Store> findAllByUserIdAndDeleted(UUID userId, boolean deleted);
+    List<Store> findAllByUserId(UUID userId);
 }
