@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@Setter
 @MappedSuperclass
 @EntityListeners(value = AuditingEntityListener.class)
 @SuperBuilder
