@@ -47,12 +47,11 @@ public class ReadStoreReviewUseCase {
     }
 
     private Map<UUID, User> getReviewAuthors(List<Review> reviews) {
-        return userRepository.findAllByIdInAndDeleted(
+        return userRepository.findAllByIdIn(
                 reviews.stream()
                         .map(Review::getUserId)
                         .distinct()
-                        .collect(Collectors.toList()),
-                false
+                        .collect(Collectors.toList())
         ).stream().collect(Collectors.toMap(User::getId, reviewAuthor -> reviewAuthor));
     }
 

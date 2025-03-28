@@ -21,15 +21,13 @@ public class DeleteStoreReviewUseCase {
     private final ReviewRepository reviewRepository;
 
     public void execute(UUID reviewId, User user) {
-        Review review = reviewRepository.findByIdAndDeleted(reviewId, false)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorType.NOT_EXIST_DELETABLE_REVIEW));
         if (!review.isWrittenBy(user.getId())) {
             log.error("[DeleteStoreReviewUseCase] User does not have review with id {}", reviewId);
             throw new ReviewException(ReviewErrorType.USER_VALIDATION_FAILED);
         }
-        review.getReviewLikes().clear();
-        review.getZeroDrinks().clear();
-        review.deleted(true);
+        reviewRepository.delete(review);
     }
 
 }

@@ -25,10 +25,10 @@ public class LikeStoreReviewUseCase {
     private final ReviewLikeRepository reviewLikeRepository;
 
     public void execute(UUID reviewId, User user) {
-        Review review = reviewRepository.findByIdAndDeleted(reviewId, false)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorType.NOT_EXIST_DELETABLE_REVIEW));
 
-        reviewLikeRepository.findByReviewIdAndUserIdAndDeleted(review.getId(), user.getId(), false)
+        reviewLikeRepository.findByReviewIdAndUserId(review.getId(), user.getId())
                 .ifPresentOrElse(
                         existingLike -> {
                             log.info("[Unlike] User {} unliked Review {}", user.getId(), review.getId());

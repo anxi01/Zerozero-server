@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.*;
 
@@ -13,6 +15,8 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SuperBuilder
+@SQLDelete(sql = "UPDATE review SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Review extends BaseEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -51,7 +55,4 @@ public class Review extends BaseEntity {
         this.zeroDrinks.addAll(zeroDrinks);
     }
 
-    public void deleted(boolean deleted) {
-        setDeleted(deleted);
-    }
 }

@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface ReviewLikeRepository extends JpaRepository<ReviewLike, Long> {
 
-    Optional<ReviewLike> findByReviewIdAndUserIdAndDeleted(UUID reviewId, UUID userId, Boolean deleted);
+    Optional<ReviewLike> findByReviewIdAndUserId(UUID reviewId, UUID userId);
 
 }
