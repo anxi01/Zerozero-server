@@ -1,9 +1,8 @@
 package com.zerozero.image.domain.model;
 
-import com.zerozero.core.domain.BaseAutoIncrementEntity;
 import com.zerozero.image.exception.ImageErrorType;
 import com.zerozero.image.exception.ImageException;
-import jakarta.persistence.Entity;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,15 +10,15 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Entity
+@Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Image extends BaseAutoIncrementEntity {
+public class Image {
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("PNG", "JPG", "JPEG", "HEIC");
 
-    private String url;
+    private String imageUrl;
 
     public static Image from(String image) {
         return new Image(image);

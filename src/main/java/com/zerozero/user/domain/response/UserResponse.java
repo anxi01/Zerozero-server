@@ -30,7 +30,7 @@ public record UserResponse(
                 user.getId(),
                 user.getNickname(),
                 user.getEmail(),
-                Optional.ofNullable(user.getProfileImage()).map(Image::getUrl).orElse(null),
+                Optional.ofNullable(user.getProfileImage()).map(Image::getImageUrl).orElse(null),
                 user.getUserStatus()
         );
     }
