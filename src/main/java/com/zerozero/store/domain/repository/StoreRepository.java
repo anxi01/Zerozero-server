@@ -27,7 +27,19 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
             """, nativeQuery = true)
     Optional<Integer> findStoreUserRank(@Param("userId") UUID userId);
 
+    @Query("""
+                SELECT s FROM Store s
+                LEFT JOIN FETCH s.images
+                WHERE s.id = :storeId
+            """)
+    Optional<Store> findByIdWithImages(@Param("storeId") UUID storeId);
+
     Store findByNameAndGeoLocation(String name, GeoLocation geoLocation);
 
-    List<Store> findAllByUserId(UUID userId);
+    @Query("""
+                SELECT s FROM Store s
+                LEFT JOIN FETCH s.images
+                WHERE s.userId = :userId
+            """)
+    List<Store> findAllByUserIdWithImages(@Param("userId") UUID userId);
 }

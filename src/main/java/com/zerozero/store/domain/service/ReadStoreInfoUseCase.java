@@ -19,7 +19,7 @@ public class ReadStoreInfoUseCase {
     private final StoreRepository storeRepository;
 
     public StoreResponse execute(UUID storeId) {
-        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreException(StoreErrorType.NOT_EXIST_STORE));
+        Store store = storeRepository.findByIdWithImages(storeId).orElseThrow(() -> new StoreException(StoreErrorType.NOT_EXIST_STORE));
         return StoreResponse.from(store);
     }
 

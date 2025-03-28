@@ -18,7 +18,7 @@ public class ReadUserStoresUseCase {
     private final StoreRepository storeRepository;
 
     public List<StoreResponse> execute(User user) {
-        return storeRepository.findAllByUserId(user.getId())
+        return storeRepository.findAllByUserIdWithImages(user.getId())
                 .stream()
                 .map(StoreResponse::from)
                 .collect(Collectors.toList());
