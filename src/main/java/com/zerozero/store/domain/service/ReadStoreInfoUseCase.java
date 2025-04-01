@@ -6,6 +6,7 @@ import com.zerozero.store.domain.response.StoreResponse;
 import com.zerozero.store.exception.StoreErrorType;
 import com.zerozero.store.exception.StoreException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class ReadStoreInfoUseCase {
 
     private final StoreRepository storeRepository;
 
+    @Cacheable(value = "stores", key = "#storeId")
     public StoreResponse execute(UUID storeId) {
         Store store = storeRepository.findByIdWithImages(storeId).orElseThrow(() -> new StoreException(StoreErrorType.NOT_EXIST_STORE));
         return StoreResponse.from(store);
