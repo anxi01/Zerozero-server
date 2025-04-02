@@ -2,9 +2,9 @@ package com.zerozero.store.domain.model;
 
 import com.zerozero.core.domain.BaseEntity;
 import com.zerozero.image.domain.model.Image;
-import com.zerozero.store.domain.response.StoreSearchResponse;
 import com.zerozero.store.domain.value.Address;
 import com.zerozero.store.domain.value.GeoLocation;
+import com.zerozero.store.presentation.request.CreateStoreRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,17 +53,17 @@ public class Store extends BaseEntity {
 
     private UUID userId;
 
-    public static Store create(UUID userId, StoreSearchResponse store, List<String> images) {
+    public static Store create(UUID userId, CreateStoreRequest createStoreRequest) {
         return Store.builder()
-                .kakaoId(store.id())
-                .name(store.placeName())
-                .category(store.categoryName())
-                .phone(store.phone())
-                .address(Address.of(store.addressName(), store.roadAddressName()))
-                .geoLocation(GeoLocation.of(store.longitude(), store.latitude()))
+                .kakaoId(createStoreRequest.kakaoId())
+                .name(createStoreRequest.placeName())
+                .category(createStoreRequest.category())
+                .phone(createStoreRequest.phone())
+                .address(Address.of(createStoreRequest.address(), createStoreRequest.roadAddress()))
+                .geoLocation(GeoLocation.of(createStoreRequest.longitude(), createStoreRequest.latitude()))
                 .status(true)
-                .images(images.stream().map(Image::from).collect(Collectors.toList()))
-                .placeUrl(store.placeUrl())
+                .images(createStoreRequest.images().stream().map(Image::from).collect(Collectors.toList()))
+                .placeUrl(createStoreRequest.placeUrl())
                 .userId(userId)
                 .build();
     }
