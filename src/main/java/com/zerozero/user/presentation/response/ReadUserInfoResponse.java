@@ -1,9 +1,12 @@
 package com.zerozero.user.presentation.response;
 
+import com.zerozero.image.domain.model.Image;
+import com.zerozero.store.domain.response.StoreUserRankProjection;
+import com.zerozero.user.domain.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 
-@Builder
+import java.util.Optional;
+
 public record ReadUserInfoResponse(
         @Schema(description = "닉네임", example = "제로")
         String nickname,
@@ -14,4 +17,12 @@ public record ReadUserInfoResponse(
         @Schema(description = "제로음료 판매점 등록 횟수", example = "1")
         int storeReportCount
 ) {
+    public static ReadUserInfoResponse of(User user, StoreUserRankProjection storeUserRankProjection) {
+        return new ReadUserInfoResponse(
+                user.getNickname(),
+                Optional.ofNullable(user.getProfileImage()).map(Image::getImageUrl).orElse(null),
+                storeUserRankProjection.getRank(),
+                storeUserRankProjection.getStoreReportCount()
+        );
+    }
 }
