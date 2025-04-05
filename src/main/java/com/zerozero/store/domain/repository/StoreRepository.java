@@ -1,6 +1,7 @@
 package com.zerozero.store.domain.repository;
 
 import com.zerozero.store.domain.model.Store;
+import com.zerozero.store.domain.response.StoreUserRankProjection;
 import com.zerozero.store.domain.value.GeoLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,20 +13,20 @@ import java.util.UUID;
 
 public interface StoreRepository extends JpaRepository<Store, UUID> {
 
-    Integer countStoresByUserId(UUID userId);
-
     @Query(value = """
-                SELECT user_rank.r
+                SELECT ranked_user.rank, ranked_user.storeReportCount
                 FROM (
-                    SELECT u.id AS user_id,
-                           RANK() OVER (ORDER BY COUNT(s.id) DESC) AS r
-                    FROM users u
-                    JOIN store s ON u.id = s.user_id
-                    GROUP BY u.id
-                ) AS user_rank
-                WHERE user_rank.user_id = :userId
+                         SELECT
+                             s.user_id AS user_id,
+                             COUNT(s.id) AS storeReportCount,
+                             RANK() OVER (ORDER BY COUNT(s.id) DESC) AS `rank`
+                         FROM store s
+                         WHERE s.deleted = false
+                         GROUP BY user_id
+                     ) AS ranked_user
+                WHERE ranked_user.user_id = :userId
             """, nativeQuery = true)
-    Optional<Integer> findStoreUserRank(@Param("userId") UUID userId);
+    Optional<StoreUserRankProjection> findStoreUserRank(@Param("userId") UUID userId);
 
     @Query("""
                 SELECT s FROM Store s
