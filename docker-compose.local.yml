@@ -7,16 +7,13 @@ services:
     image: mysql:8.0.23
     platform: linux/amd64
     ports:
-      - '3306:3306'
+      - '3307:3306'
     restart: always
     volumes:
-      - ./docker/mysql/db:/var/lib/mysql
-      - ./mysql:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: zerozero
-      MYSQL_USER: root
-      MYSQL_PASSWORD:
-      MYSQL_ROOT_PASSWORD:
+      MYSQL_ROOT_PASSWORD: root
       TZ: Asia/Seoul
 
   mongo:
@@ -49,12 +46,13 @@ services:
     container_name: zerozero_redis
     image: redis:6.0.9
     ports:
-      - '6379:6379'
+      - '6380:6379'
     restart: always
     volumes:
-      - ./docker/redis/data:/data
-      - ./docker/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis-data:/data
 
 volumes:
+  mysql-data:
   mongo-data:
   rabbitmq-data:
+  redis-data:
