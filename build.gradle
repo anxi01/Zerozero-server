@@ -3,6 +3,9 @@ plugins {
     id 'org.springframework.boot' version '3.2.1'
     id 'io.spring.dependency-management' version '1.1.4'
     id "io.sentry.jvm.gradle" version "4.14.1"
+    id 'org.jetbrains.kotlin.jvm' version '2.1.21'
+    id "org.jetbrains.kotlin.plugin.spring" version '2.1.21'
+    id 'org.jetbrains.kotlin.plugin.jpa' version '2.1.21'
 }
 
 group = 'com.zerozero'
@@ -10,6 +13,10 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 repositories {
@@ -37,3 +44,4 @@ apply from: "gradle/jwt.gradle"
 apply from: "gradle/spring.gradle"
 apply from: "gradle/test.gradle"
 apply from: "gradle/util.gradle"
+apply from: "gradle/jetbrains.gradle"
