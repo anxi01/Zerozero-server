@@ -67,7 +67,7 @@ public class SwaggerConfiguration {
                     errorType -> ExampleHolder.builder()
                             .holder(getSwaggerExample(errorType))
                             .code(errorType.getStatus().value())
-                            .name(errorType.name())
+                            .name(errorType.getCode())
                             .build()
             ).forEach(exampleHolders::add);
         }

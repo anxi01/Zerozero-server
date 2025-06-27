@@ -1,16 +1,14 @@
-package com.zerozero.auth.exception;
+package com.zerozero.auth.exception
 
-import com.zerozero.core.support.error.ErrorType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import com.zerozero.core.support.error.ErrorType
+import org.springframework.http.HttpStatus
 
-@Getter
-@RequiredArgsConstructor
-public enum AuthErrorType implements ErrorType {
+enum class AuthErrorType(
+    override val status: HttpStatus,
+    override val message: String
+) : ErrorType {
     NOT_EXIST_HEADER(HttpStatus.UNAUTHORIZED, "Authorization Header가 존재하지 않습니다."),
     NOT_EXIST_TOKEN(HttpStatus.UNAUTHORIZED, "Authorization Header에 Token이 존재하지 않습니다."),
-    NOT_MATCH_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "토큰의 형식이 맞지 않습니다."),
     NOT_DEFINE_TOKEN(HttpStatus.UNAUTHORIZED, "정의되지 않은 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     NOT_EXIST_PROVIDER(HttpStatus.BAD_REQUEST, "OAuth 써드파티 제공자가 존재하지 않습니다."),
@@ -22,8 +20,4 @@ public enum AuthErrorType implements ErrorType {
     NOT_EXIST_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "리프레시 토큰이 존재하지 않습니다."),
     TOKEN_REFRESH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 재발급에 실패하였습니다."),
     ;
-
-    private final HttpStatus status;
-
-    private final String message;
 }
