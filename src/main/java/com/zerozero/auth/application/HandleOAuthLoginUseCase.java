@@ -1,5 +1,6 @@
 package com.zerozero.auth.application;
 
+import com.zerozero.auth.domain.model.RefreshToken;
 import com.zerozero.auth.domain.repository.RefreshTokenRepository;
 import com.zerozero.auth.exception.AuthErrorType;
 import com.zerozero.auth.exception.AuthException;
@@ -10,7 +11,6 @@ import com.zerozero.auth.presentation.response.LoginResponse;
 import com.zerozero.auth.presentation.response.TokenResponse;
 import com.zerozero.core.util.JwtUtil;
 import com.zerozero.user.domain.model.User;
-import com.zerozero.user.domain.model.UserStatus;
 import com.zerozero.user.domain.repository.UserRepository;
 import com.zerozero.user.domain.response.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +51,7 @@ public class HandleOAuthLoginUseCase {
         String userEmail = oAuthResourceResponse.email();
         User user = userRepository.findByEmail(userEmail).orElse(null);
         if (user == null) {
-            User pendingUser = User.builder()
-                    .email(userEmail)
-                    .userStatus(UserStatus.PENDING)
-                    .build();
+            User pendingUser = User.createPendingUser(userEmail);
             userRepository.save(pendingUser);
             return generateAndBuildResponse(pendingUser);
         } else {
@@ -65,10 +62,7 @@ public class HandleOAuthLoginUseCase {
     private LoginResponse generateAndBuildResponse(User user) {
         String accessToken = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken(user);
-        refreshTokenRepository.save(com.zerozero.auth.domain.model.RefreshToken.builder()
-                .userId(user.getId())
-                .refreshToken(refreshToken)
-                .build());
+        refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken));
         return LoginResponse.of(UserResponse.from(user), TokenResponse.of(accessToken, refreshToken));
     }
 
