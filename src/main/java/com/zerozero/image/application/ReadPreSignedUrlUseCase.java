@@ -30,7 +30,7 @@ public class ReadPreSignedUrlUseCase {
         String extension = FilenameUtils.getExtension(fileName).toUpperCase();
         Image.validateExtension(extension);
 
-        String preSignedUrl = awss3Service.getPreSignedUrl(imagePrefix.getPrefix(), fileName);
+        String preSignedUrl = awss3Service.getPreSignedUrl(imagePrefix.name().toLowerCase(), fileName);
         String objectUrl = awss3Service.getObjectUrlFromPreSignedUrl(preSignedUrl);
         if (preSignedUrl == null || objectUrl == null) {
             log.error("[ReadPreSignedUrlResponse] Generated URLs(PreSigned, Object) are null");
