@@ -27,7 +27,7 @@ public class SearchStoreUseCase {
         return storeSearchResponses.stream()
                 .map(storeSearchResponse -> {
                     Store store = storeRepository.findByNameAndGeoLocation(
-                            storeSearchResponse.placeName(), GeoLocation.of(storeSearchResponse.longitude(), storeSearchResponse.latitude())
+                            storeSearchResponse.placeName(), new GeoLocation(storeSearchResponse.longitude(), storeSearchResponse.latitude())
                     );
 
                     if (store == null) {
@@ -37,7 +37,7 @@ public class SearchStoreUseCase {
                     return StoreResponse.of(
                             storeSearchResponse,
                             store.getId(),
-                            store.isStatus()
+                            store.getStatus()
                     );
                 })
                 .collect(Collectors.toList());

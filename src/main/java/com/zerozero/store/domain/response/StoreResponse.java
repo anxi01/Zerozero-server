@@ -58,7 +58,7 @@ public record StoreResponse(
                 .roadAddress(store.getAddress().getRoadAddress())
                 .longitude(store.getGeoLocation().getLongitude())
                 .latitude(store.getGeoLocation().getLatitude())
-                .status(store.isStatus())
+                .status(store.getStatus())
                 .images(store.getImages().stream().map(Image::getImageUrl).collect(Collectors.toList()))
                 .placeUrl(store.getPlaceUrl())
                 .build();

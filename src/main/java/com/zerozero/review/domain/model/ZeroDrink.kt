@@ -1,6 +1,6 @@
 package com.zerozero.review.domain.model;
 
-public enum ZeroDrink {
+enum class ZeroDrink {
     COCA_COLA_ZERO,
     PEPSI_ZERO,
     SPRITE_ZERO,
