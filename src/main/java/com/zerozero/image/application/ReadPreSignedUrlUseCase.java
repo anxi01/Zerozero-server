@@ -32,10 +32,6 @@ public class ReadPreSignedUrlUseCase {
 
         String preSignedUrl = awss3Service.getPreSignedUrl(imagePrefix.name().toLowerCase(), fileName);
         String objectUrl = awss3Service.getObjectUrlFromPreSignedUrl(preSignedUrl);
-        if (preSignedUrl == null || objectUrl == null) {
-            log.error("[ReadPreSignedUrlResponse] Generated URLs(PreSigned, Object) are null");
-            throw new ImageException(ImageErrorType.FAILED_TO_MAKE_URL);
-        }
         log.info("[ReadPreSignedUrlResponse] Generated URLs - PreSigned: {}, Object: {}", preSignedUrl, objectUrl);
         return PreSignedUrlResponse.of(preSignedUrl, objectUrl);
     }
