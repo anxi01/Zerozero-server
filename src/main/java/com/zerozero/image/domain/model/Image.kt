@@ -9,13 +9,11 @@ import java.util.*
 @Embeddable
 data class Image(
     @Column(name = "image_url", nullable = true)
-    var imageUrl: String? = null
+    var imageUrl: String
 ) {
     init {
-        val extension = imageUrl?.substringAfterLast('.', "")?.takeIf { it.isNotBlank() }
-        if (extension != null) {
-            validateExtension(extension)
-        }
+        val extension = imageUrl.substringAfterLast('.', "")
+        validateExtension(extension)
     }
 
     companion object {
