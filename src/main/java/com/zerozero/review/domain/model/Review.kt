@@ -42,7 +42,6 @@ class Review(
     }
 
     companion object {
-        @JvmStatic
         fun create(
             content: String,
             zeroDrinks: Set<ZeroDrink>,

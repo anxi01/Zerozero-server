@@ -26,7 +26,7 @@ class StoreService(
     private fun getTop3ZeroDrinks(reviews: List<ReviewResponse>?): List<ZeroDrink> {
         if (reviews == null) return emptyList()
 
-        val allZeroDrinks = reviews.flatMap { it.zeroDrinks() }
+        val allZeroDrinks = reviews.flatMap { it.zeroDrinks }
 
         return allZeroDrinks
             .groupingBy { it }

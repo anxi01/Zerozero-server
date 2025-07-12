@@ -5,10 +5,6 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
-import lombok.AccessLevel
-import lombok.Getter
-import lombok.NoArgsConstructor
-import lombok.experimental.SuperBuilder
 import java.util.*
 
 @Entity
@@ -21,11 +17,10 @@ class ReviewLike(
     val reviewId: UUID,
 
     @Column(name = "user_id", nullable = false)
-    val userId: UUID
+    val userId: UUID,
 ) : BaseAutoIncrementEntity() {
 
     companion object {
-        @JvmStatic
         fun create(reviewId: UUID, userId: UUID): ReviewLike {
             return ReviewLike(
                 reviewId = reviewId,
