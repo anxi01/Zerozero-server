@@ -1,10 +1,8 @@
 package com.zerozero.user.presentation.response
 
-import com.zerozero.image.domain.model.Image
 import com.zerozero.store.domain.response.StoreUserRankProjection
 import com.zerozero.user.domain.model.User
 import io.swagger.v3.oas.annotations.media.Schema
-import java.util.*
 
 @JvmRecord
 data class ReadUserInfoResponse(
@@ -23,7 +21,7 @@ data class ReadUserInfoResponse(
     val rank: Int,
 
     @field:Schema(description = "제로음료 판매점 등록 횟수", example = "1")
-    val storeReportCount: Int
+    val storeReportCount: Int,
 ) {
     companion object {
         @JvmStatic

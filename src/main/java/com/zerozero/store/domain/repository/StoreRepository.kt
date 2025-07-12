@@ -35,7 +35,7 @@ interface StoreRepository : JpaRepository<Store, UUID> {
             
             """
     )
-    fun findByIdWithImages(@Param("storeId") storeId: UUID): Optional<Store>
+    fun findByIdWithImages(@Param("storeId") storeId: UUID): Store?
 
     fun findByNameAndGeoLocation(name: String, geoLocation: GeoLocation): Store?
 
