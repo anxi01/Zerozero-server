@@ -6,5 +6,5 @@ import java.util.*
 
 interface ReviewLikeRepository : JpaRepository<ReviewLike, Long> {
 
-    fun findByReviewIdAndUserId(reviewId: UUID, userId: UUID): Optional<ReviewLike>
+    fun findByReviewIdAndUserId(reviewId: UUID, userId: UUID): ReviewLike?
 }
