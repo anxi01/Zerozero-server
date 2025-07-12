@@ -1,6 +1,6 @@
 package com.zerozero.auth.presentation
 
-import com.zerozero.auth.application.HandleOAuthLoginUseCase
+import com.zerozero.auth.application.HandleOAuthLoginService
 import com.zerozero.auth.exception.AuthErrorType
 import com.zerozero.auth.presentation.response.LoginResponse
 import com.zerozero.configuration.swagger.ApiErrorCode
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Auth", description = "인증/인가")
 @RestController
 class HandleOAuthLoginController(
-    private val handleOAuthLoginUseCase: HandleOAuthLoginUseCase
+    private val handleOAuthLoginService: HandleOAuthLoginService
 ) {
 
     @Operation(
@@ -34,7 +34,7 @@ class HandleOAuthLoginController(
         @RequestParam @Schema(description = "소셜 로그인 시 사용되는 인가 코드") code: String,
         @PathVariable providerName: String
     ): ApiResponse<LoginResponse> {
-        val loginResponse = handleOAuthLoginUseCase.execute(code, providerName)
+        val loginResponse = handleOAuthLoginService.execute(code, providerName)
         return ApiResponse.success(loginResponse)
     }
 }

@@ -1,6 +1,5 @@
-package com.zerozero.auth.presentation
+package com.zerozero.user.presentation
 
-import com.zerozero.auth.application.RegisterUserUseCase
 import com.zerozero.auth.exception.AuthErrorType
 import com.zerozero.auth.presentation.request.RegisterRequest
 import com.zerozero.configuration.interceptor.Authorization
@@ -8,6 +7,7 @@ import com.zerozero.configuration.swagger.ApiErrorCode
 import com.zerozero.core.support.error.GlobalErrorType
 import com.zerozero.core.support.response.ApiResponse
 import com.zerozero.user.domain.response.UserResponse
+import com.zerozero.user.domain.service.RegisterUserUseCase
 import com.zerozero.user.exception.UserErrorType
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "Auth", description = "인증/인가")
+@Tag(name = "User", description = "사용자")
 @RestController
 class RegisterUserController(
     private val registerUserUseCase: RegisterUserUseCase

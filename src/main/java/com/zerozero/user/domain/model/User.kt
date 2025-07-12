@@ -43,7 +43,6 @@ class User(
     }
 
     companion object {
-        @JvmStatic
         fun createPendingUser(email: String): User {
             return User(
                 email = email,
