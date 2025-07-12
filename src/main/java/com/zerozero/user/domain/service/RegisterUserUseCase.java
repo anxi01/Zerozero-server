@@ -1,4 +1,4 @@
-package com.zerozero.auth.application;
+package com.zerozero.user.domain.service;
 
 import com.zerozero.auth.presentation.request.RegisterRequest;
 import com.zerozero.core.util.JwtUtil;

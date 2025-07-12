@@ -1,6 +1,6 @@
 package com.zerozero.auth.presentation
 
-import com.zerozero.auth.application.RefreshUserTokenUseCase
+import com.zerozero.auth.application.RefreshUserTokenService
 import com.zerozero.auth.exception.AuthErrorType
 import com.zerozero.auth.presentation.response.TokenResponse
 import com.zerozero.configuration.swagger.ApiErrorCode
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Auth", description = "인증/인가")
 @RestController
 class RefreshUserTokenController(
-    private val refreshUserTokenUseCase: RefreshUserTokenUseCase
+    private val refreshUserTokenService: RefreshUserTokenService
 ) {
 
     @Operation(
@@ -31,7 +31,7 @@ class RefreshUserTokenController(
     fun refreshUserToken(
         @RequestParam refreshToken: String
     ): ApiResponse<TokenResponse> {
-        val tokenResponse = refreshUserTokenUseCase.execute(refreshToken)
+        val tokenResponse = refreshUserTokenService.execute(refreshToken)
         return ApiResponse.success(tokenResponse)
     }
 }
