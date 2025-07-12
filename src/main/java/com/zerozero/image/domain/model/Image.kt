@@ -19,7 +19,6 @@ data class Image(
     companion object {
         private val ALLOWED_EXTENSIONS = setOf("PNG", "JPG", "JPEG", "HEIC")
 
-        @JvmStatic
         fun validateExtension(extension: String) {
             if (!ALLOWED_EXTENSIONS.contains(extension.uppercase(Locale.getDefault()))) {
                 throw ImageException(ImageErrorType.INVALID_IMAGE_EXTENSION)

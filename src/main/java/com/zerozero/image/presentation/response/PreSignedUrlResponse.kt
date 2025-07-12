@@ -2,7 +2,6 @@ package com.zerozero.image.presentation.response
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-@JvmRecord
 data class PreSignedUrlResponse(
     @Schema(
         description = "이미지 업로드 PreSigned URL",
@@ -17,7 +16,6 @@ data class PreSignedUrlResponse(
     val objectUrl: String
 ) {
     companion object {
-        @JvmStatic
         fun of(preSignedUrl: String, objectUrl: String) = PreSignedUrlResponse(preSignedUrl, objectUrl)
     }
 }
