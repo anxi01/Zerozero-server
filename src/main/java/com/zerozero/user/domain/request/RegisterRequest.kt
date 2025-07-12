@@ -1,8 +1,7 @@
-package com.zerozero.auth.presentation.request
+package com.zerozero.user.domain.request
 
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 
 @JvmRecord
 data class RegisterRequest(

@@ -1,7 +1,7 @@
 package com.zerozero.user.presentation
 
 import com.zerozero.auth.exception.AuthErrorType
-import com.zerozero.auth.presentation.request.RegisterRequest
+import com.zerozero.user.domain.request.RegisterRequest
 import com.zerozero.configuration.interceptor.Authorization
 import com.zerozero.configuration.swagger.ApiErrorCode
 import com.zerozero.core.support.error.GlobalErrorType
